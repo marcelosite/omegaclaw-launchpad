@@ -1,0 +1,13 @@
+diff --git a/Dockerfile b/Dockerfile
+index 87127a8..bb5014c 100644
+--- a/Dockerfile
++++ b/Dockerfile
+@@ -44,7 +44,7 @@ RUN git clone --depth 1 --branch "${FAISS_REF}" "${FAISS_REPO}" /faiss
+ 
+ WORKDIR /faiss
+ RUN cmake -B build -DFAISS_ENABLE_GPU=OFF -DFAISS_ENABLE_PYTHON=OFF -DBUILD_SHARED_LIBS=OFF \
+- && cmake --build build --config Release --parallel \
++ && cmake --build build --config Release --parallel 2 \
+  && cmake --install build
+ 
+ WORKDIR /PeTTa

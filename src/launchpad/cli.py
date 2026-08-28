@@ -7,12 +7,23 @@ import json
 import os
 import sys
 from pathlib import Path
-from typing import Sequence
+from typing import Optional, Sequence
 
 from . import __version__
 from .config import CHANNELS, PROVIDERS
 from .doctor import print_checks, run_checks
 from .journey import load_config, next_action, write_onboarding_files
+from .proof import proof_checks
+from .reflection import (
+    DEFAULT_MISSION_ID,
+    create_receipt,
+    execute_controlled_run,
+    initialize_mission,
+    mission_root,
+    prepare_reflection,
+    record_decision,
+    validate_run,
+)
 
 
 def _root(value: str) -> Path:
@@ -23,10 +34,15 @@ def _add_workspace(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--workspace", default=".", type=_root, help="directory where onboarding files are created")
 
 
+def _add_reflection_location(parser: argparse.ArgumentParser) -> None:
+    _add_workspace(parser)
+    parser.add_argument("--mission-id", default=DEFAULT_MISSION_ID)
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="omega-launchpad",
-        description="Take a newcomer from zero to a first OmegaClaw launch handoff.",
+        description="Guide a newcomer through a first governed OmegaClaw reflection.",
     )
     parser.add_argument("--version", action="version", version=__version__)
     commands = parser.add_subparsers(dest="command", required=True)
@@ -51,6 +67,49 @@ def build_parser() -> argparse.ArgumentParser:
 
     demo = commands.add_parser("demo", help="run the offline onboarding proof; no Docker or API key needed")
     demo.add_argument("--json", action="store_true", help="emit the proof as JSON")
+
+    reflect = commands.add_parser("reflect", help="run the instrumented First Reflection mission")
+    reflect_commands = reflect.add_subparsers(dest="reflect_command", required=True)
+
+    reflect_init = reflect_commands.add_parser("init", help="create the mission contract")
+    _add_reflection_location(reflect_init)
+
+    reflect_run = reflect_commands.add_parser("run", help="execute the intentionally flawed controlled run")
+    _add_reflection_location(reflect_run)
+
+    reflect_validate = reflect_commands.add_parser("validate", help="validate claims against recorded events")
+    _add_reflection_location(reflect_validate)
+
+    reflect_prepare = reflect_commands.add_parser(
+        "prepare", help="freeze verified facts for a real OmegaClaw reflection"
+    )
+    _add_reflection_location(reflect_prepare)
+
+    reflect_prove = reflect_commands.add_parser(
+        "prove", help="check readiness for the pinned real OmegaClaw proof harness"
+    )
+    _add_reflection_location(reflect_prove)
+    reflect_prove.add_argument("--json", action="store_true")
+
+    reflect_review = reflect_commands.add_parser("review", help="approve or reject the proposed rerun")
+    _add_reflection_location(reflect_review)
+    reflect_review.add_argument(
+        "--decision", choices=("approved", "rejected"), help="non-interactive human decision"
+    )
+
+    reflect_rerun = reflect_commands.add_parser("rerun", help="repeat the fixture after explicit approval")
+    _add_reflection_location(reflect_rerun)
+
+    reflect_receipt = reflect_commands.add_parser("receipt", help="write the before/after receipt")
+    _add_reflection_location(reflect_receipt)
+
+    reflect_demo = reflect_commands.add_parser(
+        "demo", help="run the local controlled cycle; clearly excludes the pending OmegaClaw proof"
+    )
+    _add_reflection_location(reflect_demo)
+    reflect_demo.add_argument(
+        "--decision", choices=("approved", "rejected"), default="approved"
+    )
     return parser
 
 
@@ -109,6 +168,111 @@ def _demo(args: argparse.Namespace) -> int:
     return 0
 
 
+def _reflection_path(args: argparse.Namespace) -> Path:
+    return mission_root(args.workspace, args.mission_id)
+
+
+def _print_validation(result: dict) -> None:
+    finding = result["findings"][0]
+    declaration = result["findings"][1]
+    print("Expected: %s distinct sources" % finding["expected"])
+    print("Observed: %s distinct sources" % finding["observed"])
+    print("Declared: %s sources" % declaration["declared"])
+    print("Result: %s" % result["status"].upper())
+
+
+def _interactive_decision(root: Path) -> Optional[str]:
+    proposal = json.loads((root / "03-reflection" / "proposal.json").read_text(encoding="utf-8"))
+    while True:
+        print("\nREFLECTION REVIEW")
+        print("\nVerified failure: the report declared 3 sources; the recorder observed 1.")
+        print("\nControlled proposal: %s" % proposal["summary"])
+        print("Origin: %s" % proposal["origin"])
+        print("\n1. Approve and allow the controlled rerun")
+        print("2. Show the complete reflection context")
+        print("3. Reject")
+        print("4. Exit without a decision")
+        choice = input("\nChoose: ").strip()
+        if choice == "1":
+            return "approved"
+        if choice == "2":
+            print("\n%s" % (root / "03-reflection" / "reflection-context.json").read_text(encoding="utf-8"))
+            continue
+        if choice == "3":
+            return "rejected"
+        if choice == "4":
+            return None
+        print("Choose 1, 2, 3, or 4.")
+
+
+def _reflect(args: argparse.Namespace) -> int:
+    root = _reflection_path(args)
+    if args.reflect_command == "init":
+        created = initialize_mission(args.workspace, args.mission_id)
+        print("Mission created: %s" % created)
+        return 0
+    if args.reflect_command == "run":
+        run_dir = execute_controlled_run(root)
+        print("Controlled first run recorded: %s" % run_dir)
+        return 0
+    if args.reflect_command == "validate":
+        _print_validation(validate_run(root))
+        return 0
+    if args.reflect_command == "prepare":
+        prepare_reflection(root)
+        print("Reflection context prepared: %s" % (root / "03-reflection" / "reflection-context.json"))
+        print("OmegaClaw status: PENDING — no runtime response was fabricated.")
+        return 0
+    if args.reflect_command == "prove":
+        project_root = Path(__file__).resolve().parents[2]
+        checks = proof_checks(project_root, root)
+        if args.json:
+            print(json.dumps(checks, indent=2))
+        else:
+            print("Real OmegaClaw proof readiness")
+            for check in checks:
+                print("[%s] %-16s %s" % ("OK" if check["ok"] else "BLOCKED", check["name"], check["detail"]))
+            if all(check["ok"] for check in checks):
+                print("\nReady: scripts/run-omegaclaw-proof.sh %s" % args.mission_id)
+            else:
+                print("\nNo OmegaClaw proof was claimed or simulated.")
+        return 0 if all(check["ok"] for check in checks) else 1
+    if args.reflect_command == "review":
+        decision = args.decision or _interactive_decision(root)
+        if decision is None:
+            print("No decision recorded.")
+            return 0
+        record_decision(root, decision)
+        print("Human decision recorded: %s" % decision.upper())
+        return 0
+    if args.reflect_command == "rerun":
+        execute_controlled_run(root, rerun=True)
+        result = validate_run(root, rerun=True)
+        _print_validation(result)
+        return 0
+    if args.reflect_command == "receipt":
+        create_receipt(root)
+        print("Receipt written: %s" % (root / "06-receipt" / "final-receipt.md"))
+        return 0
+    if args.reflect_command == "demo":
+        initialize_mission(args.workspace, args.mission_id)
+        execute_controlled_run(root)
+        print("\nFIRST RUN")
+        _print_validation(validate_run(root))
+        prepare_reflection(root)
+        print("\nOMEGACLAW PROOF: PENDING (not simulated)")
+        record_decision(root, args.decision)
+        print("HUMAN DECISION: %s" % args.decision.upper())
+        if args.decision == "approved":
+            execute_controlled_run(root, rerun=True)
+            print("\nCONTROLLED RERUN")
+            _print_validation(validate_run(root, rerun=True))
+            create_receipt(root)
+            print("\nReceipt: %s" % (root / "06-receipt" / "final-receipt.md"))
+        return 0
+    return 2
+
+
 def main(argv: Sequence[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
     if args.command == "doctor":
@@ -119,6 +283,8 @@ def main(argv: Sequence[str] | None = None) -> int:
         return _onboard(args)
     if args.command == "demo":
         return _demo(args)
+    if args.command == "reflect":
+        return _reflect(args)
     return 2
 
 

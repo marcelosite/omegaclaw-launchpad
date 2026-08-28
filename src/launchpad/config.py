@@ -8,7 +8,8 @@ from typing import Dict, Any
 
 UPSTREAM_REPOSITORY = "https://github.com/asi-alliance/OmegaClaw-Core.git"
 UPSTREAM_REF = "v0.1.19"
-UPSTREAM_IMAGE = "singularitynet/omegaclaw:latest"
+UPSTREAM_COMMIT = "642c53676cf795cb7a0030823b36018c029b1416"
+UPSTREAM_IMAGE = "omegaclaw-launchpad:v0.1.19"
 
 PROVIDER_ENV = {
     "Anthropic": "ANTHROPIC_API_KEY",
@@ -20,12 +21,11 @@ PROVIDER_ENV = {
 }
 
 PROVIDERS = tuple(PROVIDER_ENV)
-CHANNELS = ("irc", "telegram", "slack", "websocket", "mattermost")
+CHANNELS = ("irc", "telegram", "slack", "websocket", "test")
 CHANNEL_ENV = {
     "telegram": "TG_BOT_TOKEN",
     "slack": "SL_BOT_TOKEN",
     "websocket": "WS_URL",
-    "mattermost": "MM_BOT_TOKEN",
 }
 
 
@@ -37,6 +37,7 @@ def build_config(workspace: Path, provider: str, channel: str, irc_channel: str)
         "upstream": {
             "repository": UPSTREAM_REPOSITORY,
             "ref": UPSTREAM_REF,
+            "commit": UPSTREAM_COMMIT,
             "image": UPSTREAM_IMAGE,
         },
         "provider": provider,

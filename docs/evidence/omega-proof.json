@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "status": "verified",
+  "runtime": "OmegaClaw-Core v0.1.19-dirty",
+  "upstream_base_commit": "642c53676cf795cb7a0030823b36018c029b1416",
+  "controlled_patches": [
+    "limit FAISS build parallelism to 2 (build only)",
+    "map Linux POLLRDHUP to POLLHUP on macOS (test harness only)"
+  ],
+  "provider": "Test",
+  "channel": "websocket",
+  "metta_skill_observed": true,
+  "nal_stv_observed_in_loop": true,
+  "human_approval_still_required": true,
+  "response": "OMEGACLAW-REFLECTION-1787946037: conflicting evidence; require human review."
+}

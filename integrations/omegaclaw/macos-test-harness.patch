@@ -1,0 +1,16 @@
+diff --git a/Autotests/mock/rpc.py b/Autotests/mock/rpc.py
+index 3adc52c..2717505 100644
+--- a/Autotests/mock/rpc.py
++++ b/Autotests/mock/rpc.py
+@@ -4,6 +4,11 @@ import select
+ import socket
+ import json
+ 
++# POLLRDHUP is Linux-specific; POLLHUP is the portable macOS equivalent for
++# this local test controller's disconnect detection.
++if not hasattr(select, "POLLRDHUP"):
++    select.POLLRDHUP = select.POLLHUP
++
+ LOCALHOST = "localhost"
+ 
+ class Shared:

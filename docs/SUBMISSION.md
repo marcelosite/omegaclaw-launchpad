@@ -1,29 +1,71 @@
 # BGI Commons submission draft
 
-## Project
+## Title
 
-OmegaClaw Launchpad — Track 2: Onboarding OmegaClaw
+**OmegaClaw First Reflection — Instrumented Missions for Governed Agent Learning**
 
 ## One-line proposition
 
-An AI-native onboarding layer that takes newcomers from zero to their first working OmegaClaw agent.
+A CLI onboarding lab where a newcomer watches OmegaClaw reason over verified agent evidence and must approve any controlled learning step.
+
+## Problem
+
+OmegaClaw introduces several powerful ideas at once: a MeTTa agent loop, Hyperon/PeTTa, NAL reasoning, providers, channels, memory, and Docker. A newcomer can install components without understanding why OmegaClaw is different—or what safe agent learning looks like.
+
+## Solution
+
+First Reflection begins with one concrete failure: an agent declares three sources, while its event record shows one. Launchpad records the mission, proves the mismatch with deterministic code, sends only the verified facts into a pinned real OmegaClaw runtime, observes a real MeTTa/NAL call, asks a human to approve or reject the proposal, reruns the controlled fixture, and writes a before/after receipt.
 
 ## What shipped
 
-Launchpad is a small, open-source CLI that makes the real OmegaClaw architecture legible, checks the local environment, creates a source-pinned and secret-safe launch handoff, and provides an offline proof that can be run before Docker or API credentials are available.
+- A dependency-free Python CLI and readable file contracts.
+- Hash-linked mission events and deterministic validation.
+- Explicit human approval/rejection.
+- A controlled rerun and comparison receipt.
+- A pinned WebSocket/Test-provider harness for OmegaClaw-Core `v0.1.19`.
+- A test that requires a real `metta` skill call and NAL `stv` in the loop.
+- Documentation, tests, demo script, and future adapter boundary.
 
-## Why it matters
+## Why OmegaClaw is central
 
-The upstream stack is powerful but crosses several conceptual and operational boundaries at once: PeTTa, Hyperon, MeTTa, Python bridges, plugins, providers, channels, Docker, and credentials. Launchpad turns those boundaries into explicit milestones and actionable diagnostics.
+The mismatch itself is intentionally detected without AI. OmegaClaw is central to the learning experience: the newcomer sends grounded evidence through its real channel and loop, invokes MeTTa/NAL, observes uncertainty propagation, and sees the result stop at a human governance gate. The project teaches capabilities specific to OmegaClaw instead of placing its logo over a generic validator.
 
 ## BGI alignment
 
-- It lowers the barrier to participation and contribution.
-- It preserves user control over credentials and launch decisions.
-- It favors transparent, deterministic checks over opaque setup magic.
-- It points users to the upstream open-source runtime instead of creating a private fork.
-- It creates a reusable building block for future tutorials, agents, and community education.
+- **Beneficial systems:** proposals do not become changes without human approval.
+- **Epistemic humility:** observation, inference, confidence, and claims remain separate.
+- **Transparency:** every stage produces human-readable and machine-readable evidence.
+- **Openness:** the project extends the public upstream runtime without a private replacement.
+- **Reusable commons:** future agent ecosystems can emit the same mission/event contract.
+- **Accessible onboarding:** a nontechnical person can understand the failure before learning the vocabulary.
 
-## Known limitation
+## Demonstrated result
 
-The first sprint version is a CLI and launch handoff, not a hosted conversational coach. The manifest/JSON contract is the foundation for that next layer without making it a deadline risk.
+Local demonstrated result:
+
+```text
+before: expected 3 / observed 1 / FAIL
+decision: human-approved
+after: expected 3 / observed 3 / PASS
+```
+
+Full demonstrated result:
+
+```text
+OmegaClaw v0.1.19 commit verified
+WebSocket round trip verified
+metta skill invocation verified
+NAL stv in real loop verified
+7/7 harness checks; pytest 1 passed
+```
+
+## Honest limitation
+
+This sprint demonstrates a controlled mission with a deterministic Test provider. It does not claim autonomous self-improvement, universal fact checking, production-grade tamper resistance, or existing integrations with OpenClaw/Hermes/Codex/Claude. Those are explicit follow-up adapters.
+
+## Links to submit
+
+- Repository: https://github.com/marcelosite/omegaclaw-launchpad
+- Demo video: pending
+- Reproduction evidence: https://github.com/marcelosite/omegaclaw-launchpad/blob/main/docs/PROOF.md
+- Captured proof: https://github.com/marcelosite/omegaclaw-launchpad/blob/main/docs/evidence/omega-proof.json

@@ -27,4 +27,4 @@ The Launchpad therefore does not reimplement AtomSpace, MeTTa evaluation, memory
 
 The official [HyperSprint #1 brief](https://bgicommons.org/hackathons/hypersprint-1-omegaclaw) says the sprint is about reusable building blocks that help the community learn, adopt, and expand OmegaClaw rather than changing OmegaClaw core. Track 2 asks for educational resources and onboarding experiences, with examples including interactive onboarding agents, documentation, tutorials, video demonstrations, and example projects. The [BGI Commons home page](https://bgicommons.org/) frames the community goal as building beneficial AI/AGI that serves all of humanity.
 
-The MVP targets the smallest technically real subset: an interactive onboarding CLI plus a reusable, source-pinned launch handoff and a no-secret offline proof.
+The MVP targets one technically real learning loop: a deterministic evidence audit, a pinned OmegaClaw WebSocket/Test-provider run, a real MeTTa/NAL reflection, an explicit human decision, and a before/after receipt. The original source-pinned launch handoff remains available, but it is no longer the central demonstration.
