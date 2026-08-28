@@ -115,6 +115,20 @@ The runner clones the exact upstream tag, verifies commit `642c53676cf795cb7a003
 
 **Verified on 2026-08-28:** the proof completed with `7/7` integration checks and `1 passed` in pytest on Apple Silicon. See the [reproduction evidence](docs/PROOF.md) and [captured proof JSON](docs/evidence/omega-proof.json). The reported runtime is honestly labeled `v0.1.19-dirty`: its base is the verified upstream commit, with only a two-job FAISS build patch and a macOS test-harness compatibility patch.
 
+## Evidence frames
+
+These video-ready frames summarize one verified run. The rendered cards are derived from the saved mission artifacts; the review image is the original macOS Terminal capture.
+
+| Failure detected | Real OmegaClaw proof |
+|---|---|
+| ![Expected three sources, observed one, result fail](docs/assets/video/01-failure-detected.png) | ![Seven of seven real OmegaClaw integration checks passed](docs/assets/video/02-real-omegaclaw-proof.png) |
+
+| Human approval gate | Final governed receipt |
+|---|---|
+| ![Terminal review menu requiring a human decision](docs/assets/video/03-human-approval.png) | ![Before fail, after pass, human approved, OmegaClaw verified](docs/assets/video/04-final-receipt.png) |
+
+Download the originals and editable HTML source from the [video evidence kit](docs/assets/video/README.md).
+
 ## What this proves—and what it does not
 
 | Demonstrated | Not claimed |

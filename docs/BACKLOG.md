@@ -15,7 +15,8 @@
 - [x] Install/start Docker and make the upstream image build pass on this Mac.
 - [x] Run the end-to-end proof and capture `omega-proof.json`.
 - [ ] Record the three-minute demo.
-- [ ] Add screenshots/GIF and the video link to the README.
+- [x] Add verified evidence screenshots to the README.
+- [ ] Add the published video link to the README.
 - [x] Fill and submit the BGI Commons project page.
 
 ## P1 — immediate credibility

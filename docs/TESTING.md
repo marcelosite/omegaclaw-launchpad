@@ -88,6 +88,8 @@ The final receipt must say `Before: FAIL`, `After approved rerun: PASS`, `Human 
 
 ## Recording and screenshot assets
 
+A prepared four-frame evidence kit is available in [`docs/assets/video/`](assets/video/README.md). It contains three 1600×900 video cards, the original macOS Terminal review capture, and the editable HTML source used to render the cards.
+
 For mission `video-demo-001`, all generated evidence is under:
 
 ```text

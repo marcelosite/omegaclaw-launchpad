@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>OmegaClaw Launchpad — video evidence cards</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #050b12;
+      color: #eef6ff;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; padding: 60px; display: grid; gap: 60px; background: #050b12; }
+    .frame {
+      width: 1600px;
+      height: 900px;
+      padding: 76px 84px;
+      overflow: hidden;
+      position: relative;
+      background:
+        radial-gradient(circle at 92% 8%, rgba(54, 211, 153, .16), transparent 32%),
+        linear-gradient(135deg, #0c1724 0%, #07101a 72%);
+      border: 1px solid #23384a;
+    }
+    .eyebrow { color: #64e6b4; font-size: 23px; font-weight: 750; letter-spacing: .13em; text-transform: uppercase; }
+    h1 { margin: 18px 0 18px; font-size: 60px; line-height: 1.08; letter-spacing: -.035em; }
+    .lead { margin: 0 0 38px; max-width: 1180px; color: #adc2d5; font-size: 30px; line-height: 1.42; }
+    .terminal {
+      background: rgba(2, 7, 12, .87);
+      border: 1px solid #294052;
+      border-radius: 18px;
+      padding: 34px 38px;
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+      font-size: 27px;
+      line-height: 1.47;
+      box-shadow: 0 24px 70px rgba(0, 0, 0, .3);
+    }
+    .prompt { color: #7e9bb2; }
+    .ok { color: #65e6ad; }
+    .bad { color: #ff8c8c; }
+    .strong { color: #ffffff; font-weight: 800; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px 56px; }
+    .check { display: flex; gap: 16px; align-items: baseline; }
+    .check span:first-child { color: #65e6ad; font-weight: 900; }
+    .result {
+      margin-top: 26px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-top: 1px solid #294052;
+      padding-top: 26px;
+    }
+    .pill { padding: 13px 22px; border-radius: 999px; background: #103e30; color: #73efba; font-weight: 850; }
+    .receipt { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; margin-top: 34px; }
+    .receipt-card { padding: 30px 34px; border-radius: 18px; background: rgba(9, 20, 31, .9); border: 1px solid #294052; }
+    .receipt-card .label { color: #8fa9bd; text-transform: uppercase; letter-spacing: .1em; font-size: 20px; font-weight: 750; }
+    .receipt-card .value { margin-top: 10px; font-size: 42px; font-weight: 850; }
+    .footer { position: absolute; bottom: 34px; left: 84px; right: 84px; color: #6f899d; font-size: 19px; display: flex; justify-content: space-between; }
+  </style>
+</head>
+<body>
+  <section class="frame" id="failure">
+    <div class="eyebrow">OmegaClaw Launchpad · First Reflection · 01 Detect</div>
+    <h1>The claim and the evidence do not match.</h1>
+    <p class="lead">The controlled report declares three sources. The independent event record contains one.</p>
+    <div class="terminal">
+      <div><span class="prompt">$</span> python3 -m launchpad reflect validate --mission-id video-demo-001</div>
+      <br>
+      <div>Expected: <span class="strong">3 distinct sources</span></div>
+      <div>Observed: <span class="bad strong">1 distinct source</span></div>
+      <div>Declared: <span class="strong">3 sources</span></div>
+      <div>Result: <span class="bad strong">FAIL</span></div>
+    </div>
+    <div class="footer"><span>Rendered from validation.md</span><span>Deterministic check · no LLM required</span></div>
+  </section>
+
+  <section class="frame" id="proof">
+    <div class="eyebrow">OmegaClaw Launchpad · First Reflection · 02 Prove</div>
+    <h1>The real OmegaClaw path passed.</h1>
+    <p class="lead">Pinned OmegaClaw-Core v0.1.19 base commit · deterministic Test provider · no paid LLM or API key.</p>
+    <div class="terminal">
+      <div class="grid">
+        <div class="check"><span>✓</span><span>OmegaClaw WebSocket connection</span></div>
+        <div class="check"><span>✓</span><span>Test provider connection</span></div>
+        <div class="check"><span>✓</span><span>Controlled response registration</span></div>
+        <div class="check"><span>✓</span><span>Verified mission delivery</span></div>
+        <div class="check"><span>✓</span><span>Real <strong>metta</strong> skill invocation</span></div>
+        <div class="check"><span>✓</span><span>NAL <strong>stv</strong> returned to loop</span></div>
+        <div class="check"><span>✓</span><span>WebSocket response received</span></div>
+      </div>
+      <div class="result"><span>Conflicting evidence; require human review.</span><span class="pill">7 / 7 PASSED</span></div>
+    </div>
+    <div class="footer"><span>Rendered from verified omega-proof.json</span><span>1 passed in 37.02s</span></div>
+  </section>
+
+  <section class="frame" id="receipt">
+    <div class="eyebrow">OmegaClaw Launchpad · First Reflection · 04 Receipt</div>
+    <h1>A governed, auditable outcome.</h1>
+    <p class="lead">The human approved the controlled rerun. The evidence changed; the success rule did not.</p>
+    <div class="receipt">
+      <div class="receipt-card"><div class="label">Before</div><div class="value bad">FAIL · 1 source</div></div>
+      <div class="receipt-card"><div class="label">After approved rerun</div><div class="value ok">PASS · 3 sources</div></div>
+      <div class="receipt-card"><div class="label">Human decision</div><div class="value">APPROVED</div></div>
+      <div class="receipt-card"><div class="label">OmegaClaw proof</div><div class="value ok">VERIFIED</div></div>
+    </div>
+    <div class="footer"><span>Rendered from final-receipt.md</span><span>Agent proposes · human decides · receipt records</span></div>
+  </section>
+</body>
+</html>
