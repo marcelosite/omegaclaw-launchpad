@@ -140,6 +140,17 @@ Most introductions begin with installation and terminology. First Reflection beg
 
 This is the first small stair. Future adapters can translate events from OpenClaw, Hermes, Codex, Claude Code, or other agent systems into the same mission contract, while OmegaClaw remains the reflection runtime.
 
+## Community value
+
+The source-audit fixture is not the product; it is the smallest lesson that makes OmegaClaw-specific capabilities visible. Launchpad contributes:
+
+- a no-key path from zero to a verified OmegaClaw loop;
+- readable mission, event, reflection, decision, and receipt contracts;
+- a reproducible harness for WebSocket, MeTTa skill dispatch, and NAL results;
+- an honest separation between deterministic validation, agent reasoning, and human authority;
+- an adapter boundary that future OpenClaw, Hermes, Codex, Claude Code, and MCP integrations can reuse;
+- an example project that future tutorials and onboarding experiences can extend instead of starting from an empty repository.
+
 ## Existing onboarding commands
 
 The earlier source-pinned onboarding path remains available:
@@ -166,6 +177,7 @@ Current local coverage includes mismatch detection, approval gating, rejection, 
 - [Verified upstream research](docs/RESEARCH.md)
 - [Practical backlog](docs/BACKLOG.md)
 - [Three-minute demo](docs/DEMO.md)
+- [Testing and recording guide](docs/TESTING.md)
 - [Real OmegaClaw proof](docs/PROOF.md)
 - [BGI submission draft](docs/SUBMISSION.md)
 
