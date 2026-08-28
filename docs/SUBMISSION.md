@@ -2,11 +2,11 @@
 
 ## Title
 
-**OmegaClaw First Reflection — Instrumented Missions for Governed Agent Learning**
+**OmegaClaw Launchpad — First Reflection**
 
 ## One-line proposition
 
-A CLI onboarding lab where a newcomer watches OmegaClaw reason over verified agent evidence and must approve any controlled learning step.
+An open-source onboarding layer whose first working module lets a newcomer observe real OmegaClaw MeTTa/NAL reasoning and approve a controlled learning step.
 
 ## Problem
 
@@ -14,7 +14,7 @@ OmegaClaw introduces several powerful ideas at once: a MeTTa agent loop, Hyperon
 
 ## Solution
 
-First Reflection begins with one concrete failure: an agent declares three sources, while its event record shows one. Launchpad records the mission, proves the mismatch with deterministic code, sends only the verified facts into a pinned real OmegaClaw runtime, observes a real MeTTa/NAL call, asks a human to approve or reject the proposal, reruns the controlled fixture, and writes a before/after receipt.
+OmegaClaw Launchpad turns the learning curve into small, verifiable missions. Its first working module, First Reflection, begins with one concrete failure: an agent declares three sources, while its event record shows one. Launchpad records the mission, proves the mismatch with deterministic code, sends only the verified facts into a pinned real OmegaClaw runtime, observes a real MeTTa/NAL call, asks a human to approve or reject the proposal, reruns the controlled fixture, and writes a before/after receipt.
 
 ## What shipped
 
@@ -66,6 +66,6 @@ This sprint demonstrates a controlled mission with a deterministic Test provider
 ## Links to submit
 
 - Repository: https://github.com/marcelosite/omegaclaw-launchpad
-- Demo video: pending
+- Demo video: pending — to be produced as a separate deliverable
 - Reproduction evidence: https://github.com/marcelosite/omegaclaw-launchpad/blob/main/docs/PROOF.md
 - Captured proof: https://github.com/marcelosite/omegaclaw-launchpad/blob/main/docs/evidence/omega-proof.json

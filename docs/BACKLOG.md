@@ -16,7 +16,7 @@
 - [x] Run the end-to-end proof and capture `omega-proof.json`.
 - [ ] Record the three-minute demo.
 - [ ] Add screenshots/GIF and the video link to the README.
-- [ ] Fill and submit the BGI Commons project page.
+- [x] Fill and submit the BGI Commons project page.
 
 ## P1 — immediate credibility
 

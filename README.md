@@ -1,8 +1,12 @@
-# OmegaClaw First Reflection
+# OmegaClaw Launchpad
 
-**A governed onboarding lab that lets a newcomer watch a real OmegaClaw agent reason about verified evidence before any change is approved.**
+**An open-source onboarding layer that turns OmegaClaw's learning curve into small, verifiable missions.**
 
 Built for **BGI Commons HyperSprint #1 — Track 2: Onboarding OmegaClaw**.
+
+## First Reflection
+
+**First Reflection** is Launchpad's first working module: a governed onboarding lab where a newcomer watches a real OmegaClaw agent reason about verified evidence before any change is approved.
 
 ## The simple idea
 
