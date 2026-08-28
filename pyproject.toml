@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "omegaclaw-launchpad"
+version = "0.1.0"
+description = "A secret-safe onboarding layer for going from zero to a first OmegaClaw agent."
+readme = "README.md"
+requires-python = ">=3.9"
+license = {file = "LICENSE"}
+authors = [{name = "OmegaClaw Launchpad contributors"}]
+dependencies = []
+
+[project.scripts]
+omega-launchpad = "launchpad.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
