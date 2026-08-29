@@ -20,6 +20,8 @@ This file is the continuity snapshot for future Codex chats. Read it together wi
 - private workspace copying by logical slug;
 - local readable JSON/Markdown artifacts;
 - bounded local STDIO MCP with exactly `omega.reason` and `omega.get_receipt`;
+- functional `scripts/studio-mcp-check.sh` handshake gate before the first-agent handoff;
+- bounded general consultation packets for local multi-agent tests, with deterministic conflict/missing-fact detection;
 - English installation, architecture, demo, future, and agent guides.
 
 ## Verified local state
