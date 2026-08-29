@@ -33,7 +33,7 @@ This file is the continuity snapshot for future Codex chats. Read it together wi
 
 ## Git state at this snapshot
 
-- Latest committed implementation: `3fa0b97 Refine Wizard proof language and gates`.
+- Latest committed implementation: `f968c4c Harden Wizard status refresh and mobile guidance`.
 - GitHub repository: `https://github.com/marcelosite/omegaclaw-launchpad`.
 - GitHub description and topics were updated for Studio, MCP, and auditability.
 
@@ -41,7 +41,7 @@ This file is the continuity snapshot for future Codex chats. Read it together wi
 
 - SSH alias used from the owner's Mac: `oracle-fabrica`.
 - Repository path on the VPS: `/home/ubuntu/omegaclaw-launchpad`.
-- VPS repository currently follows GitHub `main` at `3fa0b97` after the final local proof-language update.
+- VPS repository currently follows GitHub `main` at `a4a69c7`; the final `f968c4c` Wizard hardening is ready to roll out.
 - Host: Ubuntu 22.04, `aarch64`/ARM64, approximately 24 GiB RAM.
 - Studio runs in tmux session `launchpad-studio`.
 - Studio binds only to VPS loopback: `127.0.0.1:8765`.
