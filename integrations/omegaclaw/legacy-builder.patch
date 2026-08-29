@@ -12,3 +12,17 @@ index d297c58..2292ef5 100644
  
  ENV OMEGACLAW_DIR=/PeTTa/repos/OmegaClaw-Core
  ENV MEMORY_DIR=${OMEGACLAW_DIR}/memory
+
+diff --git a/Dockerfile b/Dockerfile
+index 2292ef5..f2f3f3a 100644
+--- a/Dockerfile
++++ b/Dockerfile
+@@ -64,7 +64,1 @@
+- && python3 - <<PY
+-from sentence_transformers import SentenceTransformer
+-model_name = "${EMBEDDING_MODEL}"
+-print(f"Downloading embedding model: {model_name}")
+-SentenceTransformer(model_name)
+-print("Model download complete.")
+-PY
++ && python3 -c 'from sentence_transformers import SentenceTransformer; SentenceTransformer("intfloat/e5-large-v2")'
