@@ -31,7 +31,7 @@
 ## Studio P0 — First Proof
 
 - [x] Add a loopback-only, standard-library Studio artifact reader.
-- [x] Show honest preflight, proof, receipt, and template states in a six-screen wizard with an explicit Finish handoff.
+- [x] Show honest preflight, proof, receipt, and template states in a locked nine-step wizard with visible gates and an explicit Finish handoff.
 - [x] Add the synthetic `factory-fault` template with human-readable rules, an illustrative MeTTa lesson scaffold, and positive/negative fixtures.
 - [x] Add safe CLI and browser-assisted copying into private local workspaces.
 - [x] Add English installation, architecture, security, future-scope, and three-minute demo documentation.

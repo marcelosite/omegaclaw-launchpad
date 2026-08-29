@@ -20,7 +20,7 @@ The dashboard has no Docker socket, no shell execution API, no arbitrary path AP
 
 ### Studio server
 
-The P0 server is a minimal Python web server with simple HTML/CSS/JS. It binds to `127.0.0.1:8765` only. It serves six read-oriented wizard screens and a constrained template-copy action. The sixth screen is an explicit Finish handoff to the local MCP bridge.
+The P0 server is a minimal Python web server with simple HTML/CSS/JS. It binds to `127.0.0.1:8765` only. It serves a locked nine-step Wizard and a constrained template-copy action. Each step has one primary action, a visible gate, and a human confirmation; future steps cannot be opened by clicking ahead. The ninth screen is an explicit Finish handoff to the local MCP bridge.
 
 ### Existing proof runner
 

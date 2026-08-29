@@ -27,13 +27,13 @@ This file is the continuity snapshot for future Codex chats. Read it together wi
 - Python unit suite: 32 tests passed.
 - Shell syntax checks passed.
 - Apple Silicon factory-fault real proof passed 7/7.
-- Browser QA covered desktop and mobile layout, blocked Next steps, logical workspace copying, Finish handoff, and MCP command guidance.
+- Browser QA covered desktop and mobile layout, locked forward navigation, explicit post-script confirmations, receipt comprehension, logical workspace copying, fixture inspection, Finish handoff, and MCP command guidance.
 - MCP handshake and the closed release-readiness Conflict Packet were tested locally.
 - The untracked local `tmp/` directory belongs to the human and must remain untouched.
 
 ## Git state at this snapshot
 
-- Latest committed implementation: `dc6e152 Restore evidence checkpoint in Studio Wizard`.
+- Latest committed implementation is recorded when this UX pass is committed; it includes the nine-gate Wizard redesign.
 - GitHub repository: `https://github.com/marcelosite/omegaclaw-launchpad`.
 - GitHub description and topics were updated for Studio, MCP, and auditability.
 
@@ -92,7 +92,7 @@ The local Mac proof image was removed after the final 7/7 run. The local doctor 
 
 ## Current human feedback
 
-The Studio UI now uses the approved Feynman method: referee story, plain-language definitions, explicit command locations, evidence-backed Next blockers, a meaningful Finish destination, and a guided path from first proof to one connected agent. The factory-fault lesson remains explicitly synthetic and illustrative. The fixed release-readiness packet is a first teaching test, not general arbitration.
+The Studio UI now uses the approved Feynman method: one short question, one action, one proof per numbered step. Future steps are not clickable; the primary button stays disabled until the required answer, status check, receipt, workspace, or human confirmation exists. The factory-fault lesson remains explicitly synthetic and illustrative. The fixed release-readiness packet is a first teaching test, not general arbitration.
 
 The full product direction is in `docs/STUDIO_V2_FEYNMAN_JOURNEY.md`.
 
