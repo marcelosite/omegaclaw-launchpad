@@ -97,7 +97,25 @@ After the factory-fault proof is verified, run the bounded bridge from the repos
 scripts/studio-mcp.sh
 ```
 
-Register that local STDIO command in Codex only after reviewing the project-local configuration. It exposes exactly `omega.reason` and `omega.get_receipt`. `omega.reason` consults the verified synthetic lesson and writes a local receipt; it does not run a provider, shell command, connector, or external action. It also has one fixed release-readiness teaching packet: two recorded positions, a passed unit-test record, a missing security-check record, and a `human_review_required` receipt. That packet is deterministic local teaching logic, not an externally validated or newly executed OmegaClaw decision. `omega.get_receipt` accepts only a logical receipt ID returned by the first tool. No absolute workspace path is returned by the API. See [the agent guide](AGENT_GUIDE.md#first-structured-disagreement-test) for the copyable packet.
+Check the bridge and its first two tools from a second terminal:
+
+```bash
+scripts/studio-mcp-check.sh
+```
+
+The check is a real local JSON-RPC handshake. It records only `.launchpad/studio/mcp-check.json` and requires the verified factory-fault proof. The Wizard waits for this check before its final MCP confirmation. Register one agent manually with `codex mcp add omegaclaw-launchpad -- scripts/studio-mcp.sh`, then verify that the agent lists exactly `omega.reason` and `omega.get_receipt`.
+
+Register that local STDIO command in Codex only after reviewing the project-local configuration. It exposes exactly `omega.reason` and `omega.get_receipt`. `omega.reason` consults the verified synthetic lesson and writes a local receipt; it does not run a provider, shell command, connector, or external action. It supports the fixed release-readiness teaching packet and a bounded general consultation packet for local tests. A general packet records claims, evidence labels, a human rule, missing/unknown facts, conflicts, and forbidden actions; its deterministic result is `human_review_required` when a conflict or missing fact exists, otherwise `recorded_observation`. Inputs are self-reported and never externally validated. `omega.get_receipt` accepts only a logical receipt ID returned by the first tool. No absolute workspace path is returned by the API. See [the agent guide](AGENT_GUIDE.md#bounded-general-consultation) for the copyable shape.
+
+### Use the MCP from a VPS without opening a public port
+
+The bridge is a STDIO process, not a public HTTP service. A local agent can reach a VPS bridge through an SSH command that carries STDIO over the encrypted connection:
+
+```bash
+codex mcp add omegaclaw-vps -- ssh <your-vps-alias> 'cd /path/to/omegaclaw-launchpad && scripts/studio-mcp.sh'
+```
+
+Run this on the computer where Codex is installed. The VPS keeps Studio and the MCP bridge on loopback; no firewall rule or public port is needed. For a shared public service, stop and design authentication, TLS, rate limits, per-workspace authorization, and retention first.
 
 ## Graduate to Real Omega
 

@@ -92,6 +92,30 @@ class LocalMCPTests(unittest.TestCase):
             self.assertTrue(response["result"]["isError"])
             self.assertIn("limited to the release-readiness-demo", response["result"]["content"][0]["text"])
 
+    def test_general_consultation_detects_conflict_and_missing_fact(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            self._proof(root)
+            bridge = LocalMCP(root)
+            packet = {
+                "case_id": "community-clinic",
+                "rule": "If agents disagree or a required fact is missing, ask a human to review.",
+                "claims": [
+                    {"agent_id": "triage-agent", "position": "route_to_clinic", "evidence_ids": ["queue-1"]},
+                    {"agent_id": "records-agent", "position": "request_more_info", "evidence_ids": ["record-2"]},
+                ],
+                "facts": [{"fact_id": "patient_consent", "status": "missing", "evidence_id": "consent-unknown"}],
+                "forbidden_actions": ["send_message", "change_record"],
+            }
+            response = bridge.dispatch({"jsonrpc": "2.0", "id": 4, "method": "tools/call", "params": {"name": "omega.reason", "arguments": {
+                "workspace_id": "factory-fault", "question": "What should the human review?", "consultation": packet,
+            }}})
+            result = response["result"]["structuredContent"]
+            self.assertEqual(result["answer"], "human_review_required")
+            self.assertEqual(result["decision_trace"]["missing_information"], ["patient_consent"])
+            self.assertEqual(result["decision_trace"]["case_id"], "community-clinic")
+            self.assertIn("does not validate them externally", result["limitations"][0])
+
     def test_reason_requires_verified_proof_and_rejects_paths(self):
         with tempfile.TemporaryDirectory() as directory:
             bridge = LocalMCP(Path(directory))

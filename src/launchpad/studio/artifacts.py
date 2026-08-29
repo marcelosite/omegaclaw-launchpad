@@ -34,6 +34,7 @@ class ArtifactSpec:
 
 ARTIFACT_SPECS = {
     "preflight": ArtifactSpec("preflight", (".launchpad", "studio", "preflight.json"), "application/json"),
+    "mcp-check": ArtifactSpec("mcp-check", (".launchpad", "studio", "mcp-check.json"), "application/json"),
     "reflection-context": ArtifactSpec(
         "reflection-context", ("03-reflection", "reflection-context.json"), "application/json"
     ),
@@ -98,7 +99,7 @@ class StudioArtifacts:
             spec = ARTIFACT_SPECS[logical_name]
         except KeyError as error:
             raise UnknownArtifact("unknown Studio artifact") from error
-        if logical_name == "preflight":
+        if logical_name in {"preflight", "mcp-check"}:
             return self.workspace.joinpath(*spec.relative_path)
         if logical_name.startswith("template-"):
             return self.template_root.joinpath(*spec.relative_path)
@@ -135,7 +136,7 @@ class StudioArtifacts:
     def artifact(self, logical_name: str) -> Dict[str, str]:
         """Return UTF-8 content and metadata for one allowlisted artifact."""
         candidate = self._path_for(logical_name)
-        root = self.workspace if logical_name in ("preflight", "factory-proof", "factory-receipt") else (
+        root = self.workspace if logical_name in ("preflight", "mcp-check", "factory-proof", "factory-receipt") else (
             self.template_root if logical_name.startswith("template-") else self.mission_root
         )
         path = self._safe_existing_file(candidate, root)
@@ -185,6 +186,19 @@ class StudioArtifacts:
                     "detail": "All recorded checks passed." if all(values) else "One or more recorded checks failed.",
                 }
         return {"state": "failed", "detail": "The preflight artifact has no usable checks."}
+
+    def _mcp_state(self) -> Dict[str, Any]:
+        try:
+            safe_path = self._safe_existing_file(self._path_for("mcp-check"), self.workspace)
+        except ArtifactNotFound:
+            return {"state": "pending", "detail": "Run the local MCP check after registering an agent."}
+        payload = _read_json(safe_path)
+        expected_tools = ["omega.reason", "omega.get_receipt"]
+        if payload is None:
+            return {"state": "failed", "detail": "The MCP check artifact is not valid JSON."}
+        if payload.get("transport") == "stdio" and payload.get("tools") == expected_tools and payload.get("proof") == "verified":
+            return {"state": "ready", "detail": "The local bridge answered and exposed exactly two bounded tools."}
+        return {"state": "failed", "detail": "The MCP check did not confirm the expected bridge and proof."}
 
     def _proof_state(self) -> Dict[str, Any]:
         path = self._path_for("omega-proof")
@@ -255,6 +269,7 @@ class StudioArtifacts:
     def status(self) -> Dict[str, Any]:
         """Return states derived exclusively from files that actually exist."""
         preflight = self._preflight_state()
+        mcp = self._mcp_state()
         proof = self._proof_state()
         receipt = self._receipt_state(proof["state"])
         factory = self._factory_state()
@@ -285,6 +300,7 @@ class StudioArtifacts:
         return {
             "upstream": {"ref": UPSTREAM_REF, "commit": UPSTREAM_COMMIT},
             "preflight": preflight,
+            "mcp": mcp,
             "proof": proof,
             "receipt": receipt,
             "factory_fault": factory,

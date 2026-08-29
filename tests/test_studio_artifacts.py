@@ -104,6 +104,18 @@ class StudioArtifactTests(unittest.TestCase):
             with self.assertRaises(ArtifactNotFound):
                 reader.workspace_tests("../outside")
 
+    def test_mcp_status_requires_expected_tools_and_verified_proof(self):
+        with tempfile.TemporaryDirectory() as directory:
+            workspace = Path(directory)
+            reader = StudioArtifacts(workspace)
+            self.assertEqual(reader.status()["mcp"]["state"], "pending")
+            studio_dir = workspace / ".launchpad" / "studio"
+            studio_dir.mkdir(parents=True)
+            (studio_dir / "mcp-check.json").write_text(json.dumps({"transport": "stdio", "tools": ["omega.reason"], "proof": "verified"}), encoding="utf-8")
+            self.assertEqual(reader.status()["mcp"]["state"], "failed")
+            (studio_dir / "mcp-check.json").write_text(json.dumps({"transport": "stdio", "tools": ["omega.reason", "omega.get_receipt"], "proof": "verified"}), encoding="utf-8")
+            self.assertEqual(reader.status()["mcp"]["state"], "ready")
+
     def test_artifact_content_is_returned_as_data_not_html(self):
         with tempfile.TemporaryDirectory() as directory:
             workspace = Path(directory)

@@ -24,7 +24,7 @@ This file is the continuity snapshot for future Codex chats. Read it together wi
 
 ## Verified local state
 
-- Python unit suite: 34 tests passed.
+- Python unit suite: 37 tests passed.
 - Shell syntax checks passed.
 - Apple Silicon factory-fault real proof passed 7/7.
 - Browser QA covered desktop and mobile layout, locked forward navigation, explicit post-script confirmations, receipt comprehension, logical workspace copying, fixture inspection, Finish handoff, and MCP command guidance.
@@ -33,7 +33,7 @@ This file is the continuity snapshot for future Codex chats. Read it together wi
 
 ## Git state at this snapshot
 
-- Latest committed implementation: `db49b37 Show copied workspace tests in Wizard` (includes `f968c4c`).
+- Latest committed implementation: pending commit for functional MCP check and bounded general consultation.
 - GitHub repository: `https://github.com/marcelosite/omegaclaw-launchpad`.
 - GitHub description and topics were updated for Studio, MCP, and auditability.
 
@@ -41,7 +41,7 @@ This file is the continuity snapshot for future Codex chats. Read it together wi
 
 - SSH alias used from the owner's Mac: `oracle-fabrica`.
 - Repository path on the VPS: `/home/ubuntu/omegaclaw-launchpad`.
-- VPS repository currently follows GitHub `main` at `828e0cf`.
+- VPS repository currently follows GitHub `main` at `828e0cf`; functional MCP changes are ready to roll out.
 - Host: Ubuntu 22.04, `aarch64`/ARM64, approximately 24 GiB RAM.
 - Studio runs in tmux session `launchpad-studio`.
 - Studio binds only to VPS loopback: `127.0.0.1:8765`.
@@ -59,7 +59,7 @@ ssh -N -L 8876:127.0.0.1:8765 oracle-fabrica
 - Remote MCP initialization and the exact two-tool list were verified.
 - Remote Studio now serves the nine-step Wizard and reports the factory-fault handoff as ready.
 - Remote Studio was restarted after the locked-gate UX update; the existing tmux session and all other containers remain untouched.
-- Remote repository tests pass: 34 tests.
+- Remote repository tests pass: 34 tests; the next pull will run 37.
 - The proof container and proof volume were cleaned after the run.
 
 ## VPS isolation decisions

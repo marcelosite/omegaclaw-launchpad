@@ -67,9 +67,9 @@ The product must distinguish three stages instead of presenting them as one fini
 - a fully synthetic factory-fault teaching lesson;
 - copied local workspaces;
 - a bounded local STDIO MCP bridge with only `omega.reason` and `omega.get_receipt`;
-- an MCP answer limited to the already verified teaching workspace.
+- an MCP answer limited to the already verified teaching workspace plus a bounded local consultation packet.
 
-The current MCP does not accept arbitrary claims from several agents, run a new OmegaClaw decision, validate external evidence, or authorize an action.
+The current MCP accepts structured claims from a small, bounded local packet, but it does not run a new OmegaClaw decision, validate external evidence, or authorize an action.
 
 ### Stage B — the next useful real case
 
@@ -254,7 +254,7 @@ Provide a copyable policy, not an unexplained configuration fragment:
 
 > When agents disagree about a claim that affects a human decision, stop. Preserve each claim and its evidence. Do not ask Omega to invent missing facts. Consult the approved Omega workspace, retain the receipt ID, and show the disagreement, rule, recommendation, limitations, and receipt to the human. Never execute an external action from the recommendation alone.
 
-The current v1 teaching MCP cannot yet ingest arbitrary agent claims. The screen must label the policy as the target workflow and clearly state whether the selected workspace supports it today.
+The current v1 MCP can ingest the bounded consultation shape for a first local test. It must still label every claim and fact as self-reported and keep the policy as a human-owned workflow, not autonomous arbitration.
 
 ### Screen 9 — Finish with a real next step
 

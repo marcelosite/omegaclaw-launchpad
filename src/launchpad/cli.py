@@ -26,6 +26,7 @@ from .reflection import (
 )
 from .studio_templates import TemplateNotFoundError
 from .studio_workspace import create_workspace
+from .studio.mcp_server import LocalMCP
 
 
 def _root(value: str) -> Path:
@@ -119,6 +120,23 @@ def build_parser() -> argparse.ArgumentParser:
     studio_new.add_argument("workspace_name", help="lowercase workspace name, for example my-case")
     studio_new.add_argument("--template", required=True, help="approved Studio template name")
     _add_workspace(studio_new)
+
+    mcp = commands.add_parser("mcp", help="test and consult the local Studio MCP bridge")
+    mcp_commands = mcp.add_subparsers(dest="mcp_command", required=True)
+    mcp_check = mcp_commands.add_parser("check", help="verify the local bridge and its two tools")
+    _add_workspace(mcp_check)
+    mcp_check.add_argument("--json", action="store_true", help="emit machine-readable results")
+    mcp_reason = mcp_commands.add_parser("reason", help="submit a bounded local consultation")
+    _add_workspace(mcp_reason)
+    mcp_reason.add_argument("--workspace-id", default="factory-fault")
+    mcp_reason.add_argument("--question", required=True)
+    mcp_reason.add_argument("--packet-file", type=Path, help="JSON file containing a bounded general consultation packet")
+    mcp_reason.add_argument("--release-readiness-demo", action="store_true", help="use the fixed release-readiness teaching packet")
+    mcp_reason.add_argument("--json", action="store_true", help="emit machine-readable results")
+    mcp_receipt = mcp_commands.add_parser("receipt", help="read one local MCP receipt")
+    _add_workspace(mcp_receipt)
+    mcp_receipt.add_argument("receipt_id")
+    mcp_receipt.add_argument("--json", action="store_true", help="emit machine-readable results")
     return parser
 
 
@@ -189,6 +207,68 @@ def _studio(args: argparse.Namespace) -> int:
     print("Template: %s" % args.template)
     print("Next: review facts.json, rules.md, rules.metta, and tests.json before adapting this learning fixture.")
     return 0
+
+
+def _mcp(args: argparse.Namespace) -> int:
+    bridge = LocalMCP(args.workspace)
+    if args.mcp_command == "check":
+        listing = bridge.dispatch({"jsonrpc": "2.0", "id": 1, "method": "tools/list"})
+        names = [tool["name"] for tool in listing["result"]["tools"]] if listing and "result" in listing else []
+        try:
+            bridge._verified_factory_proof()
+            proof_state = "verified"
+        except ValueError as error:
+            proof_state = str(error)
+        payload = {"transport": "stdio", "tools": names, "proof": proof_state}
+        ok = names == ["omega.reason", "omega.get_receipt"] and proof_state == "verified"
+        check_path = args.workspace / ".launchpad" / "studio" / "mcp-check.json"
+        check_path.parent.mkdir(mode=0o700, parents=True, exist_ok=True)
+        check_path.parent.chmod(0o700)
+        check_path.write_text(json.dumps({"transport": "stdio", "tools": names, "proof": proof_state, "ok": ok}, sort_keys=True) + "\n", encoding="utf-8")
+        check_path.chmod(0o600)
+        if args.json:
+            print(json.dumps({"ok": ok, **payload}, indent=2))
+        else:
+            print("OmegaClaw Launchpad MCP check")
+            print("[%s] STDIO bridge responds" % ("OK" if names else "BLOCKED"))
+            print("[%s] Tools: %s" % ("OK" if names == ["omega.reason", "omega.get_receipt"] else "BLOCKED", ", ".join(names) or "none"))
+            print("[%s] Factory-fault proof: %s" % ("OK" if proof_state == "verified" else "BLOCKED", proof_state))
+        return 0 if ok else 1
+    if args.mcp_command == "reason":
+        arguments = {"workspace_id": args.workspace_id, "question": args.question}
+        if args.release_readiness_demo:
+            arguments["conflict_packet"] = {
+                "case_id": "release-readiness-demo",
+                "rulebook_id": "release-readiness-demo-r1",
+                "claims": [
+                    {"agent_id": "build-agent", "position": "release_ready", "evidence_ids": ["unit-tests"]},
+                    {"agent_id": "security-agent", "position": "release_not_ready", "evidence_ids": ["security-check-missing"]},
+                ],
+                "recorded_facts": [
+                    {"fact_id": "unit_tests", "status": "passed", "evidence_id": "unit-tests"},
+                    {"fact_id": "required_security_check", "status": "missing", "evidence_id": "security-check-missing"},
+                ],
+                "forbidden_actions": ["deploy", "merge"],
+            }
+        elif args.packet_file:
+            try:
+                arguments["consultation"] = json.loads(args.packet_file.read_text(encoding="utf-8"))
+            except (OSError, UnicodeDecodeError, json.JSONDecodeError) as error:
+                print("MCP consultation packet could not be read: %s" % error, file=sys.stderr)
+                return 2
+        response = bridge.dispatch({"jsonrpc": "2.0", "id": 1, "method": "tools/call", "params": {"name": "omega.reason", "arguments": arguments}})
+        result = response.get("result", {}) if response else {}
+        if args.json:
+            print(json.dumps(result.get("structuredContent", result), indent=2, ensure_ascii=False))
+        else:
+            print(json.dumps(result.get("structuredContent", result), indent=2, ensure_ascii=False))
+        return 0 if not result.get("isError") else 1
+    if args.mcp_command == "receipt":
+        response = bridge.dispatch({"jsonrpc": "2.0", "id": 1, "method": "tools/call", "params": {"name": "omega.get_receipt", "arguments": {"receipt_id": args.receipt_id}}})
+        result = response.get("result", {}) if response else {}
+        print(json.dumps(result.get("structuredContent", result), indent=2, ensure_ascii=False))
+        return 0 if not result.get("isError") else 1
+    return 2
 
 
 def _reflection_path(args: argparse.Namespace) -> Path:
@@ -308,6 +388,8 @@ def main(argv: Sequence[str] | None = None) -> int:
         return _demo(args)
     if args.command == "studio":
         return _studio(args)
+    if args.command == "mcp":
+        return _mcp(args)
     if args.command == "reflect":
         return _reflect(args)
     return 2

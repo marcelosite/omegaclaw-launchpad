@@ -87,6 +87,37 @@ The workspace ID is `factory-fault` or a lowercase slug for an existing copied S
 
 The bridge persists the receipt before returning. It does not re-run OmegaClaw and does not infer a new conclusion from arbitrary text.
 
+### Bounded general consultation
+
+For a first real test with several agents, send a small `consultation` packet. Each agent contributes a claim; the caller records the facts and evidence labels. The bridge only detects disagreement and missing/unknown facts. It does not decide whether the rule is true, validate evidence, or execute any action.
+
+```json
+{
+  "case_id": "community-clinic",
+  "rule": "If agents disagree or a required fact is missing, ask a human to review.",
+  "claims": [
+    {"agent_id": "triage-agent", "position": "route_to_clinic", "evidence_ids": ["queue-1"]},
+    {"agent_id": "records-agent", "position": "request_more_info", "evidence_ids": ["record-2"]}
+  ],
+  "facts": [
+    {"fact_id": "patient_consent", "status": "missing", "evidence_id": "consent-unknown"}
+  ],
+  "forbidden_actions": ["send_message", "change_record"]
+}
+```
+
+Pass that object as `consultation` alongside the required `workspace_id` and `question`. The recommendation is `human_review_required` when positions differ or any fact is `missing`/`unknown`; otherwise it is `recorded_observation`. Every call writes a logical receipt that includes the submitted claims, facts, rule, limitations, and forbidden actions.
+
+The CLI offers the same safe path without an agent UI:
+
+```bash
+scripts/studio-mcp-check.sh
+python3 -m launchpad mcp reason --workspace . --workspace-id factory-fault --question "What should a human review?" --packet-file packet.json --json
+python3 -m launchpad mcp receipt --workspace . mcp-<receipt-id>
+```
+
+The check command verifies the STDIO handshake, the exact two tools, and the verified factory proof. It does not start Docker or contact the network.
+
 ### First structured disagreement test
 
 The same `omega.reason` tool accepts one deliberately closed **Conflict Packet** (a small, named envelope for recorded disagreement). It is a teaching test for release readiness, not a general way to submit arbitrary multi-agent debates. Run it **on the computer or VPS that holds the repository**, through the locally configured MCP process:
@@ -132,7 +163,7 @@ The ID is an opaque logical ID returned by `omega.reason`. Absolute paths, trave
 5. Separate `facts`, `rule`, `runtime_observations`, `inference`, and `human_decision` in any proposed next step.
 6. Stop before external data, credentials, connectors, or actions.
 
-For complex multi-agent systems, use Launchpad as the evidence and governance layer around an agent runtime. Have workers emit bounded observations and declarations, validate them deterministically, let OmegaClaw/MeTTa/NAL process only verified facts, and require a human decision before any change. Do not turn `omega.reason` into an unrestricted router or action tool. The release-readiness packet above is the first closed teaching test; it is not evidence that v1 supports arbitrary multi-agent disputes.
+For complex multi-agent systems, use Launchpad as the evidence and governance layer around an agent runtime. Have workers emit bounded observations and declarations, validate them deterministically, let OmegaClaw/MeTTa/NAL process only verified facts, and require a human decision before any change. Agents do not chat through MCP: each agent submits a bounded claim, and a coordinator asks Omega for one auditable consultation. Do not turn `omega.reason` into an unrestricted router or action tool. The packets above are first teaching tests, not evidence that v1 validates real-world claims.
 
 ## Future robust MCP direction
 

@@ -51,6 +51,8 @@ class StudioServerTests(unittest.TestCase):
         self.assertIn("This page does not run them", page)
         self.assertIn("Studio does not connect my agent", page)
         self.assertIn("Fictional facts → human rule → real OmegaClaw", page)
+        self.assertIn("scripts/studio-mcp-check.sh", page)
+        self.assertIn("check-mcp", page)
         self.assertIn("/api/workspaces/", page)
         self.assertIn("Open my workspace tests", page)
         self.assertIn("Open the report", page)

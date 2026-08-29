@@ -33,6 +33,7 @@ RELEASE_READINESS_FACTS = {"unit_tests", "required_security_check"}
 RELEASE_READINESS_STATUSES = {"passed", "missing", "failed", "unknown"}
 RELEASE_POSITIONS = {"release_ready", "release_not_ready"}
 FORBIDDEN_RELEASE_ACTIONS = {"deploy", "merge", "approve_release"}
+CONSULTATION_STATUSES = {"observed", "missing", "unknown"}
 
 
 def _error(code: int, message: str, request_id: Any = None) -> Dict[str, Any]:
@@ -92,6 +93,46 @@ def _tools() -> list[Dict[str, Any]]:
                             "forbidden_actions": {"type": "array", "minItems": 1, "maxItems": 3, "items": {"enum": sorted(FORBIDDEN_RELEASE_ACTIONS)}},
                         },
                         "required": ["case_id", "rulebook_id", "claims", "recorded_facts", "forbidden_actions"],
+                        "additionalProperties": False,
+                    },
+                    "consultation": {
+                        "type": "object",
+                        "description": "A bounded general consultation packet for local tests. Values are self-reported and never externally validated.",
+                        "properties": {
+                            "case_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]{0,62}$"},
+                            "rule": {"type": "string", "maxLength": 500},
+                            "claims": {
+                                "type": "array",
+                                "minItems": 1,
+                                "maxItems": 8,
+                                "items": {
+                                    "type": "object",
+                                    "properties": {
+                                        "agent_id": {"type": "string", "maxLength": MAX_AGENT_ID_LENGTH},
+                                        "position": {"type": "string", "maxLength": 64},
+                                        "evidence_ids": {"type": "array", "minItems": 1, "maxItems": 8, "items": {"type": "string", "maxLength": MAX_EVIDENCE_ID_LENGTH}},
+                                    },
+                                    "required": ["agent_id", "position", "evidence_ids"],
+                                    "additionalProperties": False,
+                                },
+                            },
+                            "facts": {
+                                "type": "array",
+                                "maxItems": 16,
+                                "items": {
+                                    "type": "object",
+                                    "properties": {
+                                        "fact_id": {"type": "string", "maxLength": 96},
+                                        "status": {"enum": sorted(CONSULTATION_STATUSES)},
+                                        "evidence_id": {"type": "string", "maxLength": MAX_EVIDENCE_ID_LENGTH},
+                                    },
+                                    "required": ["fact_id", "status", "evidence_id"],
+                                    "additionalProperties": False,
+                                },
+                            },
+                            "forbidden_actions": {"type": "array", "maxItems": 8, "items": {"type": "string", "maxLength": 64}},
+                        },
+                        "required": ["case_id", "rule", "claims", "facts", "forbidden_actions"],
                         "additionalProperties": False,
                     },
                 },
@@ -222,8 +263,73 @@ class LocalMCP:
             "forbidden_actions": forbidden_actions,
         }
 
+    def _general_trace(self, packet: Any) -> Dict[str, Any]:
+        """Evaluate a small, deterministic consultation packet for local tests."""
+        required = {"case_id", "rule", "claims", "facts", "forbidden_actions"}
+        if not isinstance(packet, dict) or set(packet) != required:
+            raise ValueError("consultation must contain only case_id, rule, claims, facts, and forbidden_actions.")
+        case_id = packet["case_id"]
+        if not isinstance(case_id, str) or SLUG_PATTERN.fullmatch(case_id) is None:
+            raise ValueError("consultation.case_id must be a lowercase local slug.")
+        rule = self._bounded_string(packet["rule"], "consultation.rule", 500)
+        claims = packet["claims"]
+        if not isinstance(claims, list) or not 1 <= len(claims) <= 8:
+            raise ValueError("consultation.claims must contain one to eight claims.")
+        normalized_claims = []
+        positions = set()
+        for claim in claims:
+            if not isinstance(claim, dict) or set(claim) != {"agent_id", "position", "evidence_ids"}:
+                raise ValueError("Each consultation claim must contain only agent_id, position, and evidence_ids.")
+            agent_id = self._bounded_string(claim["agent_id"], "claim.agent_id", MAX_AGENT_ID_LENGTH)
+            position = self._bounded_string(claim["position"], "claim.position", 64)
+            evidence_ids = claim["evidence_ids"]
+            if not isinstance(evidence_ids, list) or not 1 <= len(evidence_ids) <= 8:
+                raise ValueError("claim.evidence_ids must contain one to eight logical evidence labels.")
+            normalized_evidence_ids = [self._bounded_string(item, "claim.evidence_ids item", MAX_EVIDENCE_ID_LENGTH) for item in evidence_ids]
+            normalized_claims.append({"agent_id": agent_id, "position": position, "evidence_ids": normalized_evidence_ids})
+            positions.add(position)
+        facts = packet["facts"]
+        if not isinstance(facts, list) or len(facts) > 16:
+            raise ValueError("consultation.facts must contain zero to sixteen facts.")
+        normalized_facts = []
+        missing_information = []
+        seen_fact_ids = set()
+        for fact in facts:
+            if not isinstance(fact, dict) or set(fact) != {"fact_id", "status", "evidence_id"}:
+                raise ValueError("Each consultation fact must contain only fact_id, status, and evidence_id.")
+            fact_id = self._bounded_string(fact["fact_id"], "fact.fact_id", 96)
+            if fact_id in seen_fact_ids or fact["status"] not in CONSULTATION_STATUSES:
+                raise ValueError("Consultation facts must use unique IDs and an allowed status.")
+            seen_fact_ids.add(fact_id)
+            evidence_id = self._bounded_string(fact["evidence_id"], "fact.evidence_id", MAX_EVIDENCE_ID_LENGTH)
+            normalized_facts.append({"fact_id": fact_id, "status": fact["status"], "evidence_id": evidence_id})
+            if fact["status"] in {"missing", "unknown"}:
+                missing_information.append(fact_id)
+        forbidden_actions = packet["forbidden_actions"]
+        if not isinstance(forbidden_actions, list) or len(forbidden_actions) > 8:
+            raise ValueError("forbidden_actions must contain zero to eight actions.")
+        normalized_actions = [self._bounded_string(item, "forbidden_actions item", 64) for item in forbidden_actions]
+        conflicts = ["recorded agents disagree: " + " versus ".join(sorted(positions))] if len(positions) > 1 else []
+        recommendation = "human_review_required" if conflicts or missing_information else "recorded_observation"
+        return {
+            "mode": "bounded_general_consultation",
+            "case_id": case_id,
+            "rulebook": {"id": case_id, "human_rule": rule, "executable_evaluation": "deterministic conflict and missing-fact checks only"},
+            "recorded_facts": normalized_facts,
+            "recorded_claims": normalized_claims,
+            "conflicts": conflicts,
+            "missing_information": missing_information,
+            "recommendation": recommendation,
+            "forbidden_actions": normalized_actions,
+            "limitations": [
+                "Claims, facts, and evidence IDs are self-reported local input; the bridge does not validate them externally.",
+                "The bridge does not infer causality, execute a rule language, rerun OmegaClaw, or authorize an action.",
+                "A human must review any recommendation before acting.",
+            ],
+        }
+
     def reason(self, arguments: Any) -> Dict[str, Any]:
-        allowed_keys = {"workspace_id", "question", "conflict_packet"}
+        allowed_keys = {"workspace_id", "question", "conflict_packet", "consultation"}
         if not isinstance(arguments, dict) or not {"workspace_id", "question"}.issubset(arguments) or not set(arguments).issubset(allowed_keys):
             raise ValueError("omega.reason requires workspace_id and question, with optional conflict_packet only.")
         workspace_id = arguments["workspace_id"]
@@ -235,7 +341,12 @@ class LocalMCP:
         self._workspace(workspace_id)
         proof = self._verified_factory_proof()
         conflict_packet = arguments.get("conflict_packet")
-        decision_trace = self._release_readiness_trace(conflict_packet) if conflict_packet is not None else None
+        consultation = arguments.get("consultation")
+        if conflict_packet is not None and consultation is not None:
+            raise ValueError("Provide either conflict_packet or consultation, not both.")
+        decision_trace = self._release_readiness_trace(conflict_packet) if conflict_packet is not None else (
+            self._general_trace(consultation) if consultation is not None else None
+        )
         receipt_id = "mcp-" + uuid.uuid4().hex
         self.receipts_root.mkdir(mode=0o700, parents=True, exist_ok=True)
         self.receipts_root.chmod(0o700)
@@ -244,7 +355,12 @@ class LocalMCP:
             "workspace_id": workspace_id,
             "question": question,
             "answer": decision_trace["recommendation"] if decision_trace else proof["conclusion"],
-            "basis": {
+            "basis": ({
+                "mode": "general_consultation",
+                "runtime": "deterministic local evaluator",
+                "synthetic_only": True,
+                "human_approval_required": True,
+            } if consultation is not None else {
                 "template": "factory-fault",
                 "facts": proof.get("facts", []),
                 "runtime": proof.get("runtime"),
@@ -254,16 +370,16 @@ class LocalMCP:
                 "nal_stv_observed_in_loop": proof.get("nal_stv_observed_in_loop"),
                 "synthetic_only": True,
                 "human_approval_required": True,
-            },
+            }),
             "disclaimer": "This is a synthetic lesson result, not a diagnosis, causal claim, external-data validation, or action authorization.",
         }
         if decision_trace:
             receipt["decision_trace"] = decision_trace
-            receipt["limitations"] = [
+            receipt["limitations"] = decision_trace.get("limitations", [
                 "The claims and facts in this packet are self-reported local input; the bridge does not validate them against an external system.",
                 "This deterministic teaching evaluation does not run OmegaClaw again or establish that a release is safe.",
                 "The recommendation requires a human review and cannot authorize deployment, merge, or release approval.",
-            ]
+            ])
         path = self.receipts_root / (receipt_id + ".json")
         encoded = json.dumps(receipt, indent=2, sort_keys=True) + "\n"
         try:
