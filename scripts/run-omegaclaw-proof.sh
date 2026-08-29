@@ -113,11 +113,12 @@ fi
 if grep -q -- '--chmod=' "${UPSTREAM_DIR}/Dockerfile" || \
   grep -q -- '<<PY' "${UPSTREAM_DIR}/Dockerfile"; then
   (cd "${UPSTREAM_DIR}" && patch -p1 --forward --batch \
-    < "${PROJECT_ROOT}/integrations/omegaclaw/legacy-builder.patch")
+    -r - < "${PROJECT_ROOT}/integrations/omegaclaw/legacy-builder.patch") || true
 fi
 
-if grep -q -- '--chmod=' "${UPSTREAM_DIR}/Dockerfile"; then
-  echo "Refusing unsupported Dockerfile COPY --chmod in proof checkout." >&2
+if grep -q -- '--chmod=' "${UPSTREAM_DIR}/Dockerfile" || \
+  grep -q -- '<<PY' "${UPSTREAM_DIR}/Dockerfile"; then
+  echo "Refusing unsupported Dockerfile features in proof checkout." >&2
   exit 2
 fi
 
