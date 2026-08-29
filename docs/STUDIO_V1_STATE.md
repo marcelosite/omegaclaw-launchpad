@@ -33,7 +33,7 @@ This file is the continuity snapshot for future Codex chats. Read it together wi
 
 ## Git state at this snapshot
 
-- Latest committed implementation: pending commit for functional MCP check and bounded general consultation.
+- Latest committed implementation: `55651cb Make MCP bridge functional for local agent tests`.
 - GitHub repository: `https://github.com/marcelosite/omegaclaw-launchpad`.
 - GitHub description and topics were updated for Studio, MCP, and auditability.
 
@@ -41,7 +41,7 @@ This file is the continuity snapshot for future Codex chats. Read it together wi
 
 - SSH alias used from the owner's Mac: `oracle-fabrica`.
 - Repository path on the VPS: `/home/ubuntu/omegaclaw-launchpad`.
-- VPS repository currently follows GitHub `main` at `828e0cf`; functional MCP changes are ready to roll out.
+- VPS repository currently follows GitHub `main` at `55651cb`.
 - Host: Ubuntu 22.04, `aarch64`/ARM64, approximately 24 GiB RAM.
 - Studio runs in tmux session `launchpad-studio`.
 - Studio binds only to VPS loopback: `127.0.0.1:8765`.
@@ -59,7 +59,7 @@ ssh -N -L 8876:127.0.0.1:8765 oracle-fabrica
 - Remote MCP initialization and the exact two-tool list were verified.
 - Remote Studio now serves the nine-step Wizard and reports the factory-fault handoff as ready.
 - Remote Studio was restarted after the locked-gate UX update; the existing tmux session and all other containers remain untouched.
-- Remote repository tests pass: 34 tests; the next pull will run 37.
+- Remote repository tests pass: 37 tests.
 - The proof container and proof volume were cleaned after the run.
 
 ## VPS isolation decisions
