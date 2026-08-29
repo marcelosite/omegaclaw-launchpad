@@ -1,0 +1,23 @@
+diff --git a/scripts/omegaclaw b/scripts/omegaclaw
+--- a/scripts/omegaclaw
++++ b/scripts/omegaclaw
+@@ -606,5 +606,6 @@
+     docker_cmd=(
+         docker run -d -it
++            --network "${LAUNCHPAD_NETWORK_MODE:-bridge}"
+             --name "${container_name}"
+             --security-opt no-new-privileges:true
+             --init
+
+diff --git a/entrypoint.sh b/entrypoint.sh
+--- a/entrypoint.sh
++++ b/entrypoint.sh
+@@ -34,5 +34,7 @@ done
+ export EMBEDDING_PROVIDER OPENAIAPI_URL MM_URL OPENCLAW_URL
+ 
+-su www-data -s /bin/sh -c "sh /opt/nginx/nginx.sh"
++if [[ "${LAUNCHPAD_SKIP_NGINX:-0}" != "1" ]]; then
++  su www-data -s /bin/sh -c "sh /opt/nginx/nginx.sh"
++fi
+ 
+ # Optional knowledge-base import

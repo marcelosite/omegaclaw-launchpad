@@ -107,6 +107,21 @@ if ! git -C "${UPSTREAM_DIR}" diff --quiet -- scripts/omegaclaw; then
   fi
 fi
 
+# Older proof checkouts may already contain the container-name patch but not
+# the Linux host-network additions. Apply that incremental patch independently
+# so retries remain safe and idempotent.
+if ! grep -q -- 'LAUNCHPAD_NETWORK_MODE' "${UPSTREAM_DIR}/scripts/omegaclaw" || \
+  ! grep -q -- 'LAUNCHPAD_SKIP_NGINX' "${UPSTREAM_DIR}/entrypoint.sh"; then
+  (cd "${UPSTREAM_DIR}" && patch -p1 --forward --batch -r - \
+    < "${PROJECT_ROOT}/integrations/omegaclaw/linux-host-network.patch") || true
+fi
+
+if ! grep -q -- 'LAUNCHPAD_NETWORK_MODE' "${UPSTREAM_DIR}/scripts/omegaclaw" || \
+  ! grep -q -- 'LAUNCHPAD_SKIP_NGINX' "${UPSTREAM_DIR}/entrypoint.sh"; then
+  echo "Refusing proof checkout without isolated Linux network patch." >&2
+  exit 2
+fi
+
 # Oracle ARM hosts may expose Docker's legacy builder, which does not support
 # COPY --chmod/--chown. Apply the equivalent explicit RUN steps only to this
 # isolated proof checkout so the upstream source remains untouched elsewhere.
