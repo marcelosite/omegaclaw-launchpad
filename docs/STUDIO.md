@@ -41,7 +41,7 @@ Open the local interface:
 http://127.0.0.1:8765
 ```
 
-For a VPS, use the printed tunnel command from:
+For a VPS, use the printed tunnel command from (it uses local port `8876` so a local Studio on `8765` can stay open):
 
 ```bash
 scripts/studio-open.sh ubuntu@VPS_IP

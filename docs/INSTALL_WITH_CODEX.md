@@ -50,10 +50,10 @@ scripts/studio-open.sh ubuntu@VPS_IP
 Then, after checking the displayed target yourself, run the printed SSH command in your own terminal:
 
 ```bash
-ssh -N -L 8765:127.0.0.1:8765 ubuntu@VPS_IP
+ssh -N -L 8876:127.0.0.1:8765 ubuntu@VPS_IP
 ```
 
-Open `http://127.0.0.1:8765`. `studio-open.sh` never performs SSH itself. Do not publish port 8765 or add a firewall rule for it.
+Open `http://127.0.0.1:8876`. `studio-open.sh` never performs SSH itself. Do not publish port 8765 or add a firewall rule for it.
 
 ## First proof
 

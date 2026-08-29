@@ -2,7 +2,8 @@
 set -euo pipefail
 
 REMOTE="${1:-ubuntu@VPS_IP}"
-LOCAL_PORT="8765"
+# Keep the VPS tunnel separate from a local Studio that normally uses 8765.
+LOCAL_PORT="${STUDIO_LOCAL_PORT:-8876}"
 REMOTE_PORT="8765"
 
 if [[ ! "${REMOTE}" =~ ^[A-Za-z0-9._@:-]+$ ]]; then
