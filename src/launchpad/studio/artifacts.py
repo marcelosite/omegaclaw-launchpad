@@ -267,11 +267,11 @@ class StudioArtifacts:
             "receipt": receipt,
             "factory_fault": factory,
             "handoff": {
-                "state": "ready" if proof["state"] == "verified" and factory["state"] == "verified" else "pending",
+                "state": "ready" if factory["state"] == "verified" else "pending",
                 "detail": (
-                    "Proof and the real factory-fault lesson are verified. Your next step is to connect Codex through the local MCP bridge."
-                    if proof["state"] == "verified" and factory["state"] == "verified"
-                    else "Finish the safe Test proof and run the real factory-fault lesson before connecting an agent."
+                    "The real factory-fault lesson is verified. Your next step is to connect Codex through the local MCP bridge."
+                    if factory["state"] == "verified"
+                    else "Run the safe Test/WebSocket factory-fault proof before connecting an agent."
                 ),
             },
             "template": {

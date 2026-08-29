@@ -1,6 +1,6 @@
 # OmegaClaw Launchpad Studio
 
-OmegaClaw Launchpad Studio is a small, self-hosted onboarding lab for the first real OmegaClaw proof. It gives a newcomer a readable path from a VPS preflight to the existing First Reflection artifacts, then provides one synthetic template to copy and study.
+OmegaClaw Launchpad Studio is a small, self-hosted onboarding lab for the first real OmegaClaw proof. Its nine-step Wizard gives a newcomer a readable path from a local or VPS preflight to the pinned factory-fault proof, then provides one synthetic template to copy and study before the MCP handoff.
 
 ## Scope
 
@@ -8,7 +8,7 @@ P0 is intentionally small:
 
 - the `Test` provider is the only no-key path;
 - the dashboard reads and explains artifacts;
-- the real proof remains a terminal/Codex operation through `scripts/run-omegaclaw-proof.sh`;
+- the real proof remains a terminal/Codex operation through `scripts/run-factory-fault-proof.sh` (the separate First Reflection proof remains available through `scripts/run-omegaclaw-proof.sh`);
 - the `factory-fault` project uses fictional data only;
 - all artifacts remain local files.
 
@@ -49,19 +49,22 @@ scripts/studio-open.sh ubuntu@VPS_IP
 
 That helper only prints instructions. It never opens an SSH connection.
 
-## The six screens
+## The nine screens
 
-1. **Welcome** — the proof's purpose and its limits.
-2. **Preflight** — read-only repository, upstream, Python, Docker, architecture, memory, and disk checks.
-3. **First real proof** — actual First Reflection status and artifacts. `verified` is shown only when the real harness wrote `omega-proof.json`.
-4. **Learn** — the visual chain `agent/Test → frozen facts → MeTTa/NAL → STV → response → receipt.md`.
-5. **Your case** — the synthetic case, its rules and tests, plus **Create my workspace** inside the same screen.
-6. **Finish** — a clear handoff: review the local files, then connect Codex through the bounded local MCP bridge only after the factory-fault proof is verified.
+1. **Meet Omega** — the referee story and the recommendation/action boundary.
+2. **Choose place** — whether commands run on the computer or a private VPS.
+3. **Ready?** — read-only repository, upstream, Python, Docker, architecture, memory, and disk checks.
+4. **Real proof** — the pinned factory-fault Test/WebSocket/MeTTa/NAL proof.
+5. **Evidence** — the visual chain `facts → human rule → MeTTa/NAL → result → limitations → receipt`.
+6. **Your case** — the synthetic case, its rules and tests, plus **Create my workspace**.
+7. **Connect agent** — the two-tool local MCP setup for Codex or another compatible agent.
+8. **Teach agent** — a copyable human-gated disagreement policy.
+9. **Finish** — a clear next question and handoff to the local MCP bridge.
 
-The dashboard does not replace the proof runner. To run the real proof, prepare the existing mission and use the terminal command documented in [PROOF.md](PROOF.md):
+The dashboard does not replace the proof runner. To run the first Studio proof, use this fixed terminal command from the repository root:
 
 ```bash
-scripts/run-omegaclaw-proof.sh
+scripts/run-factory-fault-proof.sh
 ```
 
 Until the real artifact exists, the Studio must show `pending`. A failed run remains `failed` or `pending`; it must never be presented as verified. The factory-fault lesson is a scaffold until `scripts/run-factory-fault-proof.sh` writes its pinned-runtime proof and receipt.
