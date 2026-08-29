@@ -22,6 +22,7 @@ This file is the continuity snapshot for future Codex chats. Read it together wi
 - bounded local STDIO MCP with exactly `omega.reason` and `omega.get_receipt`;
 - functional `scripts/studio-mcp-check.sh` handshake gate before the first-agent handoff;
 - bounded general consultation packets for local multi-agent tests, with deterministic conflict/missing-fact detection;
+- local Codex registration verified with the exact STDIO command and two-tool list;
 - English installation, architecture, demo, future, and agent guides.
 
 ## Verified local state
