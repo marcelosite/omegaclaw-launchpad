@@ -33,7 +33,7 @@ This file is the continuity snapshot for future Codex chats. Read it together wi
 
 ## Git state at this snapshot
 
-- Latest committed implementation is recorded when this UX pass is committed; it includes the nine-gate Wizard redesign.
+- Latest committed implementation: `bf0581c Lock Studio Wizard behind human proof gates`.
 - GitHub repository: `https://github.com/marcelosite/omegaclaw-launchpad`.
 - GitHub description and topics were updated for Studio, MCP, and auditability.
 
