@@ -41,7 +41,7 @@ This file is the continuity snapshot for future Codex chats. Read it together wi
 
 - SSH alias used from the owner's Mac: `oracle-fabrica`.
 - Repository path on the VPS: `/home/ubuntu/omegaclaw-launchpad`.
-- VPS repository currently follows GitHub `main` at `dc6e152`.
+- VPS repository currently follows GitHub `main` at `3c6f948`.
 - Host: Ubuntu 22.04, `aarch64`/ARM64, approximately 24 GiB RAM.
 - Studio runs in tmux session `launchpad-studio`.
 - Studio binds only to VPS loopback: `127.0.0.1:8765`.
@@ -58,6 +58,7 @@ ssh -N -L 8876:127.0.0.1:8765 oracle-fabrica
 - Remote proof artifacts exist under `.launchpad/studio/runs/factory-fault/`.
 - Remote MCP initialization and the exact two-tool list were verified.
 - Remote Studio now serves the nine-step Wizard and reports the factory-fault handoff as ready.
+- Remote Studio was restarted after the locked-gate UX update; the existing tmux session and all other containers remain untouched.
 - Remote repository tests pass: 32 tests.
 - The proof container and proof volume were cleaned after the run.
 
