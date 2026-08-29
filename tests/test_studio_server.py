@@ -18,9 +18,9 @@ class StudioServerTests(unittest.TestCase):
             require_loopback("0.0.0.0")
         self.assertEqual(PORT, 8765)
 
-    def test_page_has_exactly_five_wizard_screens_and_safe_artifact_rendering(self):
+    def test_page_has_six_wizard_screens_and_safe_artifact_rendering(self):
         page = _page()
-        self.assertEqual(page.count('class="screen'), 5)
+        self.assertEqual(page.count('class="screen'), 6)
         self.assertIn("textContent", page)
         self.assertNotIn("innerHTML", page)
         self.assertIn("/api/templates/factory-fault/copy", page)
@@ -29,6 +29,11 @@ class StudioServerTests(unittest.TestCase):
         self.assertIn("function showScreen(index)", page)
         self.assertIn("Illustrative MeTTa lesson", page)
         self.assertIn("Graduate to Real Omega", page)
+        self.assertIn("Finish", page)
+        self.assertIn("factory-proof", page)
+        self.assertIn("omega.reason", page)
+        self.assertIn("omega.get_receipt", page)
+        self.assertIn("Create my workspace", page)
         self.assertNotIn("Reviewed MeTTa", page)
 
     def test_workspace_slug_disallows_paths_and_uppercase(self):

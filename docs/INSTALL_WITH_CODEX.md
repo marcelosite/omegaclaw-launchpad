@@ -76,6 +76,22 @@ python3 -m launchpad studio new my-case --template factory-fault
 
 Use a lowercase, path-safe slug. The copy is local and preserves the source template. Keep the synthetic-data disclaimer in any adapted workspace.
 
+## Finish and local MCP
+
+The final Wizard screen is a handoff, not an automatic agent connection. First run the real synthetic lesson proof:
+
+```bash
+scripts/run-factory-fault-proof.sh
+```
+
+When Studio shows the factory proof as verified, start the local bridge in a separate foreground terminal:
+
+```bash
+scripts/studio-mcp.sh
+```
+
+The bridge is STDIO and local-only. It exposes only `omega.reason` and `omega.get_receipt`; it cannot execute shell commands, call a provider, read arbitrary files, or perform an external action. Add it to Codex manually after reviewing the local project configuration. Keep tool approvals explicit and narrow.
+
 ## Stop and ask for a human decision
 
 Stop before any request to:

@@ -52,9 +52,21 @@ Say:
 
 > This example recommends manual inspection when two synthetic signals coexist. It does not diagnose a fault, infer a cause, validate external data, or stop a machine.
 
-## 2:15–2:40 — copy a workspace
+## 2:15–2:40 — finish the Wizard
 
-Use **Copy to workspace** and create `my-case`, or show the equivalent safe command:
+Open **Finish**. The screen names the next step instead of leaving the user at a dead end: review the copied files, run the real factory-fault lesson proof, and only then connect the local MCP bridge. The final button reads **Done** and is intentionally disabled; the Wizard has completed its job.
+
+If the proof is verified, show the bounded local command:
+
+```bash
+scripts/studio-mcp.sh
+```
+
+Explain that `omega.reason` consults the published synthetic lesson and creates a logical receipt ID, while `omega.get_receipt` retrieves that receipt. The bridge cannot run shell commands, providers, connectors, or external actions.
+
+## 2:40–2:55 — copy a workspace
+
+Use **Create my workspace** and create `my-case`, or show the equivalent safe command:
 
 ```bash
 python3 -m launchpad studio new my-case --template factory-fault
@@ -62,9 +74,7 @@ python3 -m launchpad studio new my-case --template factory-fault
 
 Show that the original template is unchanged and that the copy is a local, readable workspace for Codex-assisted study.
 
-## 2:40–2:55 — close the loop
-
-Open the copied workspace's example receipt and point out its fixture label and synthetic-data disclaimer. Explain that MCP, dashboard execution, and public exposure are future decisions, not hidden P0 features.
+Open the copied workspace's example receipt and point out its fixture label and synthetic-data disclaimer. Explain that the local MCP bridge is consultative only; dashboard execution and public exposure remain future decisions, not hidden features.
 
 Point to **Graduate to Real Omega**. Explain the boundary: finish the safe Studio/Test lesson, read the official risk disclaimer, then use the official Quick Start only after human approval. MiniMax belongs on the documented `ASICloud` provider path; credentials stay outside Studio, the channel stays private and owner-controlled, and the runtime receives only minimum permissions.
 

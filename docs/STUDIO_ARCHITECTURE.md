@@ -20,7 +20,7 @@ The dashboard has no Docker socket, no shell execution API, no arbitrary path AP
 
 ### Studio server
 
-The P0 server is a minimal Python web server with simple HTML/CSS/JS. It binds to `127.0.0.1:8765` only. It serves five read-oriented wizard screens and a constrained template-copy action.
+The P0 server is a minimal Python web server with simple HTML/CSS/JS. It binds to `127.0.0.1:8765` only. It serves six read-oriented wizard screens and a constrained template-copy action. The sixth screen is an explicit Finish handoff to the local MCP bridge.
 
 ### Existing proof runner
 
@@ -36,7 +36,11 @@ All Studio-owned state is below:
 ├── workspaces/
 │   └── <validated-workspace-slug>/
 └── runs/
-    └── <run-id>/
+    ├── factory-fault/
+    │   ├── omega-proof.json
+    │   └── receipt.md
+    └── mcp/
+        └── mcp-<logical-receipt-id>.json
 ```
 
 The existing mission and proof remain below:
@@ -69,11 +73,19 @@ factory-fault template
   → validated copy under workspaces/<slug>/
   → local human-readable facts/rules/tests
   → fixture receipt, clearly labeled
+
+verified factory-fault lesson
+  → local STDIO MCP bridge
+  → omega.reason
+  → logical receipt ID
+  → omega.get_receipt
 ```
 
 The browser should display content only after HTML escaping. Markdown is presented as escaped text or a deliberately constrained renderer; it is never treated as trusted HTML.
 
 The template-copy API returns only the validated logical workspace ID, for example `{"workspace_id":"my-case"}`. It never returns the server's absolute workspace path. The server resolves that ID internally beneath the fixed workspace root.
+
+The MCP bridge accepts only the logical workspace and receipt IDs described in its contract. It does not expose a filesystem path. `omega.reason` consults the verified synthetic factory-fault proof and persists a receipt before returning; `omega.get_receipt` reads only receipts created by that bridge.
 
 ## Status semantics
 
@@ -90,6 +102,7 @@ The UI must derive these states from files. It must not create a synthetic verif
 - no credentials are collected or persisted;
 - no Docker socket is mounted into the dashboard;
 - no shell, upload, arbitrary MeTTa, or external-action endpoint exists;
+- the MCP STDIO bridge has exactly two bounded tools and no shell, provider, connector, or arbitrary-file operation;
 - file names, Markdown, JSON, and user-visible values are escaped;
 - workspace slugs and template names are allowlisted;
 - state files are private, and the dashboard never overwrites proof or receipt artifacts;

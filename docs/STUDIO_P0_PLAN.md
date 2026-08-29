@@ -96,7 +96,7 @@ Opens a fully synthetic case containing:
 
 The case derives only `manual_inspection_recommended` when two synthetic signals coexist. It never produces a diagnosis, causal claim, or machine-stop command.
 
-The **Copy to workspace** action is part of this template screen. The user creates a copy with a safe CLI command:
+The **Create my workspace** action is part of this template screen. The user creates a copy with a safe CLI command:
 
 ```bash
 python3 -m launchpad studio new my-case --template factory-fault
@@ -138,14 +138,17 @@ docs/STUDIO.md                 user guide
 docs/STUDIO_ARCHITECTURE.md    boundaries and data flow
 docs/STUDIO_DEMO.md            three-minute script
 docs/INSTALL_WITH_CODEX.md     copyable Codex installation instructions
+docs/AGENT_GUIDE.md            agent inputs, outputs, MCP contract, and safe use
 
 scripts/studio-doctor.sh       read-only preflight
 scripts/studio-start.sh        starts only the local interface
 scripts/studio-open.sh         prints the SSH tunnel command and URL
+scripts/studio-mcp.sh          starts the bounded local STDIO MCP bridge
 
 src/launchpad/studio/           web server and safe artifact reader
 templates/factory-fault/        copyable synthetic tutorial
 tests/test_studio_*.py          contracts, routes, and security
+integrations/omegaclaw/         pinned runtime proof tests
 ```
 
 The Docker composition file enters P0 only if it can reuse the current proof without changing it. The dashboard does not depend on Docker Compose to serve artifacts; Docker remains a requirement only for the real proof.
@@ -168,7 +171,7 @@ The Docker composition file enters P0 only if it can reuse the current proof wit
 ### Slice 3 — Studio interface
 
 1. Create a minimal Python server with simple HTML/CSS/JS; use neither a SPA nor a database.
-2. Implement the five wizard screens in read-only mode.
+2. Implement the six wizard screens in read-only mode, ending with an explicit Finish handoff.
 3. Show `ready`, `pending`, `failed`, and `verified` directly from artifacts.
 4. Add the limited action to copy a template by validated slug.
 
@@ -193,4 +196,4 @@ The Docker composition file enters P0 only if it can reuse the current proof wit
 
 ## Outside P0
 
-The following are recorded in [STUDIO_FUTURE.md](STUDIO_FUTURE.md): MCP, dashboard execution, an isolated worker, a rule editor/compiler, LLM-proposed rules, paid providers, MiniMax, public deployment, authentication, and connectors.
+The following remain recorded in [STUDIO_FUTURE.md](STUDIO_FUTURE.md): dashboard execution, an isolated worker, a rule editor/compiler, LLM-proposed rules, paid providers, MiniMax, public deployment, authentication, and connectors. The bounded local STDIO bridge is implemented as the Finish handoff; it is not a general OmegaClaw executor.

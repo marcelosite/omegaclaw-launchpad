@@ -49,13 +49,14 @@ scripts/studio-open.sh ubuntu@VPS_IP
 
 That helper only prints instructions. It never opens an SSH connection.
 
-## The five screens
+## The six screens
 
 1. **Welcome** — the proof's purpose and its limits.
 2. **Preflight** — read-only repository, upstream, Python, Docker, architecture, memory, and disk checks.
 3. **First real proof** — actual First Reflection status and artifacts. `verified` is shown only when the real harness wrote `omega-proof.json`.
 4. **Learn** — the visual chain `agent/Test → frozen facts → MeTTa/NAL → STV → response → receipt.md`.
-5. **factory-fault** — the synthetic case, its rules and tests, plus **Copy to workspace** inside the same screen.
+5. **Your case** — the synthetic case, its rules and tests, plus **Create my workspace** inside the same screen.
+6. **Finish** — a clear handoff: review the local files, then connect Codex through the bounded local MCP bridge only after the factory-fault proof is verified.
 
 The dashboard does not replace the proof runner. To run the real proof, prepare the existing mission and use the terminal command documented in [PROOF.md](PROOF.md):
 
@@ -63,7 +64,7 @@ The dashboard does not replace the proof runner. To run the real proof, prepare 
 scripts/run-omegaclaw-proof.sh
 ```
 
-Until the real artifact exists, the Studio must show `pending`. A failed run remains `failed` or `pending`; it must never be presented as verified.
+Until the real artifact exists, the Studio must show `pending`. A failed run remains `failed` or `pending`; it must never be presented as verified. The factory-fault lesson is a scaffold until `scripts/run-factory-fault-proof.sh` writes its pinned-runtime proof and receipt.
 
 ## Local artifacts
 
@@ -84,6 +85,16 @@ python3 -m launchpad studio new my-case --template factory-fault
 ```
 
 Then ask Codex to adapt the local facts and tests while preserving the disclaimer and human review boundary. The P0 web screen does not edit executable rules.
+
+## Local MCP handoff
+
+After the factory-fault proof is verified, run the bounded bridge from the repository root:
+
+```bash
+scripts/studio-mcp.sh
+```
+
+Register that local STDIO command in Codex only after reviewing the project-local configuration. It exposes exactly `omega.reason` and `omega.get_receipt`. `omega.reason` consults the verified synthetic lesson and writes a local receipt; it does not run a provider, shell command, connector, or external action. `omega.get_receipt` accepts only a logical receipt ID returned by the first tool. No absolute workspace path is returned by the API.
 
 ## Graduate to Real Omega
 

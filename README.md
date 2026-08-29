@@ -18,7 +18,16 @@ The P0 also includes a deliberately synthetic `factory-fault` tutorial that can 
 python3 -m launchpad studio new my-case --template factory-fault
 ```
 
-The Studio server, preflight helper, and exact installation flow are documented in the [Studio guide](docs/STUDIO.md). No LLM API key, public web port, database, account, or remote service is part of P0.
+The Studio server, preflight helper, exact installation flow, and agent-facing contracts are documented in the [Studio guide](docs/STUDIO.md) and [Agent integration guide](docs/AGENT_GUIDE.md). No LLM API key, public web port, database, account, or remote service is part of P0.
+
+After the real synthetic factory-fault proof passes locally, the optional bounded handoff is:
+
+```bash
+scripts/run-factory-fault-proof.sh
+scripts/studio-mcp.sh
+```
+
+The local STDIO bridge exposes only `omega.reason` and `omega.get_receipt`. It records local receipts and cannot run shell commands, providers, connectors, or external actions.
 
 ## The simple idea
 

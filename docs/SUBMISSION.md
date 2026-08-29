@@ -2,11 +2,11 @@
 
 ## Title
 
-**OmegaClaw Launchpad — First Reflection**
+**OmegaClaw Launchpad — First Reflection and Studio**
 
 ## One-line proposition
 
-An open-source onboarding layer whose first working module lets a newcomer observe real OmegaClaw MeTTa/NAL reasoning and approve a controlled learning step.
+An open-source onboarding layer that lets a newcomer observe real OmegaClaw MeTTa/NAL reasoning, understand its evidence, and continue into a safe local Studio workspace.
 
 ## Problem
 
@@ -15,6 +15,8 @@ OmegaClaw introduces several powerful ideas at once: a MeTTa agent loop, Hyperon
 ## Solution
 
 OmegaClaw Launchpad turns the learning curve into small, verifiable missions. Its first working module, First Reflection, begins with one concrete failure: an agent declares three sources, while its event record shows one. Launchpad records the mission, proves the mismatch with deterministic code, sends only the verified facts into a pinned real OmegaClaw runtime, observes a real MeTTa/NAL call, asks a human to approve or reject the proposal, reruns the controlled fixture, and writes a before/after receipt.
+
+Launchpad Studio extends that path for a nontechnical user: it runs a loopback-only dashboard, explains the evidence chain, offers the synthetic `factory-fault` lesson, copies a readable workspace, and provides a bounded local MCP handoff with only `omega.reason` and `omega.get_receipt`.
 
 ## What shipped
 
@@ -25,6 +27,9 @@ OmegaClaw Launchpad turns the learning curve into small, verifiable missions. It
 - A pinned WebSocket/Test-provider harness for OmegaClaw-Core `v0.1.19`.
 - A test that requires a real `metta` skill call and NAL `stv` in the loop.
 - Documentation, tests, demo script, and future adapter boundary.
+- Launchpad Studio six-step local Wizard with Finish handoff.
+- Real pinned-runtime factory-fault lesson proof using Test/WebSocket/MeTTa/NAL.
+- Local STDIO MCP bridge with logical receipts and no external actions.
 
 ## Why OmegaClaw is central
 
@@ -61,7 +66,7 @@ NAL stv in real loop verified
 
 ## Honest limitation
 
-This sprint demonstrates a controlled mission with a deterministic Test provider. It does not claim autonomous self-improvement, universal fact checking, production-grade tamper resistance, or existing integrations with OpenClaw/Hermes/Codex/Claude. Those are explicit follow-up adapters.
+This sprint demonstrates controlled missions with a deterministic Test provider. The Studio MCP bridge is consultative and synthetic; it does not claim autonomous self-improvement, universal fact checking, production-grade tamper resistance, or a credentialed integration with OpenClaw/Hermes/Codex/Claude. Those are explicit follow-up adapters.
 
 ## Links to submit
 

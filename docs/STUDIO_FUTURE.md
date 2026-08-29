@@ -1,19 +1,19 @@
 # OmegaClaw Launchpad Studio — post-P0 roadmap
 
-This document preserves the broader proposal. Nothing here authorizes implementation during P0 without a new explicit decision.
+This document preserves the broader proposal. The bounded local MCP handoff is implemented; every other item below remains future work and needs a separate decision.
 
-## P1 — agent use
+## P1 — agent use (bounded bridge implemented locally)
 
 ### Minimal MCP bridge
 
-After the Studio is installed and tested, expose exactly two tools:
+The local handoff now exposes exactly two tools after the real factory-fault proof is verified:
 
 ```text
 omega.reason
 omega.get_receipt
 ```
 
-The contract must accept only known internal IDs, reference a published rulebook, and persist a receipt before returning. It must have no shell, connectors, administrative operations, external actions, or arbitrary MeTTa.
+The STDIO bridge accepts only known internal IDs, references the verified synthetic lesson, and persists a receipt before returning. It has no shell, provider, connectors, administrative operations, external actions, or arbitrary MeTTa. It is not a general OmegaClaw executor.
 
 ### More guided workspaces
 

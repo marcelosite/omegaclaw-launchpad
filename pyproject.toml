@@ -14,6 +14,7 @@ dependencies = []
 
 [project.scripts]
 omega-launchpad = "launchpad.cli:main"
+omega-launchpad-mcp = "launchpad.studio.mcp_server:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]

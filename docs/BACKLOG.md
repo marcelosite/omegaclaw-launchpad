@@ -31,11 +31,14 @@
 ## Studio P0 — First Proof
 
 - [x] Add a loopback-only, standard-library Studio artifact reader.
-- [x] Show honest preflight, proof, receipt, and template states in a five-screen wizard.
+- [x] Show honest preflight, proof, receipt, and template states in a six-screen wizard with an explicit Finish handoff.
 - [x] Add the synthetic `factory-fault` template with human-readable rules, an illustrative MeTTa lesson scaffold, and positive/negative fixtures.
 - [x] Add safe CLI and browser-assisted copying into private local workspaces.
 - [x] Add English installation, architecture, security, future-scope, and three-minute demo documentation.
 - [x] Add local preflight, start, and SSH-tunnel instruction helpers.
+- [x] Add the real-runtime `factory-fault` proof and local receipt.
+- [x] Add a bounded local STDIO MCP bridge with only `omega.reason` and `omega.get_receipt`.
+- [x] Document agent-facing inputs, outputs, and safe MCP usage.
 - [ ] Validate the complete installation on a clean supported VPS after explicit infrastructure approval.
 - [ ] Record and publish the Studio three-minute demo.
 
