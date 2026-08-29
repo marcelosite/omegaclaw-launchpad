@@ -216,6 +216,8 @@ Current local coverage includes mismatch detection, approval gating, rejection, 
 - [Real OmegaClaw proof](docs/PROOF.md)
 - [Launchpad Studio](docs/STUDIO.md)
 - [Launchpad Studio P0 plan](docs/STUDIO_P0_PLAN.md)
+- [Studio v1 state and continuity record](docs/STUDIO_V1_STATE.md)
+- [Studio v2 Feynman experience direction](docs/STUDIO_V2_FEYNMAN_JOURNEY.md)
 - [BGI submission draft](docs/SUBMISSION.md)
 
 ## License

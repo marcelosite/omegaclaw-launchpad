@@ -4,12 +4,21 @@ This repository is an onboarding and evidence layer for OmegaClaw. It is not an 
 
 ## Default workflow
 
-1. Read `README.md`, `docs/STUDIO.md`, `docs/STUDIO_ARCHITECTURE.md`, and `docs/PROOF.md` before changing the Studio.
-2. Run `scripts/studio-doctor.sh` before a local proof. Show blockers instead of bypassing them.
-3. Use the deterministic `Test` provider for the first proof. Never request or store an LLM key for this path.
-4. Run `scripts/run-factory-fault-proof.sh` for the synthetic factory-fault lesson. A lesson is verified only when its real `omega-proof.json` passes the evidence contract.
-5. Keep facts, human rules, executable lesson scaffolds, runtime evidence, and receipts as separate files.
-6. Preserve human approval. Do not execute an action because a lesson concludes `manual_inspection_recommended`.
+1. Read `README.md`, `docs/STUDIO.md`, `docs/STUDIO_ARCHITECTURE.md`, `docs/PROOF.md`, `docs/STUDIO_V1_STATE.md`, and `docs/STUDIO_V2_FEYNMAN_JOURNEY.md` before changing the Studio.
+2. Treat `docs/STUDIO_V1_STATE.md` as the continuity snapshot and `docs/STUDIO_V2_FEYNMAN_JOURNEY.md` as the approved direction for the next user experience. Where older P0 interface copy conflicts with the newer experience direction, stop and surface the conflict before implementation.
+3. Run `scripts/studio-doctor.sh` before a local proof. Show blockers instead of bypassing them.
+4. Use the deterministic `Test` provider for the first proof. Never request or store an LLM key for this path.
+5. Run `scripts/run-factory-fault-proof.sh` for the synthetic factory-fault lesson. A lesson is verified only when its real `omega-proof.json` passes the evidence contract.
+6. Keep facts, human rules, executable lesson scaffolds, runtime evidence, and receipts as separate files.
+7. Preserve human approval. Do not execute an action because a lesson concludes `manual_inspection_recommended`.
+
+## Experience language
+
+- Explain the plain-language idea before introducing a technical term.
+- Define the first use of each technical term in parentheses.
+- Every command shown to a user must say where it runs: the user's computer, the VPS, or the temporary proof container.
+- Describe Omega as a referee that applies a human-approved rule to recorded facts and produces a receipt. Do not describe it as the boss of agents or an autonomous action authority.
+- Do not claim the current MCP supports arbitrary multi-agent disputes. That is a future bounded extension.
 
 ## Local files and formats
 
