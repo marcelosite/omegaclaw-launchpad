@@ -1,6 +1,6 @@
 # OmegaClaw Launchpad Studio
 
-OmegaClaw Launchpad Studio is a small, self-hosted onboarding lab for the first real OmegaClaw proof. Its nine-step Wizard gives a newcomer a readable path from a local or VPS preflight to the pinned factory-fault proof, then provides one synthetic template to copy and study before the MCP handoff.
+OmegaClaw Launchpad Studio is a small, self-hosted onboarding lab for the first real OmegaClaw proof. Its nine-step Wizard uses one question, one action, and one proof per screen. A newcomer moves from a local or VPS preflight to the pinned factory-fault proof, reads what the result means, copies one synthetic template, checks both fixtures, and finishes with a bounded MCP handoff.
 
 ## Scope
 
@@ -51,15 +51,15 @@ That helper only prints instructions. It never opens an SSH connection.
 
 ## The nine screens
 
-1. **Meet Omega** — the referee story and the recommendation/action boundary.
-2. **Choose place** — whether commands run on the computer or a private VPS.
-3. **Ready?** — read-only repository, upstream, Python, Docker, architecture, memory, and disk checks.
-4. **Real proof** — the pinned factory-fault Test/WebSocket/MeTTa/NAL proof.
-5. **Evidence** — the visual chain `facts → human rule → MeTTa/NAL → result → limitations → receipt`.
-6. **Your case** — the synthetic case, its rules and tests, plus **Create my workspace**.
-7. **Connect agent** — the two-tool local MCP setup for Codex or another compatible agent.
-8. **Teach agent** — a copyable human-gated disagreement policy.
-9. **Finish** — a clear next question and handoff to the local MCP bridge.
+1. **Who decides?** — the referee story and the recommendation/action boundary.
+2. **Where?** — whether commands run on the computer or a private VPS.
+3. **Is it ready?** — run and confirm the read-only preflight report.
+4. **Real proof** — run and confirm the pinned factory-fault Test/WebSocket/MeTTa/NAL proof.
+5. **What does green mean?** — open the receipt and answer the honest interpretation question.
+6. **My case** — copy the synthetic case into a logical local workspace ID.
+7. **My tests** — open and confirm the positive and negative fixtures.
+8. **One agent** — confirm the local MCP bridge exposes exactly two consultation tools.
+9. **Finish** — a clear next prompt and handoff to the local MCP bridge.
 
 The dashboard does not replace the proof runner. To run the first Studio proof, use this fixed terminal command from the repository root:
 
