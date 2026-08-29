@@ -1,0 +1,68 @@
+diff --git a/scripts/omegaclaw b/scripts/omegaclaw
+index 76a21e0..77974ff 100755
+--- a/scripts/omegaclaw
++++ b/scripts/omegaclaw
+@@ -338,16 +338,16 @@ cat <<EOF
+ ============================================
+ 
+ Stop OmegaClaw:
+-  docker stop omegaclaw
++  docker stop "${LAUNCHPAD_CONTAINER_NAME:-omegaclaw}"
+ 
+ Restart OmegaClaw:
+-  docker start omegaclaw
++  docker start "${LAUNCHPAD_CONTAINER_NAME:-omegaclaw}"
+ 
+ To switch to a different channel or token:
+   Rerun this script
+ 
+ Examine log file in case of problem:
+-  docker logs -f omegaclaw
++  docker logs -f "${LAUNCHPAD_CONTAINER_NAME:-omegaclaw}"
+ 
+ EOF
+ 
+@@ -586,7 +586,9 @@ options() {
+ }
+ 
+ start() {
+-    docker rm -f omegaclaw 2>/dev/null || true
++    container_name="${LAUNCHPAD_CONTAINER_NAME:-omegaclaw}"
++    memory_volume="${LAUNCHPAD_MEMORY_VOLUME:-omegaclaw-memory}"
++    docker rm -f "${container_name}" 2>/dev/null || true
+     docker pull "${image}" 2>/dev/null || true
+ 
+     container_log_config_path=""
+@@ -605,14 +607,14 @@ start() {
+ 
+     docker_cmd=(
+         docker run -d -it
+-            --name omegaclaw
++            --name "${container_name}"
+             --security-opt no-new-privileges:true
+             --init
+             --add-host=host.docker.internal:host-gateway
+             --tmpfs /tmp:size=64m,mode=1777
+             --tmpfs /var/tmp:size=64m,mode=1777
+             --tmpfs /run:size=16m,mode=755
+-            --volume omegaclaw-memory:/PeTTa/repos/OmegaClaw-Core/memory
++            --volume "${memory_volume}:/PeTTa/repos/OmegaClaw-Core/memory"
+             ${log_config_volume[@]+"${log_config_volume[@]}"}
+             -e "${api_token_var}"="${api_token}"
+             -e "TG_BOT_TOKEN=${TG_BOT_TOKEN:-}"
+@@ -666,12 +668,12 @@ start() {
+ }
+ 
+ stop() {
+-    docker stop omegaclaw
++    docker stop "${LAUNCHPAD_CONTAINER_NAME:-omegaclaw}"
+ }
+ 
+ clean() {
+-    docker rm -f omegaclaw
+-    docker volume rm omegaclaw-memory
++    docker rm -f "${LAUNCHPAD_CONTAINER_NAME:-omegaclaw}"
++    docker volume rm "${LAUNCHPAD_MEMORY_VOLUME:-omegaclaw-memory}"
+ }
+ 
+ set -euo pipefail

@@ -15,6 +15,8 @@ UPSTREAM_REF="v0.1.19"
 UPSTREAM_COMMIT="642c53676cf795cb7a0030823b36018c029b1416"
 PROOF_IMAGE="omegaclaw-launchpad-proof:v0.1.19"
 WS_TOKEN="launchpad-local-proof-token"
+CONTAINER_NAME="launchpad-omegaclaw-proof"
+MEMORY_VOLUME="launchpad-omegaclaw-memory"
 
 if ! command -v docker >/dev/null 2>&1 && \
   [[ -x "/Applications/Docker.app/Contents/Resources/bin/docker" ]]; then
@@ -60,6 +62,11 @@ if ! docker info >/dev/null 2>&1; then
   exit 2
 fi
 
+if docker ps -a --format '{{.Names}}' | grep -Fxq "${CONTAINER_NAME}"; then
+  echo "Refusing to touch existing Docker container: ${CONTAINER_NAME}" >&2
+  exit 2
+fi
+
 if [[ ! -d "${UPSTREAM_DIR}/.git" ]]; then
   git clone --depth 1 --branch "${UPSTREAM_REF}" \
     https://github.com/asi-alliance/OmegaClaw-Core.git "${UPSTREAM_DIR}"
@@ -85,7 +92,26 @@ if ! git -C "${UPSTREAM_DIR}" diff --quiet -- Dockerfile; then
   fi
 fi
 
-docker build --progress=plain -t "${PROOF_IMAGE}" "${UPSTREAM_DIR}"
+if git -C "${UPSTREAM_DIR}" apply --check \
+  "${PROJECT_ROOT}/integrations/omegaclaw/isolated-container.patch" >/dev/null 2>&1; then
+  git -C "${UPSTREAM_DIR}" apply \
+    "${PROJECT_ROOT}/integrations/omegaclaw/isolated-container.patch"
+fi
+
+if ! git -C "${UPSTREAM_DIR}" diff --quiet -- scripts/omegaclaw; then
+  EXPECTED_LAUNCHER_DIFF="$(git -C "${UPSTREAM_DIR}" diff -- scripts/omegaclaw)"
+  if [[ "${EXPECTED_LAUNCHER_DIFF}" != *"LAUNCHPAD_CONTAINER_NAME"* || \
+    "${EXPECTED_LAUNCHER_DIFF}" != *"LAUNCHPAD_MEMORY_VOLUME"* ]]; then
+    echo "Refusing unexpected upstream launcher changes." >&2
+    exit 2
+  fi
+fi
+
+DOCKER_BUILD_ARGS=(-t "${PROOF_IMAGE}")
+if docker build --help 2>/dev/null | grep -q -- '--progress'; then
+  DOCKER_BUILD_ARGS=(--progress=plain "${DOCKER_BUILD_ARGS[@]}")
+fi
+docker build "${DOCKER_BUILD_ARGS[@]}" "${UPSTREAM_DIR}"
 
 if [[ "${PROOF_MODE}" == "first-reflection" ]]; then
   TEST_SOURCE="${PROJECT_ROOT}/integrations/omegaclaw/test_launchpad_first_reflection_ws_mock.py"
@@ -117,7 +143,9 @@ case "$(uname -s)" in
 esac
 
 cleanup() {
-  "${UPSTREAM_DIR}/scripts/omegaclaw" clean >/dev/null 2>&1 || true
+  LAUNCHPAD_CONTAINER_NAME="${CONTAINER_NAME}" \
+  LAUNCHPAD_MEMORY_VOLUME="${MEMORY_VOLUME}" \
+    "${UPSTREAM_DIR}/scripts/omegaclaw" clean >/dev/null 2>&1 || true
 }
 trap cleanup EXIT
 
@@ -125,6 +153,8 @@ env \
   WS_URL="ws://${HOST_FROM_CONTAINER}:8770" \
   WS_TOKEN="${WS_TOKEN}" \
   TEST_SERVER_IP="${HOST_FROM_CONTAINER}" \
+  LAUNCHPAD_CONTAINER_NAME="${CONTAINER_NAME}" \
+  LAUNCHPAD_MEMORY_VOLUME="${MEMORY_VOLUME}" \
   "${UPSTREAM_DIR}/scripts/omegaclaw" start \
     -s 0000 -p Test -t websocket -d "${PROOF_IMAGE}"
 
@@ -134,7 +164,7 @@ fi
 "${UPSTREAM_DIR}/Autotests/venv/bin/pip" install pytest websockets pyyaml
 
 env \
-  OMEGACLAW_CONTAINER=omegaclaw \
+  OMEGACLAW_CONTAINER="${CONTAINER_NAME}" \
   WS_MOCK_PORT=8770 \
   WS_TOKEN="${WS_TOKEN}" \
   LAUNCHPAD_MISSION_ROOT="${MISSION_ROOT}" \
