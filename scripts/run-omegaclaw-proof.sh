@@ -107,6 +107,20 @@ if ! git -C "${UPSTREAM_DIR}" diff --quiet -- scripts/omegaclaw; then
   fi
 fi
 
+# Oracle ARM hosts may expose Docker's legacy builder, which does not support
+# COPY --chmod/--chown. Apply the equivalent explicit RUN steps only to this
+# isolated proof checkout so the upstream source remains untouched elsewhere.
+if git -C "${UPSTREAM_DIR}" apply --check \
+  "${PROJECT_ROOT}/integrations/omegaclaw/legacy-builder.patch" >/dev/null 2>&1; then
+  git -C "${UPSTREAM_DIR}" apply \
+    "${PROJECT_ROOT}/integrations/omegaclaw/legacy-builder.patch"
+fi
+
+if grep -q -- '--chmod=' "${UPSTREAM_DIR}/Dockerfile"; then
+  echo "Refusing unsupported Dockerfile COPY --chmod in proof checkout." >&2
+  exit 2
+fi
+
 DOCKER_BUILD_ARGS=(-t "${PROOF_IMAGE}")
 if docker build --help 2>/dev/null | grep -q -- '--progress'; then
   DOCKER_BUILD_ARGS=(--progress=plain "${DOCKER_BUILD_ARGS[@]}")

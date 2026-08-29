@@ -1,0 +1,14 @@
+diff --git a/Dockerfile b/Dockerfile
+index d297c58..2292ef5 100644
+--- a/Dockerfile
++++ b/Dockerfile
+@@ -122,7 +122,8 @@ RUN usermod -a -G tty www-data
+ RUN mkdir /opt/nginx
+ RUN chown www-data:www-data /opt/nginx
+ RUN chmod 0700 /opt/nginx
+-COPY --chown=www-data:www-data --chmod=0600 ./proxy/* /opt/nginx/
++COPY ./proxy/* /opt/nginx/
++RUN chown -R www-data:www-data /opt/nginx && chmod 0600 /opt/nginx/*
+ 
+ ENV OMEGACLAW_DIR=/PeTTa/repos/OmegaClaw-Core
+ ENV MEMORY_DIR=${OMEGACLAW_DIR}/memory

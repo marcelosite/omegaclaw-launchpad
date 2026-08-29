@@ -50,7 +50,7 @@ index 76a21e0..77974ff 100755
              ${log_config_volume[@]+"${log_config_volume[@]}"}
              -e "${api_token_var}"="${api_token}"
              -e "TG_BOT_TOKEN=${TG_BOT_TOKEN:-}"
-@@ -666,12 +668,12 @@ start() {
+@@ -666,10 +668,10 @@ start() {
  }
  
  stop() {
@@ -64,5 +64,3 @@ index 76a21e0..77974ff 100755
 +    docker rm -f "${LAUNCHPAD_CONTAINER_NAME:-omegaclaw}"
 +    docker volume rm "${LAUNCHPAD_MEMORY_VOLUME:-omegaclaw-memory}"
  }
- 
- set -euo pipefail
