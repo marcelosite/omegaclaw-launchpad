@@ -33,7 +33,7 @@ This file is the continuity snapshot for future Codex chats. Read it together wi
 
 ## Git state at this snapshot
 
-- Latest committed implementation before this documentation update: `14ec027 Apply VPS network patch independently on retries`.
+- Latest committed implementation: `dc6e152 Restore evidence checkpoint in Studio Wizard`.
 - GitHub repository: `https://github.com/marcelosite/omegaclaw-launchpad`.
 - GitHub description and topics were updated for Studio, MCP, and auditability.
 
@@ -41,6 +41,7 @@ This file is the continuity snapshot for future Codex chats. Read it together wi
 
 - SSH alias used from the owner's Mac: `oracle-fabrica`.
 - Repository path on the VPS: `/home/ubuntu/omegaclaw-launchpad`.
+- VPS repository currently follows GitHub `main` at `dc6e152`.
 - Host: Ubuntu 22.04, `aarch64`/ARM64, approximately 24 GiB RAM.
 - Studio runs in tmux session `launchpad-studio`.
 - Studio binds only to VPS loopback: `127.0.0.1:8765`.
@@ -56,6 +57,8 @@ ssh -N -L 8876:127.0.0.1:8765 oracle-fabrica
 - The ARM64 factory-fault proof passed 7/7 on the VPS.
 - Remote proof artifacts exist under `.launchpad/studio/runs/factory-fault/`.
 - Remote MCP initialization and the exact two-tool list were verified.
+- Remote Studio now serves the nine-step Wizard and reports the factory-fault handoff as ready.
+- Remote repository tests pass: 32 tests.
 - The proof container and proof volume were cleaned after the run.
 
 ## VPS isolation decisions
@@ -85,6 +88,8 @@ ssh -N -L 8876:127.0.0.1:8765 oracle-fabrica
 - The current MCP can consult the verified teaching lesson and accept only the fixed release-readiness teaching packet. It cannot accept arbitrary claims from several agents or run a new real-world decision.
 - The Studio process is held by tmux and is not configured to restart after a VPS reboot.
 
+The local Mac proof image was removed after the final 7/7 run. The local doctor may still report `disk: BLOCKED` when fewer than 25 GiB are available; this is an honest resource gate, not a proof result. The Oracle VPS preflight is ready.
+
 ## Current human feedback
 
 The Studio UI now uses the approved Feynman method: referee story, plain-language definitions, explicit command locations, evidence-backed Next blockers, a meaningful Finish destination, and a guided path from first proof to one connected agent. The factory-fault lesson remains explicitly synthetic and illustrative. The fixed release-readiness packet is a first teaching test, not general arbitration.
@@ -100,4 +105,4 @@ The full product direction is in `docs/STUDIO_V2_FEYNMAN_JOURNEY.md`.
 - connecting Codex, Claude Code, or other agents to a new real workspace;
 - MiniMax/ASICloud compatibility work or credentials;
 - domain, TLS, authentication, reverse proxy, public firewall, or public exposure;
-- GitHub push or additional VPS changes after this snapshot.
+- public sprint-page editing (the portal is currently unauthenticated in the available browser session).
