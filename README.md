@@ -8,6 +8,18 @@ Built for **BGI Commons HyperSprint #1 — Track 2: Onboarding OmegaClaw**.
 
 **First Reflection** is Launchpad's first working module: a governed onboarding lab where a newcomer watches a real OmegaClaw agent reason about verified evidence before any change is approved.
 
+## Launchpad Studio — First Proof
+
+Launchpad Studio is the P0 self-hosted learning interface for the same evidence and proof contracts. It runs only on `127.0.0.1:8765`, is opened through an SSH tunnel, and reads real First Reflection artifacts without controlling Docker or fabricating an OmegaClaw result.
+
+The P0 also includes a deliberately synthetic `factory-fault` tutorial that can be copied into a private local workspace:
+
+```bash
+python3 -m launchpad studio new my-case --template factory-fault
+```
+
+The Studio server, preflight helper, and exact installation flow are documented in the [Studio guide](docs/STUDIO.md). No LLM API key, public web port, database, account, or remote service is part of P0.
+
 ## The simple idea
 
 An agent says: “I consulted three sources.” The independent event record shows one.
@@ -193,6 +205,8 @@ Current local coverage includes mismatch detection, approval gating, rejection, 
 - [Three-minute demo](docs/DEMO.md)
 - [Testing and recording guide](docs/TESTING.md)
 - [Real OmegaClaw proof](docs/PROOF.md)
+- [Launchpad Studio](docs/STUDIO.md)
+- [Launchpad Studio P0 plan](docs/STUDIO_P0_PLAN.md)
 - [BGI submission draft](docs/SUBMISSION.md)
 
 ## License

@@ -1,0 +1,16 @@
+{
+  "fixture": true,
+  "asset_id": "press-demo-07",
+  "facts": [
+    {
+      "predicate": "temperature_above_demo_threshold",
+      "value": true,
+      "source": "synthetic-fixture"
+    },
+    {
+      "predicate": "vibration_above_demo_threshold",
+      "value": true,
+      "source": "synthetic-fixture"
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "OmegaClaw Launchpad Studio workspace",
+  "type": "object",
+  "required": ["template", "facts", "rules", "tests"],
+  "properties": {
+    "template": {"const": "factory-fault"},
+    "facts": {"type": "string", "const": "facts.json"},
+    "rules": {
+      "type": "object",
+      "required": ["human", "metta"],
+      "properties": {
+        "human": {"type": "string", "const": "rules.md"},
+        "metta": {"type": "string", "const": "rules.metta"}
+      },
+      "additionalProperties": false
+    },
+    "tests": {"type": "string", "const": "tests.json"}
+  },
+  "additionalProperties": false
+}

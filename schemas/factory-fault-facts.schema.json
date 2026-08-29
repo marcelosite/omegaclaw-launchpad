@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Synthetic factory-fault facts",
+  "type": "object",
+  "required": ["fixture", "asset_id", "facts"],
+  "properties": {
+    "fixture": {"const": true},
+    "asset_id": {"type": "string"},
+    "facts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["predicate", "value", "source"],
+        "properties": {
+          "predicate": {"enum": ["temperature_above_demo_threshold", "vibration_above_demo_threshold"]},
+          "value": {"type": "boolean"},
+          "source": {"const": "synthetic-fixture"}
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,9 @@
+{
+  "template": "factory-fault",
+  "facts": "facts.json",
+  "rules": {
+    "human": "rules.md",
+    "metta": "rules.metta"
+  },
+  "tests": "tests.json"
+}

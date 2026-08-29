@@ -28,6 +28,17 @@
 - [ ] Open an upstream issue for documented test dependency/cleanup discrepancies.
 - [ ] Test the walkthrough with one newcomer and record time-to-first-reflection.
 
+## Studio P0 — First Proof
+
+- [x] Add a loopback-only, standard-library Studio artifact reader.
+- [x] Show honest preflight, proof, receipt, and template states in a five-screen wizard.
+- [x] Add the synthetic `factory-fault` template with human-readable rules, an illustrative MeTTa lesson scaffold, and positive/negative fixtures.
+- [x] Add safe CLI and browser-assisted copying into private local workspaces.
+- [x] Add English installation, architecture, security, future-scope, and three-minute demo documentation.
+- [x] Add local preflight, start, and SSH-tunnel instruction helpers.
+- [ ] Validate the complete installation on a clean supported VPS after explicit infrastructure approval.
+- [ ] Record and publish the Studio three-minute demo.
+
 ## P2 — traction adapters
 
 - [ ] OpenClaw event adapter.
@@ -39,7 +50,7 @@
 
 ## P3 — later product work
 
-- [ ] Browser wizard consuming the same contracts.
+- [x] Browser wizard consuming the same contracts (delivered as the local-only Studio P0 reader).
 - [ ] Shareable redacted receipts.
 - [ ] Mission template registry.
 - [ ] Aggregate onboarding failure analytics with explicit consent.

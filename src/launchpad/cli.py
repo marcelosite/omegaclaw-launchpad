@@ -24,6 +24,8 @@ from .reflection import (
     record_decision,
     validate_run,
 )
+from .studio_templates import TemplateNotFoundError
+from .studio_workspace import create_workspace
 
 
 def _root(value: str) -> Path:
@@ -110,6 +112,13 @@ def build_parser() -> argparse.ArgumentParser:
     reflect_demo.add_argument(
         "--decision", choices=("approved", "rejected"), default="approved"
     )
+
+    studio = commands.add_parser("studio", help="manage local OmegaClaw Launchpad Studio learning workspaces")
+    studio_commands = studio.add_subparsers(dest="studio_command", required=True)
+    studio_new = studio_commands.add_parser("new", help="copy an approved Studio template into a new workspace")
+    studio_new.add_argument("workspace_name", help="lowercase workspace name, for example my-case")
+    studio_new.add_argument("--template", required=True, help="approved Studio template name")
+    _add_workspace(studio_new)
     return parser
 
 
@@ -165,6 +174,20 @@ def _demo(args: argparse.Namespace) -> int:
         for item in proof["steps"]:
             print("[OK] %-14s %s" % (item["step"], item["result"]))
         print("\nThis proves the onboarding layer only; it does not pretend to run OmegaClaw without its runtime.")
+    return 0
+
+
+def _studio(args: argparse.Namespace) -> int:
+    if args.studio_command != "new":
+        return 2
+    try:
+        created = create_workspace(args.workspace, args.workspace_name, args.template)
+    except (TemplateNotFoundError, ValueError, FileExistsError, FileNotFoundError) as error:
+        print("Studio workspace was not created: %s" % error, file=sys.stderr)
+        return 2
+    print("Studio workspace created: %s" % created)
+    print("Template: %s" % args.template)
+    print("Next: review facts.json, rules.md, rules.metta, and tests.json before adapting this learning fixture.")
     return 0
 
 
@@ -283,6 +306,8 @@ def main(argv: Sequence[str] | None = None) -> int:
         return _onboard(args)
     if args.command == "demo":
         return _demo(args)
+    if args.command == "studio":
+        return _studio(args)
     if args.command == "reflect":
         return _reflect(args)
     return 2
