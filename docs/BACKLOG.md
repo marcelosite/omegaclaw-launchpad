@@ -44,15 +44,15 @@
 
 ## Studio v1.1 — Feynman experience redesign
 
-- [ ] Rewrite every Wizard screen using the plain-language-first rules in `STUDIO_V2_FEYNMAN_JOURNEY.md`.
-- [ ] Label every command with its execution location: user computer, VPS, or proof container.
-- [ ] Replace click-only navigation with evidence-backed blockers and one explicit missing action.
-- [ ] Rebuild the factory-fault lesson as a visible facts → human rule → real Omega path → safe result → limitations → receipt story.
-- [ ] Add a real Finish destination that summarizes installation, proof, workspace, MCP state, one safe next prompt, and unavailable capabilities.
+- [x] Rewrite every Wizard screen using the plain-language-first rules in `STUDIO_V2_FEYNMAN_JOURNEY.md`.
+- [x] Label every command with its execution location: user computer, VPS, or proof container.
+- [x] Replace click-only navigation with evidence-backed blockers and one explicit missing action.
+- [x] Rebuild the factory-fault lesson as a visible facts → human rule → real Omega path → safe result → limitations → receipt story.
+- [x] Add a real Finish destination that summarizes installation, proof, workspace, MCP state, one safe next prompt, and unavailable capabilities.
 - [ ] Design a fixed allowlisted action runner before adding any real `Run` button; never expose arbitrary shell or unrestricted Docker authority.
-- [ ] Add the `Agent Disagreement — Release Readiness` workspace with positive and negative deterministic tests.
-- [ ] Add guided setup and connection testing for one MCP-compatible agent at a time.
-- [ ] Write the agent consultation policy for disagreements, while clearly labeling the current v1 MCP limitation.
+- [x] Add the closed `Agent Disagreement — Release Readiness` teaching packet with deterministic tests.
+- [x] Add guided setup instructions for one MCP-compatible agent at a time.
+- [x] Write the agent consultation policy for disagreements, while clearly labeling the current v1 MCP limitation.
 - [ ] Test the redesigned journey with a newcomer who has never used OmegaClaw, Docker, SSH, MeTTa, NAL, or MCP.
 
 ## P2 — traction adapters
