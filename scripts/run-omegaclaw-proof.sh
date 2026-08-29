@@ -152,8 +152,19 @@ if ! git -C "${UPSTREAM_DIR}" diff --quiet -- Autotests/mock/rpc.py; then
 fi
 
 case "$(uname -s)" in
-  Darwin) HOST_FROM_CONTAINER="host.docker.internal" ;;
-  Linux) HOST_FROM_CONTAINER="172.17.0.1" ;;
+  Darwin)
+    HOST_FROM_CONTAINER="host.docker.internal"
+    NETWORK_MODE="bridge"
+    SKIP_NGINX="0"
+    ;;
+  Linux)
+    # Oracle's Docker bridge blocks container-to-host traffic. Host networking
+    # keeps the proof harness reachable without publishing or claiming a port;
+    # nginx is skipped so the container cannot contend with host port 8080.
+    HOST_FROM_CONTAINER="127.0.0.1"
+    NETWORK_MODE="host"
+    SKIP_NGINX="1"
+    ;;
   *) echo "Unsupported host for the proof runner: $(uname -s)" >&2; exit 2 ;;
 esac
 
@@ -170,6 +181,8 @@ env \
   TEST_SERVER_IP="${HOST_FROM_CONTAINER}" \
   LAUNCHPAD_CONTAINER_NAME="${CONTAINER_NAME}" \
   LAUNCHPAD_MEMORY_VOLUME="${MEMORY_VOLUME}" \
+  LAUNCHPAD_NETWORK_MODE="${NETWORK_MODE}" \
+  LAUNCHPAD_SKIP_NGINX="${SKIP_NGINX}" \
   "${UPSTREAM_DIR}/scripts/omegaclaw" start \
     -s 0000 -p Test -t websocket -d "${PROOF_IMAGE}"
 

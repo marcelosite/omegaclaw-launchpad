@@ -33,10 +33,11 @@ index 76a21e0..77974ff 100755
      docker pull "${image}" 2>/dev/null || true
  
      container_log_config_path=""
-@@ -605,14 +607,14 @@ start() {
+@@ -605,14 +607,15 @@ start() {
  
      docker_cmd=(
          docker run -d -it
++            --network "${LAUNCHPAD_NETWORK_MODE:-bridge}"
 -            --name omegaclaw
 +            --name "${container_name}"
              --security-opt no-new-privileges:true
@@ -50,7 +51,7 @@ index 76a21e0..77974ff 100755
              ${log_config_volume[@]+"${log_config_volume[@]}"}
              -e "${api_token_var}"="${api_token}"
              -e "TG_BOT_TOKEN=${TG_BOT_TOKEN:-}"
-@@ -666,10 +668,10 @@ start() {
+@@ -666,11 +668,11 @@ start() {
  }
  
  stop() {
@@ -64,3 +65,16 @@ index 76a21e0..77974ff 100755
 +    docker rm -f "${LAUNCHPAD_CONTAINER_NAME:-omegaclaw}"
 +    docker volume rm "${LAUNCHPAD_MEMORY_VOLUME:-omegaclaw-memory}"
  }
+
+diff --git a/entrypoint.sh b/entrypoint.sh
+--- a/entrypoint.sh
++++ b/entrypoint.sh
+@@ -34,5 +34,7 @@ done
+ export EMBEDDING_PROVIDER OPENAIAPI_URL MM_URL OPENCLAW_URL
+ 
+-su www-data -s /bin/sh -c "sh /opt/nginx/nginx.sh"
++if [[ "${LAUNCHPAD_SKIP_NGINX:-0}" != "1" ]]; then
++  su www-data -s /bin/sh -c "sh /opt/nginx/nginx.sh"
++fi
+ 
+ # Optional knowledge-base import
