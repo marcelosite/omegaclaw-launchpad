@@ -47,11 +47,11 @@ ARTIFACT_SPECS = {
     "template-tests": ArtifactSpec("template-tests", ("tests.json",), "application/json"),
     "template-workspace": ArtifactSpec("template-workspace", ("workspace.json",), "application/json"),
     "template-receipt": ArtifactSpec("template-receipt", ("example-receipt.md",), "text/markdown"),
-    "factory-proof": ArtifactSpec(
-        "factory-proof", (".launchpad", "studio", "runs", "factory-fault", "omega-proof.json"), "application/json"
+    "community-proof": ArtifactSpec(
+        "community-proof", (".launchpad", "studio", "runs", "community-care", "omega-proof.json"), "application/json"
     ),
-    "factory-receipt": ArtifactSpec(
-        "factory-receipt", (".launchpad", "studio", "runs", "factory-fault", "receipt.md"), "text/markdown"
+    "community-receipt": ArtifactSpec(
+        "community-receipt", (".launchpad", "studio", "runs", "community-care", "receipt.md"), "text/markdown"
     ),
 }
 
@@ -87,7 +87,7 @@ class StudioArtifacts:
     def __init__(self, workspace: Path):
         self.workspace = workspace.expanduser().resolve()
         self.launchpad_root = self.workspace / ".launchpad"
-        self.template_root = self.workspace / "templates" / "factory-fault"
+        self.template_root = self.workspace / "templates" / "community-care"
 
     @property
     def mission_root(self) -> Path:
@@ -103,7 +103,7 @@ class StudioArtifacts:
             return self.workspace.joinpath(*spec.relative_path)
         if logical_name.startswith("template-"):
             return self.template_root.joinpath(*spec.relative_path)
-        if logical_name.startswith("factory-"):
+        if logical_name.startswith("community-"):
             return self.workspace.joinpath(*spec.relative_path)
         return self.mission_root.joinpath(*spec.relative_path)
 
@@ -136,7 +136,7 @@ class StudioArtifacts:
     def artifact(self, logical_name: str) -> Dict[str, str]:
         """Return UTF-8 content and metadata for one allowlisted artifact."""
         candidate = self._path_for(logical_name)
-        root = self.workspace if logical_name in ("preflight", "mcp-check", "factory-proof", "factory-receipt") else (
+        root = self.workspace if logical_name in ("preflight", "mcp-check", "community-proof", "community-receipt") else (
             self.template_root if logical_name.startswith("template-") else self.mission_root
         )
         path = self._safe_existing_file(candidate, root)
@@ -244,27 +244,27 @@ class StudioArtifacts:
             return {"state": "verified", "detail": "The receipt is accompanied by a verified proof artifact."}
         return {"state": "ready", "detail": "A local receipt is available; it does not itself prove OmegaClaw ran."}
 
-    def _factory_state(self) -> Dict[str, Any]:
+    def _community_state(self) -> Dict[str, Any]:
         try:
-            self.artifact("factory-proof")
-            self.artifact("factory-receipt")
+            self.artifact("community-proof")
+            self.artifact("community-receipt")
         except ArtifactNotFound:
-            return {"state": "pending", "detail": "Run the real factory-fault proof and keep its receipt to unlock the Codex handoff."}
-        payload = _read_json(self._path_for("factory-proof"))
+            return {"state": "pending", "detail": "Run the real Community Hospital lesson and keep its receipt to unlock the Codex handoff."}
+        payload = _read_json(self._path_for("community-proof"))
         requirements = {
             "status": "verified",
             "provider": "Test",
             "channel": "websocket",
-            "template": "factory-fault",
+            "template": "community-care",
             "synthetic_only": True,
-            "conclusion": "manual_inspection_recommended",
+            "conclusion": "human_review_required",
             "metta_skill_observed": True,
             "nal_stv_observed_in_loop": True,
             "human_approval_still_required": True,
         }
         if payload is not None and all(payload.get(key) == value for key, value in requirements.items()):
-            return {"state": "verified", "detail": "The synthetic lesson ran through pinned OmegaClaw Test/WebSocket/MeTTa/NAL and wrote a receipt."}
-        return {"state": "failed", "detail": "The factory-fault proof artifact does not satisfy its real-runtime contract."}
+            return {"state": "verified", "detail": "The synthetic Community Hospital lesson ran through pinned OmegaClaw Test/WebSocket/MeTTa/NAL and wrote a receipt."}
+        return {"state": "failed", "detail": "The Community Hospital proof artifact does not satisfy its real-runtime contract."}
 
     def status(self) -> Dict[str, Any]:
         """Return states derived exclusively from files that actually exist."""
@@ -272,7 +272,7 @@ class StudioArtifacts:
         mcp = self._mcp_state()
         proof = self._proof_state()
         receipt = self._receipt_state(proof["state"])
-        factory = self._factory_state()
+        community = self._community_state()
         template_files: List[str] = []
         for name in (
             "template-readme",
@@ -303,18 +303,18 @@ class StudioArtifacts:
             "mcp": mcp,
             "proof": proof,
             "receipt": receipt,
-            "factory_fault": factory,
+            "community_care": community,
             "handoff": {
-                "state": "ready" if factory["state"] == "verified" else "pending",
+                "state": "ready" if community["state"] == "verified" else "pending",
                 "detail": (
-                    "The real factory-fault lesson is verified. Your next step is to connect Codex through the local MCP bridge."
-                    if factory["state"] == "verified"
-                    else "Run the safe Test/WebSocket factory-fault proof before connecting an agent."
+                    "The real Community Hospital lesson is verified. Your next step is to connect Codex through the local MCP bridge."
+                    if community["state"] == "verified"
+                    else "Run the safe Test/WebSocket Community Hospital lesson before connecting an agent."
                 ),
             },
             "template": {
                 "state": "ready" if len(template_files) == len(required_template_files) else "pending",
                 "available_artifacts": template_files,
-                "name": "factory-fault",
+                "name": "community-care",
             },
         }

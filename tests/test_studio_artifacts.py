@@ -69,27 +69,27 @@ class StudioArtifactTests(unittest.TestCase):
             (studio_dir / "preflight.json").write_text(json.dumps({"checks": [{"ok": True}]}))
             self.assertEqual(reader.status()["preflight"]["state"], "ready")
 
-    def test_factory_proof_requires_its_receipt(self):
+    def test_community_proof_requires_its_receipt(self):
         with tempfile.TemporaryDirectory() as directory:
             workspace = Path(directory)
-            run_root = workspace / ".launchpad" / "studio" / "runs" / "factory-fault"
+            run_root = workspace / ".launchpad" / "studio" / "runs" / "community-care"
             run_root.mkdir(parents=True)
             payload = {
                 "status": "verified",
                 "provider": "Test",
                 "channel": "websocket",
-                "template": "factory-fault",
+                "template": "community-care",
                 "synthetic_only": True,
-                "conclusion": "manual_inspection_recommended",
+                "conclusion": "human_review_required",
                 "metta_skill_observed": True,
                 "nal_stv_observed_in_loop": True,
                 "human_approval_still_required": True,
             }
             (run_root / "omega-proof.json").write_text(json.dumps(payload), encoding="utf-8")
             reader = StudioArtifacts(workspace)
-            self.assertEqual(reader.status()["factory_fault"]["state"], "pending")
+            self.assertEqual(reader.status()["community_care"]["state"], "pending")
             (run_root / "receipt.md").write_text("# Receipt", encoding="utf-8")
-            self.assertEqual(reader.status()["factory_fault"]["state"], "verified")
+            self.assertEqual(reader.status()["community_care"]["state"], "verified")
 
     def test_workspace_tests_are_read_by_logical_id_only(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -129,7 +129,7 @@ class StudioArtifactTests(unittest.TestCase):
     def test_template_example_receipt_and_workspace_contract_are_allowlisted(self):
         with tempfile.TemporaryDirectory() as directory:
             workspace = Path(directory)
-            template = workspace / "templates" / "factory-fault"
+            template = workspace / "templates" / "community-care"
             template.mkdir(parents=True)
             (template / "example-receipt.md").write_text("# Fixture receipt", encoding="utf-8")
             (template / "workspace.json").write_text("{}", encoding="utf-8")

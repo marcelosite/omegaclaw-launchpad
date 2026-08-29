@@ -128,10 +128,10 @@ def build_parser() -> argparse.ArgumentParser:
     mcp_check.add_argument("--json", action="store_true", help="emit machine-readable results")
     mcp_reason = mcp_commands.add_parser("reason", help="submit a bounded local consultation")
     _add_workspace(mcp_reason)
-    mcp_reason.add_argument("--workspace-id", default="factory-fault")
+    mcp_reason.add_argument("--workspace-id", default="community-care")
     mcp_reason.add_argument("--question", required=True)
     mcp_reason.add_argument("--packet-file", type=Path, help="JSON file containing a bounded general consultation packet")
-    mcp_reason.add_argument("--release-readiness-demo", action="store_true", help="use the fixed release-readiness teaching packet")
+    mcp_reason.add_argument("--community-care-demo", action="store_true", help="use the fixed Community Hospital teaching packet")
     mcp_reason.add_argument("--json", action="store_true", help="emit machine-readable results")
     mcp_receipt = mcp_commands.add_parser("receipt", help="read one local MCP receipt")
     _add_workspace(mcp_receipt)
@@ -215,7 +215,7 @@ def _mcp(args: argparse.Namespace) -> int:
         listing = bridge.dispatch({"jsonrpc": "2.0", "id": 1, "method": "tools/list"})
         names = [tool["name"] for tool in listing["result"]["tools"]] if listing and "result" in listing else []
         try:
-            bridge._verified_factory_proof()
+            bridge._verified_community_proof()
             proof_state = "verified"
         except ValueError as error:
             proof_state = str(error)
@@ -232,23 +232,23 @@ def _mcp(args: argparse.Namespace) -> int:
             print("OmegaClaw Launchpad MCP check")
             print("[%s] STDIO bridge responds" % ("OK" if names else "BLOCKED"))
             print("[%s] Tools: %s" % ("OK" if names == ["omega.reason", "omega.get_receipt"] else "BLOCKED", ", ".join(names) or "none"))
-            print("[%s] Factory-fault proof: %s" % ("OK" if proof_state == "verified" else "BLOCKED", proof_state))
+            print("[%s] Community Hospital proof: %s" % ("OK" if proof_state == "verified" else "BLOCKED", proof_state))
         return 0 if ok else 1
     if args.mcp_command == "reason":
         arguments = {"workspace_id": args.workspace_id, "question": args.question}
-        if args.release_readiness_demo:
+        if args.community_care_demo:
             arguments["conflict_packet"] = {
-                "case_id": "release-readiness-demo",
-                "rulebook_id": "release-readiness-demo-r1",
+                "case_id": "community-care-first-review",
+                "rulebook_id": "community-care-first-review-r1",
                 "claims": [
-                    {"agent_id": "build-agent", "position": "release_ready", "evidence_ids": ["unit-tests"]},
-                    {"agent_id": "security-agent", "position": "release_not_ready", "evidence_ids": ["security-check-missing"]},
+                    {"agent_id": "triage-agent", "position": "route_to_clinic", "evidence_ids": ["triage-note"]},
+                    {"agent_id": "records-agent", "position": "request_more_information", "evidence_ids": ["consent-missing"]},
                 ],
                 "recorded_facts": [
-                    {"fact_id": "unit_tests", "status": "passed", "evidence_id": "unit-tests"},
-                    {"fact_id": "required_security_check", "status": "missing", "evidence_id": "security-check-missing"},
+                    {"fact_id": "patient_consent", "status": "missing", "evidence_id": "consent-missing"},
+                    {"fact_id": "triage_capacity", "status": "observed", "evidence_id": "triage-note"},
                 ],
-                "forbidden_actions": ["deploy", "merge"],
+                "forbidden_actions": ["send_message", "change_record", "deny_care"],
             }
         elif args.packet_file:
             try:

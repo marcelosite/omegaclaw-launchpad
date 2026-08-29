@@ -11,7 +11,7 @@ from launchpad.config import UPSTREAM_COMMIT
 
 class MCPCLITests(unittest.TestCase):
     def _proof(self, workspace: Path) -> None:
-        root = workspace / ".launchpad" / "studio" / "runs" / "factory-fault"
+        root = workspace / ".launchpad" / "studio" / "runs" / "community-care"
         root.mkdir(parents=True)
         payload = {
             "status": "verified",
@@ -19,9 +19,9 @@ class MCPCLITests(unittest.TestCase):
             "upstream_base_commit": UPSTREAM_COMMIT,
             "provider": "Test",
             "channel": "websocket",
-            "template": "factory-fault",
+            "template": "community-care",
             "synthetic_only": True,
-            "conclusion": "manual_inspection_recommended",
+            "conclusion": "human_review_required",
             "metta_skill_observed": True,
             "nal_stv_observed_in_loop": True,
             "human_approval_still_required": True,
@@ -29,7 +29,7 @@ class MCPCLITests(unittest.TestCase):
         }
         (root / "omega-proof.json").write_text(json.dumps(payload), encoding="utf-8")
         (root / "receipt.md").write_text("# Receipt", encoding="utf-8")
-        (workspace / "templates" / "factory-fault").mkdir(parents=True)
+        (workspace / "templates" / "community-care").mkdir(parents=True)
 
     def test_mcp_check_and_general_reason(self):
         with tempfile.TemporaryDirectory() as directory:

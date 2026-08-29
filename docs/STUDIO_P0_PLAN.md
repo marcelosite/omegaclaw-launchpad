@@ -27,7 +27,7 @@ It does not claim that:
 
 - the Test provider measures intelligence;
 - a conclusion is true in the outside world;
-- the factory template diagnoses equipment;
+- the Community Hospital template provides medical-context teaching only;
 - OmegaClaw changes rules, executes actions, or improves itself autonomously;
 - the dashboard validates corporate sources or business decisions.
 
@@ -83,7 +83,7 @@ Shows the chain below with links to generated artifacts:
 agent/Test → frozen facts → MeTTa/NAL expression → STV → response → receipt.md
 ```
 
-### 5. `factory-fault` template
+### 5. `community-care` template
 
 Opens a fully synthetic case containing:
 
@@ -94,12 +94,12 @@ Opens a fully synthetic case containing:
 - `README.md`, with an explicit disclaimer;
 - an example receipt.
 
-The case derives only `manual_inspection_recommended` when two synthetic signals coexist. It never produces a diagnosis, causal claim, or machine-stop command.
+The case derives only `human_review_required` when two synthetic signals coexist. It never produces a diagnosis, causal claim, or machine-stop command.
 
 The **Create my workspace** action is part of this template screen. The user creates a copy with a safe CLI command:
 
 ```bash
-python3 -m launchpad studio new my-case --template factory-fault
+python3 -m launchpad studio new my-case --template community-care
 ```
 
 The Studio displays only the created logical workspace ID and instructions for Codex to adapt facts, rules, and tests. Its copy API never exposes an absolute server path. The first version does not edit rules in the web interface.
@@ -146,7 +146,7 @@ scripts/studio-open.sh         prints the SSH tunnel command and URL
 scripts/studio-mcp.sh          starts the bounded local STDIO MCP bridge
 
 src/launchpad/studio/           web server and safe artifact reader
-templates/factory-fault/        copyable synthetic tutorial
+templates/community-care/        copyable synthetic tutorial
 tests/test_studio_*.py          contracts, routes, and security
 integrations/omegaclaw/         pinned runtime proof tests
 ```
@@ -157,7 +157,7 @@ The Docker composition file enters P0 only if it can reuse the current proof wit
 
 ### Slice 1 — contracts and template
 
-1. Create `templates/factory-fault/` with synthetic data, human rules, an illustrative MeTTa lesson scaffold, tests, and disclaimers.
+1. Create `templates/community-care/` with synthetic data, human rules, an illustrative MeTTa lesson scaffold, tests, and disclaimers.
 2. Create a minimal workspace schema and a `studio new` command that duplicates only known templates.
 3. Test that copying does not change the original template and that invalid slugs/paths fail.
 
@@ -189,7 +189,7 @@ The Docker composition file enters P0 only if it can reuse the current proof wit
 - The Studio listens only on loopback.
 - The wizard displays real artifacts and never simulates `verified`.
 - Missing real proof is shown as `pending`.
-- The `factory-fault` template is explicitly synthetic, copyable, and has at least one positive and one negative case.
+- The `community-care` template is explicitly synthetic, copyable, and has at least one positive and one negative case.
 - Copying preserves the original template and rejects invalid paths/slugs.
 - Every item shown by the browser is escaped.
 - The guide lets a person open the Studio through an SSH tunnel and follow First Reflection.

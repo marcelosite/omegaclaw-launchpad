@@ -71,7 +71,7 @@ Use the mission and workspace options required by [PROOF.md](PROOF.md). The proo
 The template screen includes the copy action. The equivalent CLI command is:
 
 ```bash
-python3 -m launchpad studio new my-case --template factory-fault
+python3 -m launchpad studio new my-case --template community-care
 ```
 
 Use a lowercase, path-safe slug. The copy is local and preserves the source template. Keep the synthetic-data disclaimer in any adapted workspace.
@@ -81,10 +81,10 @@ Use a lowercase, path-safe slug. The copy is local and preserves the source temp
 The final Wizard screen is a handoff, not an automatic agent connection. First run the real synthetic lesson proof:
 
 ```bash
-scripts/run-factory-fault-proof.sh
+scripts/run-community-care-proof.sh
 ```
 
-When Studio shows the factory proof as verified, start the local bridge in a separate foreground terminal:
+When Studio shows the Community Hospital proof as verified, start the local bridge in a separate foreground terminal:
 
 ```bash
 scripts/studio-mcp.sh

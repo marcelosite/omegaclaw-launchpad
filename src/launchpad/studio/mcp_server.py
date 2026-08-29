@@ -1,8 +1,8 @@
 """A bounded, local STDIO MCP bridge for the Studio evidence.
 
 The bridge is deliberately not an OmegaClaw executor.  It consults the
-verified, synthetic factory-fault lesson and returns a new local receipt.  It
-has no shell, network, provider, or arbitrary-file capability.
+verified, synthetic Community Hospital lesson and returns a new local
+receipt.  It has no shell, network, provider, or arbitrary-file capability.
 """
 
 from __future__ import annotations
@@ -27,12 +27,12 @@ MAX_EVIDENCE_ID_LENGTH = 96
 # This is intentionally a *single*, closed teaching packet.  It demonstrates
 # the shape of a useful agent disagreement without turning the local bridge
 # into a general multi-agent decision service.
-RELEASE_READINESS_CASE_ID = "release-readiness-demo"
-RELEASE_READINESS_RULEBOOK_ID = "release-readiness-demo-r1"
-RELEASE_READINESS_FACTS = {"unit_tests", "required_security_check"}
-RELEASE_READINESS_STATUSES = {"passed", "missing", "failed", "unknown"}
-RELEASE_POSITIONS = {"release_ready", "release_not_ready"}
-FORBIDDEN_RELEASE_ACTIONS = {"deploy", "merge", "approve_release"}
+COMMUNITY_CARE_CASE_ID = "community-care-first-review"
+COMMUNITY_CARE_RULEBOOK_ID = "community-care-first-review-r1"
+COMMUNITY_CARE_FACTS = {"patient_consent", "triage_capacity"}
+COMMUNITY_CARE_STATUSES = {"observed", "missing", "unknown"}
+COMMUNITY_CARE_POSITIONS = {"route_to_clinic", "request_more_information"}
+FORBIDDEN_COMMUNITY_ACTIONS = {"send_message", "change_record", "deny_care"}
 CONSULTATION_STATUSES = {"observed", "missing", "unknown"}
 
 
@@ -48,18 +48,18 @@ def _tools() -> list[Dict[str, Any]]:
     return [
         {
             "name": "omega.reason",
-            "description": "Consult the verified synthetic factory-fault lesson and record a local receipt. This never runs an external action.",
+            "description": "Consult the verified synthetic Community Hospital lesson and record a local receipt. This never runs an external action.",
             "inputSchema": {
                 "type": "object",
                 "properties": {
-                    "workspace_id": {"type": "string", "description": "A local Studio workspace slug, or factory-fault."},
-                    "question": {"type": "string", "description": "A question about the published lesson or the bounded release-readiness teaching packet."},
+                    "workspace_id": {"type": "string", "description": "A local Studio workspace slug, or community-care."},
+                    "question": {"type": "string", "description": "A question about the Community Hospital lesson or its bounded first-review teaching packet."},
                     "conflict_packet": {
                         "type": "object",
-                        "description": "Optional closed teaching packet for one release-readiness disagreement. It is not a general multi-agent input API and does not validate external evidence.",
+                        "description": "Optional closed teaching packet for one Community Hospital disagreement. It is not a general multi-agent input API and does not validate external evidence.",
                         "properties": {
-                            "case_id": {"const": RELEASE_READINESS_CASE_ID},
-                            "rulebook_id": {"const": RELEASE_READINESS_RULEBOOK_ID},
+                            "case_id": {"const": COMMUNITY_CARE_CASE_ID},
+                            "rulebook_id": {"const": COMMUNITY_CARE_RULEBOOK_ID},
                             "claims": {
                                 "type": "array",
                                 "minItems": 2,
@@ -68,7 +68,7 @@ def _tools() -> list[Dict[str, Any]]:
                                     "type": "object",
                                     "properties": {
                                         "agent_id": {"type": "string", "maxLength": MAX_AGENT_ID_LENGTH},
-                                        "position": {"enum": sorted(RELEASE_POSITIONS)},
+                                        "position": {"enum": sorted(COMMUNITY_CARE_POSITIONS)},
                                         "evidence_ids": {"type": "array", "minItems": 1, "maxItems": 8, "items": {"type": "string", "maxLength": MAX_EVIDENCE_ID_LENGTH}},
                                     },
                                     "required": ["agent_id", "position", "evidence_ids"],
@@ -82,15 +82,15 @@ def _tools() -> list[Dict[str, Any]]:
                                 "items": {
                                     "type": "object",
                                     "properties": {
-                                        "fact_id": {"enum": sorted(RELEASE_READINESS_FACTS)},
-                                        "status": {"enum": sorted(RELEASE_READINESS_STATUSES)},
+                                        "fact_id": {"enum": sorted(COMMUNITY_CARE_FACTS)},
+                                        "status": {"enum": sorted(COMMUNITY_CARE_STATUSES)},
                                         "evidence_id": {"type": "string", "maxLength": MAX_EVIDENCE_ID_LENGTH},
                                     },
                                     "required": ["fact_id", "status", "evidence_id"],
                                     "additionalProperties": False,
                                 },
                             },
-                            "forbidden_actions": {"type": "array", "minItems": 1, "maxItems": 3, "items": {"enum": sorted(FORBIDDEN_RELEASE_ACTIONS)}},
+                            "forbidden_actions": {"type": "array", "minItems": 1, "maxItems": 3, "items": {"enum": sorted(FORBIDDEN_COMMUNITY_ACTIONS)}},
                         },
                         "required": ["case_id", "rulebook_id", "claims", "recorded_facts", "forbidden_actions"],
                         "additionalProperties": False,
@@ -159,21 +159,28 @@ class LocalMCP:
         self.artifacts = StudioArtifacts(self.project_root)
         self.receipts_root = self.project_root / ".launchpad" / "studio" / "runs" / "mcp"
 
-    def _verified_factory_proof(self) -> Dict[str, Any]:
-        state = self.artifacts.status()["factory_fault"]
-        if state["state"] != "verified":
-            raise ValueError("The factory-fault lesson has no verified local OmegaClaw proof yet.")
+    def _verified_community_proof(self) -> Dict[str, Any]:
+        """Require a real local OmegaClaw runtime proof before consulting.
+
+        The Community Hospital-specific proof is required. The consultation
+        packet remains the only source for a Community Hospital recommendation.
+        """
+        status = self.artifacts.status()
+        if status.get("community_care", {}).get("state") != "verified":
+            raise ValueError("A verified local OmegaClaw proof is required before consulting the Community Hospital lesson.")
+        logical_name = "community-proof"
+        detail = "The Community Hospital lesson"
         try:
-            payload = json.loads(self.artifacts.artifact("factory-proof")["content"])
+            payload = json.loads(self.artifacts.artifact(logical_name)["content"])
         except (OSError, UnicodeDecodeError, json.JSONDecodeError, KeyError) as error:
-            raise ValueError("The factory-fault proof artifact is unavailable.") from error
+            raise ValueError(f"{detail} proof artifact is unavailable.") from error
         if not isinstance(payload, dict):
-            raise ValueError("The factory-fault proof artifact is invalid.")
+            raise ValueError(f"{detail} proof artifact is invalid.")
         return payload
 
     def _workspace(self, workspace_id: str) -> Path:
-        if workspace_id == "factory-fault":
-            return self.project_root / "templates" / "factory-fault"
+        if workspace_id == "community-care":
+            return self.project_root / "templates" / "community-care"
         if SLUG_PATTERN.fullmatch(workspace_id) is None:
             raise ValueError("workspace_id must be a lowercase local Studio slug.")
         root = self.project_root / ".launchpad" / "studio" / "workspaces"
@@ -188,7 +195,7 @@ class LocalMCP:
             raise ValueError(f"{field} must be a non-empty printable string of at most {maximum} characters.")
         return value
 
-    def _release_readiness_trace(self, packet: Any) -> Dict[str, Any]:
+    def _community_care_trace(self, packet: Any) -> Dict[str, Any]:
         """Validate and evaluate one fixed, deterministic teaching packet.
 
         The validation is intentionally closed: callers cannot select a new
@@ -198,9 +205,9 @@ class LocalMCP:
         """
         required = {"case_id", "rulebook_id", "claims", "recorded_facts", "forbidden_actions"}
         if not isinstance(packet, dict) or set(packet) != required:
-            raise ValueError("conflict_packet must contain only the fixed release-readiness teaching fields.")
-        if packet["case_id"] != RELEASE_READINESS_CASE_ID or packet["rulebook_id"] != RELEASE_READINESS_RULEBOOK_ID:
-            raise ValueError("conflict_packet is limited to the release-readiness-demo rulebook.")
+            raise ValueError("conflict_packet must contain only the fixed Community Hospital teaching fields.")
+        if packet["case_id"] != COMMUNITY_CARE_CASE_ID or packet["rulebook_id"] != COMMUNITY_CARE_RULEBOOK_ID:
+            raise ValueError("conflict_packet is limited to the community-care-first-review rulebook.")
 
         claims = packet["claims"]
         if not isinstance(claims, list) or not 2 <= len(claims) <= 4:
@@ -213,52 +220,52 @@ class LocalMCP:
             agent_id = self._bounded_string(claim["agent_id"], "claim.agent_id", MAX_AGENT_ID_LENGTH)
             position = claim["position"]
             evidence_ids = claim["evidence_ids"]
-            if position not in RELEASE_POSITIONS:
-                raise ValueError("claim.position is not allowed by the release-readiness teaching packet.")
+            if position not in COMMUNITY_CARE_POSITIONS:
+                raise ValueError("claim.position is not allowed by the Community Hospital teaching packet.")
             if not isinstance(evidence_ids, list) or not 1 <= len(evidence_ids) <= 8:
                 raise ValueError("claim.evidence_ids must contain one to eight logical evidence labels.")
             normalized_evidence_ids = [self._bounded_string(item, "claim.evidence_ids item", MAX_EVIDENCE_ID_LENGTH) for item in evidence_ids]
             normalized_claims.append({"agent_id": agent_id, "position": position, "evidence_ids": normalized_evidence_ids})
             positions.add(position)
-        if positions != RELEASE_POSITIONS:
-            raise ValueError("The teaching packet needs recorded claims on both sides of the release decision.")
+        if positions != COMMUNITY_CARE_POSITIONS:
+            raise ValueError("The teaching packet needs both Community Hospital positions recorded.")
 
         facts = packet["recorded_facts"]
         if not isinstance(facts, list) or len(facts) != 2:
-            raise ValueError("conflict_packet.recorded_facts must contain the two fixed release-readiness facts.")
+            raise ValueError("conflict_packet.recorded_facts must contain the two fixed Community Hospital facts.")
         normalized_facts = []
         statuses: Dict[str, str] = {}
         for fact in facts:
             if not isinstance(fact, dict) or set(fact) != {"fact_id", "status", "evidence_id"}:
                 raise ValueError("Each recorded fact must contain only fact_id, status, and evidence_id.")
             fact_id, status = fact["fact_id"], fact["status"]
-            if fact_id not in RELEASE_READINESS_FACTS or status not in RELEASE_READINESS_STATUSES or fact_id in statuses:
+            if fact_id not in COMMUNITY_CARE_FACTS or status not in COMMUNITY_CARE_STATUSES or fact_id in statuses:
                 raise ValueError("The teaching packet contains an invalid or duplicate recorded fact.")
             statuses[fact_id] = status
             normalized_facts.append({"fact_id": fact_id, "status": status, "evidence_id": self._bounded_string(fact["evidence_id"], "fact.evidence_id", MAX_EVIDENCE_ID_LENGTH)})
-        if set(statuses) != RELEASE_READINESS_FACTS:
-            raise ValueError("The teaching packet must record unit_tests and required_security_check.")
-        if statuses["unit_tests"] != "passed" or statuses["required_security_check"] != "missing":
-            raise ValueError("This fixed first test requires passed unit tests and a missing required security-check result.")
+        if set(statuses) != COMMUNITY_CARE_FACTS:
+            raise ValueError("The teaching packet must record patient_consent and triage_capacity.")
+        if statuses["patient_consent"] != "missing" or statuses["triage_capacity"] != "observed":
+            raise ValueError("This first test requires missing patient consent and observed triage capacity.")
 
         forbidden_actions = packet["forbidden_actions"]
-        if not isinstance(forbidden_actions, list) or not 1 <= len(forbidden_actions) <= 3 or any(item not in FORBIDDEN_RELEASE_ACTIONS for item in forbidden_actions):
-            raise ValueError("forbidden_actions must list one to three fixed release actions.")
+        if not isinstance(forbidden_actions, list) or not 1 <= len(forbidden_actions) <= 3 or any(item not in FORBIDDEN_COMMUNITY_ACTIONS for item in forbidden_actions):
+            raise ValueError("forbidden_actions must list one to three fixed Community Hospital boundaries.")
         if len(set(forbidden_actions)) != len(forbidden_actions):
             raise ValueError("forbidden_actions must not contain duplicates.")
 
         return {
-            "mode": "bounded_release_readiness_teaching_packet",
+            "mode": "bounded_community_care_teaching_packet",
             "rulebook": {
-                "id": RELEASE_READINESS_RULEBOOK_ID,
-                "human_rule": "If required evidence is missing or recorded agents disagree at a release gate, recommend human_review_required.",
+                "id": COMMUNITY_CARE_RULEBOOK_ID,
+                "human_rule": "If agents disagree about care routing or a required consent fact is missing, recommend human_review_required.",
                 "executable_evaluation": "deterministic local validation of this fixed teaching packet",
             },
             "recorded_facts": normalized_facts,
             "recorded_claims": normalized_claims,
-            "accepted_observations": ["unit_tests=passed", "required_security_check=missing"],
-            "conflicts": ["recorded agents disagree: release_ready versus release_not_ready"],
-            "missing_information": ["required_security_check result"],
+            "accepted_observations": ["triage_capacity=observed", "patient_consent=missing"],
+            "conflicts": ["recorded agents disagree: route_to_clinic versus request_more_information"],
+            "missing_information": ["patient_consent"],
             "recommendation": "human_review_required",
             "forbidden_actions": forbidden_actions,
         }
@@ -331,7 +338,7 @@ class LocalMCP:
     def reason(self, arguments: Any) -> Dict[str, Any]:
         allowed_keys = {"workspace_id", "question", "conflict_packet", "consultation"}
         if not isinstance(arguments, dict) or not {"workspace_id", "question"}.issubset(arguments) or not set(arguments).issubset(allowed_keys):
-            raise ValueError("omega.reason requires workspace_id and question, with optional conflict_packet only.")
+            raise ValueError("omega.reason requires workspace_id and question, with one optional bounded packet.")
         workspace_id = arguments["workspace_id"]
         question = arguments["question"]
         if not isinstance(workspace_id, str) or SLUG_PATTERN.fullmatch(workspace_id) is None:
@@ -339,12 +346,12 @@ class LocalMCP:
         if not isinstance(question, str) or not question.strip() or len(question) > MAX_QUESTION_LENGTH:
             raise ValueError("question must be a non-empty string of at most 1000 characters.")
         self._workspace(workspace_id)
-        proof = self._verified_factory_proof()
+        proof = self._verified_community_proof()
         conflict_packet = arguments.get("conflict_packet")
         consultation = arguments.get("consultation")
         if conflict_packet is not None and consultation is not None:
             raise ValueError("Provide either conflict_packet or consultation, not both.")
-        decision_trace = self._release_readiness_trace(conflict_packet) if conflict_packet is not None else (
+        decision_trace = self._community_care_trace(conflict_packet) if conflict_packet is not None else (
             self._general_trace(consultation) if consultation is not None else None
         )
         receipt_id = "mcp-" + uuid.uuid4().hex
@@ -361,7 +368,7 @@ class LocalMCP:
                 "synthetic_only": True,
                 "human_approval_required": True,
             } if consultation is not None else {
-                "template": "factory-fault",
+                "template": "community-care",
                 "facts": proof.get("facts", []),
                 "runtime": proof.get("runtime"),
                 "provider": proof.get("provider"),
@@ -371,14 +378,14 @@ class LocalMCP:
                 "synthetic_only": True,
                 "human_approval_required": True,
             }),
-            "disclaimer": "This is a synthetic lesson result, not a diagnosis, causal claim, external-data validation, or action authorization.",
+            "disclaimer": "This is a synthetic Community Hospital lesson result, not medical advice, a diagnosis, external-data validation, or action authorization.",
         }
         if decision_trace:
             receipt["decision_trace"] = decision_trace
             receipt["limitations"] = decision_trace.get("limitations", [
                 "The claims and facts in this packet are self-reported local input; the bridge does not validate them against an external system.",
-                "This deterministic teaching evaluation does not run OmegaClaw again or establish that a release is safe.",
-                "The recommendation requires a human review and cannot authorize deployment, merge, or release approval.",
+                "This deterministic teaching evaluation does not run OmegaClaw again or establish that any real care decision is safe.",
+                "The recommendation requires human review and cannot send messages, change records, or deny care.",
             ])
         path = self.receipts_root / (receipt_id + ".json")
         encoded = json.dumps(receipt, indent=2, sort_keys=True) + "\n"

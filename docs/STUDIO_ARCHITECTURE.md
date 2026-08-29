@@ -37,7 +37,7 @@ All Studio-owned state is below:
 ├── workspaces/
 │   └── <validated-workspace-slug>/
 └── runs/
-    ├── factory-fault/
+    ├── community-care/
     │   ├── omega-proof.json
     │   └── receipt.md
     └── mcp/
@@ -70,12 +70,12 @@ existing terminal proof
   → omega-proof.json
   → Studio status and evidence cards
 
-factory-fault template
+community-care template
   → validated copy under workspaces/<slug>/
   → local human-readable facts/rules/tests
   → fixture receipt, clearly labeled
 
-verified factory-fault lesson
+verified community-care lesson
   → local STDIO MCP bridge
   → omega.reason
   → logical receipt ID
@@ -86,7 +86,7 @@ The browser should display content only after HTML escaping. Markdown is present
 
 The template-copy API returns only the validated logical workspace ID, for example `{"workspace_id":"my-case"}`. It never returns the server's absolute workspace path. The server resolves that ID internally beneath the fixed workspace root.
 
-The MCP bridge accepts only logical workspace and receipt IDs. It does not expose a filesystem path. `omega.reason` consults the verified synthetic factory-fault proof and persists a receipt before returning; it accepts the closed `release-readiness-demo` packet and a bounded general consultation packet for local tests. The deterministic general evaluator only detects conflicting positions and missing/unknown facts; it does not execute arbitrary rules, validate outside data, or authorize an action. `omega.get_receipt` reads only receipts created by that bridge. `scripts/studio-mcp-check.sh` performs the real STDIO handshake and writes the local `mcp-check.json` status artifact.
+The MCP bridge accepts only logical workspace and receipt IDs. It does not expose a filesystem path. `omega.reason` consults the verified synthetic community-care proof and persists a receipt before returning; it accepts the closed `community-care-first-review` packet and a bounded general consultation packet for local tests. The deterministic general evaluator only detects conflicting positions and missing/unknown facts; it does not execute arbitrary rules, validate outside data, or authorize an action. `omega.get_receipt` reads only receipts created by that bridge. `scripts/studio-mcp-check.sh` performs the real STDIO handshake and writes the local `mcp-check.json` status artifact.
 
 ## Status semantics
 

@@ -1,0 +1,23 @@
+{
+  "fixture": true,
+  "cases": [
+    {
+      "id": "disagreement-and-missing-consent",
+      "facts": {
+        "triage_capacity": "observed",
+        "patient_consent": "missing",
+        "care_agents_disagree": true
+      },
+      "expected_conclusion": "human_review_required"
+    },
+    {
+      "id": "one-clear-observation",
+      "facts": {
+        "triage_capacity": "observed",
+        "patient_consent": "observed",
+        "care_agents_disagree": false
+      },
+      "expected_conclusion": null
+    }
+  ]
+}

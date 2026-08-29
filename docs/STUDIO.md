@@ -1,6 +1,6 @@
 # OmegaClaw Launchpad Studio
 
-OmegaClaw Launchpad Studio is a small, self-hosted onboarding lab for the first real OmegaClaw proof. Its nine-step Wizard uses one question, one action, and one proof per screen. A newcomer moves from a local or VPS preflight to the pinned factory-fault proof, reads what the result means, copies one synthetic template, checks both fixtures, and finishes with a bounded MCP handoff.
+OmegaClaw Launchpad Studio is a small, self-hosted onboarding lab for the first real OmegaClaw proof. Its nine-step Wizard uses one question, one action, and one proof per screen. A newcomer moves from a local or VPS preflight to the pinned community-care proof, reads what the result means, copies one synthetic template, checks both fixtures, and finishes with a bounded MCP handoff.
 
 ## Scope
 
@@ -8,8 +8,8 @@ P0 is intentionally small:
 
 - the `Test` provider is the only no-key path;
 - the dashboard reads and explains artifacts;
-- the real proof remains a terminal/Codex operation through `scripts/run-factory-fault-proof.sh` (the separate First Reflection proof remains available through `scripts/run-omegaclaw-proof.sh`);
-- the `factory-fault` project uses fictional data only;
+- the real proof remains a terminal/Codex operation through `scripts/run-community-care-proof.sh` (the separate First Reflection proof remains available through `scripts/run-omegaclaw-proof.sh`);
+- the `community-care` project uses fictional data only;
 - all artifacts remain local files.
 
 The dashboard does not run shell commands, control Docker, receive a Docker socket, accept uploads, validate outside sources, diagnose equipment, or perform external actions.
@@ -51,23 +51,23 @@ That helper only prints instructions. It never opens an SSH connection.
 
 ## The nine screens
 
-1. **Who decides?** — the referee story and the recommendation/action boundary.
-2. **Where?** — whether commands run on the computer or a private VPS.
-3. **Is it ready?** — run and confirm the read-only preflight report.
-4. **Real proof** — run and confirm the pinned factory-fault Test/WebSocket/MeTTa/NAL proof.
-5. **What does green mean?** — open the receipt and answer the honest interpretation question.
-6. **My case** — copy the synthetic case into a logical local workspace ID.
-7. **My tests** — open and confirm the positive and negative fixtures.
-8. **One agent** — confirm the local MCP bridge exposes exactly two consultation tools.
-9. **Finish** — a clear next prompt and handoff to the local MCP bridge.
+1. **Meet Omega** — a referee that records reasons; a person still decides.
+2. **Community Hospital** — two fictional agents, one missing consent fact, and the risk of a hidden decision.
+3. **The simple flow** — claims → facts → human rule → recommendation → receipt.
+4. **Ready** — run the read-only local setup check.
+5. **Real proof** — run the pinned Community Hospital Test/WebSocket/MeTTa/NAL proof.
+6. **First question** — copy the bounded disagreement packet for an agent.
+7. **Connect one agent** — check the local MCP bridge or use the CLI.
+8. **Teach the habit** — copy the human stop policy.
+9. **Finish** — use the receipt-backed prompt for the first harmless real case.
 
 The dashboard does not replace the proof runner. To run the first Studio proof, use this fixed terminal command from the repository root:
 
 ```bash
-scripts/run-factory-fault-proof.sh
+scripts/run-community-care-proof.sh
 ```
 
-Until the real artifact exists, the Studio must show `pending`. A failed run remains `failed` or `pending`; it must never be presented as verified. The factory-fault lesson is a scaffold until `scripts/run-factory-fault-proof.sh` writes its pinned-runtime proof and receipt.
+Until the real artifact exists, the Studio must show `pending`. A failed run remains `failed` or `pending`; it must never be presented as verified. The community-care lesson is a scaffold until `scripts/run-community-care-proof.sh` writes its pinned-runtime proof and receipt.
 
 ## Local artifacts
 
@@ -75,23 +75,23 @@ The Studio stores its preflight and private workspace copies below `.launchpad/s
 
 The exact paths and allowed file types are described in [STUDIO_ARCHITECTURE.md](STUDIO_ARCHITECTURE.md). The browser receives logical IDs, not arbitrary filesystem paths.
 
-## factory-fault limits
+## community-care limits
 
-`factory-fault` is a teaching fixture. Its signals, thresholds, timestamps, and outcome are fictional. Its only derived statement is `manual_inspection_recommended` when the two example signals coexist. It does not claim a fault, identify a cause, validate telemetry, or command a machine to stop.
+`community-care` is a teaching fixture. Its notes, positions, and outcome are fictional. Its only derived statement is `human_review_required` when the agents disagree or consent is missing. It does not provide medical advice, diagnose a person, validate an outside record, or authorize care.
 
 Its `rules.metta` file is an **Illustrative MeTTa lesson**, not a reviewed real-runtime rule. Studio P0 does not execute that scaffold in OmegaClaw, so the template is not evidence that the rule runs in the pinned runtime.
 
 Copy it with:
 
 ```bash
-python3 -m launchpad studio new my-case --template factory-fault
+python3 -m launchpad studio new my-case --template community-care
 ```
 
 Then ask Codex to adapt the local facts and tests while preserving the disclaimer and human review boundary. The P0 web screen does not edit executable rules.
 
 ## Local MCP handoff
 
-After the factory-fault proof is verified, run the bounded bridge from the repository root:
+After the community-care proof is verified, run the bounded bridge from the repository root:
 
 ```bash
 scripts/studio-mcp.sh
@@ -103,9 +103,9 @@ Check the bridge and its first two tools from a second terminal:
 scripts/studio-mcp-check.sh
 ```
 
-The check is a real local JSON-RPC handshake. It records only `.launchpad/studio/mcp-check.json` and requires the verified factory-fault proof. The Wizard waits for this check before its final MCP confirmation. Register one agent manually with `codex mcp add omegaclaw-launchpad -- scripts/studio-mcp.sh`, then verify that the agent lists exactly `omega.reason` and `omega.get_receipt`.
+The check is a real local JSON-RPC handshake. It records only `.launchpad/studio/mcp-check.json` and requires the verified community-care proof. The Wizard waits for this check before its final MCP confirmation. Register one agent manually with `codex mcp add omegaclaw-launchpad -- scripts/studio-mcp.sh`, then verify that the agent lists exactly `omega.reason` and `omega.get_receipt`.
 
-Register that local STDIO command in Codex only after reviewing the project-local configuration. It exposes exactly `omega.reason` and `omega.get_receipt`. `omega.reason` consults the verified synthetic lesson and writes a local receipt; it does not run a provider, shell command, connector, or external action. It supports the fixed release-readiness teaching packet and a bounded general consultation packet for local tests. A general packet records claims, evidence labels, a human rule, missing/unknown facts, conflicts, and forbidden actions; its deterministic result is `human_review_required` when a conflict or missing fact exists, otherwise `recorded_observation`. Inputs are self-reported and never externally validated. `omega.get_receipt` accepts only a logical receipt ID returned by the first tool. No absolute workspace path is returned by the API. See [the agent guide](AGENT_GUIDE.md#bounded-general-consultation) for the copyable shape.
+Register that local STDIO command in Codex only after reviewing the project-local configuration. It exposes exactly `omega.reason` and `omega.get_receipt`. `omega.reason` consults the verified synthetic lesson and writes a local receipt; it does not run a provider, shell command, connector, or external action. It supports the fixed Community Hospital first review teaching packet and a bounded general consultation packet for local tests. A general packet records claims, evidence labels, a human rule, missing/unknown facts, conflicts, and forbidden actions; its deterministic result is `human_review_required` when a conflict or missing fact exists, otherwise `recorded_observation`. Inputs are self-reported and never externally validated. `omega.get_receipt` accepts only a logical receipt ID returned by the first tool. No absolute workspace path is returned by the API. See [the agent guide](AGENT_GUIDE.md#bounded-general-consultation) for the copyable shape.
 
 ### Use the MCP from a VPS without opening a public port
 

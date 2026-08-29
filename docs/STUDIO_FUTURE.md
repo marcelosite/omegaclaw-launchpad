@@ -6,7 +6,7 @@ This document preserves the broader proposal. The bounded local MCP handoff is i
 
 ### Minimal MCP bridge
 
-The local handoff now exposes exactly two tools after the real factory-fault proof is verified:
+The local handoff now exposes exactly two tools after the real community-care proof is verified:
 
 ```text
 omega.reason

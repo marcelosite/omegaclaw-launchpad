@@ -12,22 +12,22 @@ Built for **BGI Commons HyperSprint #1 — Track 2: Onboarding OmegaClaw**.
 
 Launchpad Studio is the self-hosted learning interface for the same evidence and proof contracts. Its nine-step, plain-language Wizard uses the referee story to guide a newcomer from a safe preflight to a real proof, a synthetic lesson, a local workspace, and a bounded MCP handoff. It runs only on `127.0.0.1:8765`, is opened through an SSH tunnel, and reads real artifacts without controlling Docker or fabricating an OmegaClaw result.
 
-The P0 also includes a deliberately synthetic `factory-fault` tutorial that can be copied into a private local workspace:
+The P0 also includes a deliberately synthetic `community-care` tutorial that can be copied into a private local workspace:
 
 ```bash
-python3 -m launchpad studio new my-case --template factory-fault
+python3 -m launchpad studio new my-case --template community-care
 ```
 
 The Studio server, preflight helper, exact installation flow, and agent-facing contracts are documented in the [Studio guide](docs/STUDIO.md) and [Agent integration guide](docs/AGENT_GUIDE.md). No LLM API key, public web port, database, account, or remote service is part of P0.
 
-After the real synthetic factory-fault proof passes locally, the optional bounded handoff is:
+After the real synthetic community-care proof passes locally, the optional bounded handoff is:
 
 ```bash
-scripts/run-factory-fault-proof.sh
+scripts/run-community-care-proof.sh
 scripts/studio-mcp.sh
 ```
 
-The local STDIO bridge exposes only `omega.reason` and `omega.get_receipt`. It records local receipts and cannot run shell commands, providers, connectors, or external actions. Its first structured disagreement test is a closed release-readiness teaching packet, not arbitrary multi-agent arbitration. See the [sprint summary](docs/SPRINT_SUMMARY.md) for the concise product description.
+The local STDIO bridge exposes only `omega.reason` and `omega.get_receipt`. It records local receipts and cannot run shell commands, providers, connectors, or external actions. Its first structured disagreement test is a closed Community Hospital first review teaching packet, not arbitrary multi-agent arbitration. See the [sprint summary](docs/SPRINT_SUMMARY.md) for the concise product description.
 
 ## The simple idea
 

@@ -16,7 +16,7 @@ This file is the continuity snapshot for future Codex chats. Read it together wi
 - explicit human approval and before/after Markdown receipt;
 - pinned OmegaClaw-Core `v0.1.19` proof through WebSocket, Test provider, real loop, MeTTa skill, and NAL/STV;
 - loopback-only Studio Wizard;
-- synthetic `factory-fault` template;
+- synthetic `community-care` template;
 - private workspace copying by logical slug;
 - local readable JSON/Markdown artifacts;
 - bounded local STDIO MCP with exactly `omega.reason` and `omega.get_receipt`;
@@ -29,9 +29,9 @@ This file is the continuity snapshot for future Codex chats. Read it together wi
 
 - Python unit suite: 37 tests passed.
 - Shell syntax checks passed.
-- Apple Silicon factory-fault real proof passed 7/7.
+- Apple Silicon community-care real proof passed 7/7.
 - Browser QA covered desktop and mobile layout, locked forward navigation, explicit post-script confirmations, receipt comprehension, logical workspace copying, fixture inspection, Finish handoff, and MCP command guidance.
-- MCP handshake and the closed release-readiness Conflict Packet were tested locally.
+- MCP handshake and the closed Community Hospital first review Conflict Packet were tested locally.
 - The untracked local `tmp/` directory belongs to the human and must remain untouched.
 
 ## Git state at this snapshot
@@ -57,10 +57,10 @@ ssh -N -L 8876:127.0.0.1:8765 oracle-fabrica
 - That SSH command runs on the owner's Mac, not inside the VPS.
 - The remote dashboard is then opened on the Mac at `http://127.0.0.1:8876`.
 - The existing local Studio remains at `http://127.0.0.1:8765`.
-- The ARM64 factory-fault proof passed 7/7 on the VPS.
-- Remote proof artifacts exist under `.launchpad/studio/runs/factory-fault/`.
+- The ARM64 community-care proof passed 7/7 on the VPS.
+- Remote proof artifacts exist under `.launchpad/studio/runs/community-care/`.
 - Remote MCP initialization and the exact two-tool list were verified.
-- Remote Studio now serves the nine-step Wizard and reports the factory-fault handoff as ready.
+- Remote Studio now serves the nine-step Wizard and reports the community-care handoff as ready.
 - Remote Studio was restarted after the locked-gate UX update; the existing tmux session and all other containers remain untouched.
 - Remote repository tests pass: 37 tests.
 - The proof container and proof volume were cleaned after the run.
@@ -87,16 +87,16 @@ ssh -N -L 8876:127.0.0.1:8765 oracle-fabrica
 
 ## Honest status distinction
 
-- `factory_fault` is verified on the VPS.
+- `community_care` is verified on the VPS.
 - The separate First Reflection proof artifact is still pending on the VPS.
-- The current MCP can consult the verified teaching lesson and accept only the fixed release-readiness teaching packet. It cannot accept arbitrary claims from several agents or run a new real-world decision.
+- The current MCP can consult the verified teaching lesson and accept only the fixed Community Hospital first review teaching packet. It cannot accept arbitrary claims from several agents or run a new real-world decision.
 - The Studio process is held by tmux and is not configured to restart after a VPS reboot.
 
 The local Mac proof image was removed after the final 7/7 run. The local doctor may still report `disk: BLOCKED` when fewer than 25 GiB are available; this is an honest resource gate, not a proof result. The Oracle VPS preflight is ready.
 
 ## Current human feedback
 
-The Studio UI now uses the approved Feynman method: one short question, one action, one proof per numbered step. Future steps are not clickable; the primary button stays disabled until the required answer, status check, receipt, workspace, or human confirmation exists. The factory-fault lesson remains explicitly synthetic and illustrative. The fixed release-readiness packet is a first teaching test, not general arbitration.
+The Studio UI now uses the approved Feynman method: one short question, one action, one proof per numbered step. Future steps are not clickable; the primary button stays disabled until the required answer, status check, receipt, workspace, or human confirmation exists. The community-care lesson remains explicitly synthetic and illustrative. The fixed Community Hospital first review packet is a first teaching test, not general arbitration.
 
 The full product direction is in `docs/STUDIO_V2_FEYNMAN_JOURNEY.md`.
 
@@ -105,7 +105,7 @@ The full product direction is in `docs/STUDIO_V2_FEYNMAN_JOURNEY.md`.
 - adding a fixed web action runner;
 - running the separate First Reflection proof on the VPS;
 - configuring automatic restart/systemd;
-- extending the bounded MCP contract beyond the fixed release-readiness teaching packet;
+- extending the bounded MCP contract beyond the fixed Community Hospital first review teaching packet;
 - connecting Codex, Claude Code, or other agents to a new real workspace;
 - MiniMax/ASICloud compatibility work or credentials;
 - domain, TLS, authentication, reverse proxy, public firewall, or public exposure;

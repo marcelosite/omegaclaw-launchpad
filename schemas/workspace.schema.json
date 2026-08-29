@@ -4,7 +4,7 @@
   "type": "object",
   "required": ["template", "facts", "rules", "tests"],
   "properties": {
-    "template": {"const": "factory-fault"},
+    "template": {"const": "community-care"},
     "facts": {"type": "string", "const": "facts.json"},
     "rules": {
       "type": "object",

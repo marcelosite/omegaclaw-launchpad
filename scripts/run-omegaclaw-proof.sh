@@ -3,13 +3,13 @@ set -euo pipefail
 
 PROJECT_ROOT="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
 PROOF_MODE="first-reflection"
-if [[ "${1:-}" == "--factory-fault" ]]; then
-  PROOF_MODE="factory-fault"
+if [[ "${1:-}" == "--community-care" ]]; then
+  PROOF_MODE="community-care"
   shift
 fi
 MISSION_ID="${1:-source-audit-demo-001}"
 MISSION_ROOT="${PROJECT_ROOT}/.launchpad/first-reflection/${MISSION_ID}"
-FACTORY_RUN_ROOT="${PROJECT_ROOT}/.launchpad/studio/runs/factory-fault"
+COMMUNITY_RUN_ROOT="${PROJECT_ROOT}/.launchpad/studio/runs/community-care"
 UPSTREAM_DIR="${PROJECT_ROOT}/.launchpad/omegaclaw-core-v0.1.19"
 UPSTREAM_REF="v0.1.19"
 UPSTREAM_COMMIT="642c53676cf795cb7a0030823b36018c029b1416"
@@ -30,8 +30,8 @@ if [[ "${PROOF_MODE}" == "first-reflection" ]]; then
   fi
 else
   for required in README.md facts.json rules.md rules.metta tests.json; do
-    if [[ ! -f "${PROJECT_ROOT}/templates/factory-fault/${required}" ]]; then
-      echo "Missing factory-fault template file: ${required}" >&2
+    if [[ ! -f "${PROJECT_ROOT}/templates/community-care/${required}" ]]; then
+      echo "Missing Community Hospital template file: ${required}" >&2
       exit 2
     fi
   done
@@ -147,8 +147,8 @@ if [[ "${PROOF_MODE}" == "first-reflection" ]]; then
   TEST_SOURCE="${PROJECT_ROOT}/integrations/omegaclaw/test_launchpad_first_reflection_ws_mock.py"
   TEST_TARGET="${UPSTREAM_DIR}/Autotests/mock_websocket/test_launchpad_first_reflection_ws_mock.py"
 else
-  TEST_SOURCE="${PROJECT_ROOT}/integrations/omegaclaw/test_launchpad_factory_fault_ws_mock.py"
-  TEST_TARGET="${UPSTREAM_DIR}/Autotests/mock_websocket/test_launchpad_factory_fault_ws_mock.py"
+  TEST_SOURCE="${PROJECT_ROOT}/integrations/omegaclaw/test_launchpad_community_care_ws_mock.py"
+  TEST_TARGET="${UPSTREAM_DIR}/Autotests/mock_websocket/test_launchpad_community_care_ws_mock.py"
 fi
 cp "${TEST_SOURCE}" "${TEST_TARGET}"
 
@@ -211,12 +211,12 @@ env \
   WS_MOCK_PORT=8770 \
   WS_TOKEN="${WS_TOKEN}" \
   LAUNCHPAD_MISSION_ROOT="${MISSION_ROOT}" \
-  LAUNCHPAD_STUDIO_RUN_ROOT="${FACTORY_RUN_ROOT}" \
+  LAUNCHPAD_STUDIO_RUN_ROOT="${COMMUNITY_RUN_ROOT}" \
   "${UPSTREAM_DIR}/Autotests/venv/bin/pytest" -s -v \
     "${TEST_TARGET}"
 
 if [[ "${PROOF_MODE}" == "first-reflection" ]]; then
   echo "Real OmegaClaw proof captured at ${MISSION_ROOT}/03-reflection/omega-proof.json"
 else
-  echo "Real OmegaClaw factory-fault proof captured at ${FACTORY_RUN_ROOT}/omega-proof.json"
+  echo "Real OmegaClaw Community Hospital proof captured at ${COMMUNITY_RUN_ROOT}/omega-proof.json"
 fi

@@ -23,39 +23,34 @@ class StudioServerTests(unittest.TestCase):
         self.assertEqual(page.count('class="screen'), 9)
         self.assertIn("textContent", page)
         self.assertNotIn("innerHTML", page)
-        self.assertIn("/api/templates/factory-fault/copy", page)
         self.assertIn('id="wizard-back"', page)
         self.assertIn('id="wizard-next"', page)
         self.assertIn("function show(n)", page)
-        self.assertIn("Illustrative MeTTa lesson", page)
+        self.assertIn("Community Hospital", page)
         self.assertIn("MCP", page)
         self.assertIn("Finish", page)
         self.assertIn("omega.reason", page)
         self.assertIn("omega.get_receipt", page)
-        self.assertIn("Create my workspace", page)
+        self.assertIn("copy-packet", page)
         self.assertIn("Blocked:", page)
-        self.assertIn("name=\"decision\"", page)
-        self.assertIn("confirm-preflight", page)
-        self.assertIn("confirm-proof", page)
-        self.assertIn("confirm-tests", page)
-        self.assertIn("confirm-mcp", page)
-        self.assertIn("Check my result", page)
-        self.assertIn("Check my proof", page)
-        self.assertIn("Open the receipt", page)
+        self.assertIn("ack-boundary", page)
+        self.assertIn("ack-story", page)
+        self.assertIn("ack-flow", page)
+        self.assertIn("scripts/studio-doctor.sh", page)
+        self.assertIn("scripts/run-community-care-proof.sh", page)
+        self.assertIn("copy-mcp", page)
+        self.assertIn("copy-policy", page)
         self.assertIn("Complete the step above", page)
         self.assertIn("if(n<active)show(n)", page)
         self.assertIn("codex mcp add omegaclaw-launchpad", page)
         self.assertNotIn("Reviewed MeTTa", page)
         self.assertIn("data-place-label", page)
-        self.assertIn("cannot prove who ran the command", page)
-        self.assertIn("This page does not run them", page)
-        self.assertIn("Studio does not connect my agent", page)
-        self.assertIn("Fictional facts → human rule → real OmegaClaw", page)
-        self.assertIn("scripts/studio-mcp-check.sh", page)
-        self.assertIn("check-mcp", page)
-        self.assertIn("/api/workspaces/", page)
-        self.assertIn("Open my workspace tests", page)
-        self.assertIn("Open the report", page)
+        self.assertIn("The card updates automatically", page)
+        self.assertIn("Green means the rehearsal ran", page)
+        self.assertIn("This is a human-owned workflow", page)
+        self.assertIn("claims → facts → rule → recommendation → receipt", page)
+        self.assertIn("human_review_required", page)
+        self.assertIn("The referee, not the boss", page)
 
     def test_workspace_slug_disallows_paths_and_uppercase(self):
         self.assertIsNotNone(WORKSPACE_SLUG.fullmatch("my-case-2"))
@@ -96,7 +91,7 @@ class StudioServerTests(unittest.TestCase):
 
                 body = json.dumps({"name": "my-case"})
                 status, payload = request(
-                    "POST", "/api/templates/factory-fault/copy", body, {"Content-Type": "application/json"}
+                    "POST", "/api/templates/community-care/copy", body, {"Content-Type": "application/json"}
                 )
                 self.assertEqual(status, HTTPStatus.CREATED)
                 self.assertEqual(payload, {"workspace_id": "my-case"})
@@ -105,7 +100,7 @@ class StudioServerTests(unittest.TestCase):
 
                 status, _payload = request(
                     "POST",
-                    "/api/templates/factory-fault/copy",
+                    "/api/templates/community-care/copy",
                     json.dumps({"name": "../bad"}),
                     {"Content-Type": "application/json"},
                 )
@@ -114,7 +109,7 @@ class StudioServerTests(unittest.TestCase):
 
                 status, _payload = request(
                     "POST",
-                    "/api/templates/factory-fault/copy",
+                    "/api/templates/community-care/copy",
                     json.dumps({"name": "another-case"}),
                     {"Content-Type": "text/plain"},
                 )

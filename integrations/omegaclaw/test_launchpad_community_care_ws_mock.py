@@ -1,7 +1,7 @@
-"""Real pinned-runtime proof for the synthetic factory-fault lesson.
+"""Real pinned-runtime proof for the synthetic Community Hospital lesson.
 
 This file is copied into the pinned OmegaClaw-Core checkout by the
-run-omegaclaw-proof.sh --factory-fault mode. The facts and conclusion are
+run-omegaclaw-proof.sh --community-care mode. The facts and conclusion are
 fictional; the proof only establishes that the real Test/WebSocket/MeTTa/NAL
 path processed this controlled lesson and returned a receipt.
 """
@@ -68,13 +68,13 @@ def _write_receipt(run_id, response, nal_log):
         ],
         "provider": "Test",
         "channel": "websocket",
-        "template": "factory-fault",
+        "template": "community-care",
         "synthetic_only": True,
         "facts": [
-            "temperature_above_demo_threshold",
-            "vibration_above_demo_threshold",
+            "triage_capacity=observed",
+            "patient_consent=missing",
         ],
-        "conclusion": "manual_inspection_recommended",
+        "conclusion": "human_review_required",
         "metta_skill_observed": True,
         "nal_stv_observed_in_loop": True,
         "human_approval_still_required": True,
@@ -83,7 +83,7 @@ def _write_receipt(run_id, response, nal_log):
     }
     (RUN_ROOT / "omega-proof.json").write_text(json.dumps(proof, indent=2) + "\n", encoding="utf-8")
     (RUN_ROOT / "receipt.md").write_text(
-        "# Factory-fault receipt - real runtime, synthetic lesson\n\n"
+        "# Community Hospital receipt - real runtime, synthetic lesson\n\n"
         "**Status:** verified pinned OmegaClaw runtime path; fictional facts only\n\n"
         "## Evidence\n\n"
         "- Provider: Test\n"
@@ -92,23 +92,23 @@ def _write_receipt(run_id, response, nal_log):
         "- NAL/STV in loop: observed\n"
         "- Human approval: still required\n\n"
         "## Synthetic input\n\n"
-        "The lesson supplied temperature_above_demo_threshold and "
-        "vibration_above_demo_threshold for fictional asset press-demo-07.\n\n"
+        "The lesson supplied an observed triage-capacity note, a missing "
+        "consent record, and two fictional agent positions.\n\n"
         "## Result\n\n"
-        "manual_inspection_recommended\n\n"
+        "human_review_required\n\n"
         "The runtime path was real; the data, rule meaning, and conclusion are "
-        "not an equipment diagnosis, causal finding, external-data validation, "
-        "or authorization for an action.\n\n"
+        "not medical advice, a diagnosis, external-data validation, or "
+        "authorization for an action.\n\n"
         "## Captured response\n\n"
         "Captured response:\n\n%s\n" % response,
         encoding="utf-8",
     )
 
 
-def test_launchpad_factory_fault_uses_real_nal(llm, ws):
-    with Checker("Launchpad factory-fault lesson via real OmegaClaw") as check:
-        marker = "launchpad_factory_fault_%s" % check.run_id
-        reply_token = "OMEGACLAW-FACTORY-FAULT-%s" % check.run_id
+def test_launchpad_community_care_uses_real_nal(llm, ws):
+    with Checker("Launchpad Community Hospital lesson via real OmegaClaw") as check:
+        marker = "launchpad_community_care_%s" % check.run_id
+        reply_token = "OMEGACLAW-COMMUNITY-CARE-%s" % check.run_id
 
         check.step("wait for OmegaClaw WebSocket connection")
         if not ws.wait_for_connection(timeout=60):
@@ -123,22 +123,22 @@ def test_launchpad_factory_fault_uses_real_nal(llm, ws):
 
         prompt = make_prompt(
             check.run_id,
-            "Run the factory-fault teaching lesson using only these fictional facts: "
-            "temperature_above_demo_threshold=true and "
-            "vibration_above_demo_threshold=true. Apply the illustrative rule "
-            "that derives manual_inspection_recommended. Use the metta skill "
+            "Run the Community Hospital teaching lesson using only these fictional facts: "
+            "triage_capacity=observed, patient_consent=missing, and two agents "
+            "disagree about care routing. Apply the illustrative rule "
+            "that derives human_review_required. Use the metta skill "
             "with NAL revision, then send exactly one short response that says "
             "the result is synthetic and still requires human approval.",
         )
         metta_expression = (
-            "(|- ((--> %s manual_inspection_recommended) (stv 1.0 0.9)) "
-            "((--> %s manual_inspection_recommended) (stv 1.0 0.9)))"
+            "(|- ((--> %s human_review_required) (stv 1.0 0.9)) "
+            "((--> %s human_review_required) (stv 1.0 0.9)))"
             % (marker, marker)
         )
         check.step("register the controlled provider response")
         answer_registered = llm.set_answer(
             prompt,
-            '(metta "%s") (send "%s: manual_inspection_recommended; synthetic facts only; human approval required.")'
+            '(metta "%s") (send "%s: human_review_required; synthetic facts only; human approval required.")'
             % (metta_expression, reply_token),
         )
         if not answer_registered:

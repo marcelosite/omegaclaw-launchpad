@@ -40,7 +40,7 @@ Open one artifact from each card. Emphasize that the Test provider is determinis
 
 ## 1:40–2:15 — open the template
 
-Open **factory-fault**. Show:
+Open **community-care**. Show:
 
 - fictional facts;
 - the human-readable `rules.md`;
@@ -50,11 +50,11 @@ Open **factory-fault**. Show:
 
 Say:
 
-> This example recommends manual inspection when two synthetic signals coexist. It does not diagnose a fault, infer a cause, validate external data, or stop a machine.
+> This example recommends human review when two fictional care agents disagree or consent is missing. It does not provide medical advice, diagnose a person, validate external data, or change a record.
 
 ## 2:15–2:40 — finish the Wizard
 
-Open **Finish**. The screen names the next step instead of leaving the user at a dead end: review the copied files, run the real factory-fault lesson proof, and only then connect the local MCP bridge. The final button reads **Done** and is intentionally disabled; the Wizard has completed its job.
+Open **Finish**. The screen names the next step instead of leaving the user at a dead end: review the copied files, run the real community-care lesson proof, and only then connect the local MCP bridge. The final button reads **Done** and is intentionally disabled; the Wizard has completed its job.
 
 If the proof is verified, show the bounded local command:
 
@@ -69,7 +69,7 @@ Explain that `omega.reason` consults the published synthetic lesson and creates 
 Use **Create my workspace** and create `my-case`, or show the equivalent safe command:
 
 ```bash
-python3 -m launchpad studio new my-case --template factory-fault
+python3 -m launchpad studio new my-case --template community-care
 ```
 
 Show that the original template is unchanged and that the copy is a local, readable workspace for Codex-assisted study.

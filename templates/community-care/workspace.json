@@ -1,5 +1,5 @@
 {
-  "template": "factory-fault",
+  "template": "community-care",
   "facts": "facts.json",
   "rules": {
     "human": "rules.md",

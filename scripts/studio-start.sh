@@ -26,6 +26,6 @@ from launchpad.studio_workspace import create_workspace
 project_root = Path(sys.argv[1])
 serve(
     project_root,
-    copy_template=lambda name: create_workspace(project_root, name, "factory-fault"),
+    copy_template=lambda name: create_workspace(project_root, name, "community-care"),
 )
 PY

@@ -8,12 +8,12 @@ This guide tells Codex, Claude Code, and other preferred agents how to use Omega
 local preflight
   → real OmegaClaw Test/WebSocket proof
   → readable facts/rules/MeTTa/NAL/result/receipt
-  → synthetic factory-fault workspace
+  → synthetic community-care workspace
   → explicit Finish handoff
   → bounded local MCP consultation
 ```
 
-The v1 proof is integration evidence: pinned OmegaClaw-Core `v0.1.19`, a real loop, a real `metta` skill call, and an observed NAL/STV result. The provider response and factory-fault data are controlled and fictional. This is not autonomous intelligence, industrial diagnosis, causal discovery, source validation, or action authorization.
+The v1 proof is integration evidence: pinned OmegaClaw-Core `v0.1.19`, a real loop, a real `metta` skill call, and an observed NAL/STV result. The provider response and community-care data are controlled and fictional. This is not autonomous intelligence, industrial diagnosis, causal discovery, source validation, or action authorization.
 
 ## Installation and local use
 
@@ -29,15 +29,15 @@ Open `http://127.0.0.1:8765`. The Studio does not run Docker from the browser. R
 ```bash
 python3 -m launchpad reflect prepare
 scripts/run-omegaclaw-proof.sh
-scripts/run-factory-fault-proof.sh
+scripts/run-community-care-proof.sh
 ```
 
-The factory-fault proof is safe because it uses the deterministic `Test` provider and fictional facts. It writes evidence only after the WebSocket, MeTTa, NAL/STV, and response assertions pass.
+The community-care proof is safe because it uses the deterministic `Test` provider and fictional facts. It writes evidence only after the WebSocket, MeTTa, NAL/STV, and response assertions pass.
 
 Copy a case either from the Wizard or with:
 
 ```bash
-python3 -m launchpad studio new my-case --template factory-fault
+python3 -m launchpad studio new my-case --template community-care
 ```
 
 The API and CLI expose `my-case` as a logical ID. They do not return an absolute workspace path.
@@ -46,7 +46,7 @@ The API and CLI expose `my-case` as a logical ID. They do not return an absolute
 
 ```json
 {
-  "template": "factory-fault",
+  "template": "community-care",
   "facts": "facts.json",
   "rules": {"human": "rules.md", "metta": "rules.metta"},
   "tests": "tests.json"
@@ -70,17 +70,17 @@ The transport is JSON-RPC 2.0 over newline-delimited STDIO. Initialization and t
 Minimum input:
 
 ```json
-{"workspace_id":"factory-fault","question":"What does this synthetic lesson conclude?"}
+{"workspace_id":"community-care","question":"What does this synthetic lesson conclude?"}
 ```
 
-The workspace ID is `factory-fault` or a lowercase slug for an existing copied Studio workspace. The bridge requires a verified local factory-fault proof. A successful result contains:
+The workspace ID is `community-care` or a lowercase slug for an existing copied Studio workspace. The bridge requires a verified local community-care proof. A successful result contains:
 
 ```json
 {
   "receipt_id":"mcp-0123456789abcdef0123456789abcdef",
-  "workspace_id":"factory-fault",
-  "answer":"manual_inspection_recommended",
-  "basis":{"template":"factory-fault","provider":"Test","synthetic_only":true,"human_approval_required":true},
+  "workspace_id":"community-care",
+  "answer":"human_review_required",
+  "basis":{"template":"community-care","provider":"Test","synthetic_only":true,"human_approval_required":true},
   "disclaimer":"This is a synthetic lesson result, not a diagnosis, causal claim, external-data validation, or action authorization."
 }
 ```
@@ -112,37 +112,37 @@ The CLI offers the same safe path without an agent UI:
 
 ```bash
 scripts/studio-mcp-check.sh
-python3 -m launchpad mcp reason --workspace . --workspace-id factory-fault --question "What should a human review?" --packet-file packet.json --json
+python3 -m launchpad mcp reason --workspace . --workspace-id community-care --question "What should a human review?" --packet-file packet.json --json
 python3 -m launchpad mcp receipt --workspace . mcp-<receipt-id>
 ```
 
-The check command verifies the STDIO handshake, the exact two tools, and the verified factory proof. It does not start Docker or contact the network.
+The check command verifies the STDIO handshake, the exact two tools, and the verified Community Hospital proof. It does not start Docker or contact the network.
 
 ### First structured disagreement test
 
-The same `omega.reason` tool accepts one deliberately closed **Conflict Packet** (a small, named envelope for recorded disagreement). It is a teaching test for release readiness, not a general way to submit arbitrary multi-agent debates. Run it **on the computer or VPS that holds the repository**, through the locally configured MCP process:
+The same `omega.reason` tool accepts one deliberately closed **Conflict Packet** (a small, named envelope for recorded disagreement). It is a teaching test for the first Community Hospital review, not a general way to submit arbitrary multi-agent debates. Run it **on the computer or VPS that holds the repository**, through the locally configured MCP process:
 
 ```json
 {
-  "workspace_id": "factory-fault",
-  "question": "What must a human review before this release?",
+  "workspace_id": "community-care",
+  "question": "What must a human review before changing this care request?",
   "conflict_packet": {
-    "case_id": "release-readiness-demo",
-    "rulebook_id": "release-readiness-demo-r1",
+    "case_id": "community-care-first-review",
+    "rulebook_id": "community-care-first-review-r1",
     "claims": [
-      {"agent_id": "build-agent", "position": "release_ready", "evidence_ids": ["unit-tests-2026-08-29"]},
-      {"agent_id": "security-agent", "position": "release_not_ready", "evidence_ids": ["security-check-missing"]}
+      {"agent_id": "triage-agent", "position": "route_to_clinic", "evidence_ids": ["triage-note"]},
+      {"agent_id": "records-agent", "position": "request_more_information", "evidence_ids": ["consent-missing"]}
     ],
     "recorded_facts": [
-      {"fact_id": "unit_tests", "status": "passed", "evidence_id": "unit-tests-2026-08-29"},
-      {"fact_id": "required_security_check", "status": "missing", "evidence_id": "security-check-missing"}
+      {"fact_id": "triage_capacity", "status": "observed", "evidence_id": "triage-note"},
+      {"fact_id": "patient_consent", "status": "missing", "evidence_id": "consent-missing"}
     ],
-    "forbidden_actions": ["deploy", "merge"]
+    "forbidden_actions": ["send_message", "change_record", "deny_care"]
   }
 }
 ```
 
-The returned receipt contains a **decision trace** (the recorded claims and facts, rule, detected conflict, missing information, recommendation, and prohibited actions). It returns `human_review_required`. The packet is deterministic local teaching logic: its IDs and fact vocabulary are fixed, its entries are not externally validated, it does not re-run OmegaClaw, and it cannot deploy, merge, or approve a release.
+The returned receipt contains a **decision trace** (the recorded claims and facts, rule, detected conflict, missing information, recommendation, and prohibited actions). It returns `human_review_required`. The packet is deterministic local teaching logic: its IDs and fact vocabulary are fixed, its entries are not externally validated, it does not re-run OmegaClaw, and it cannot send a message, change a record, or deny care.
 
 ### `omega.get_receipt`
 

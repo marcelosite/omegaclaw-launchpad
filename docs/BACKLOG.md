@@ -32,14 +32,14 @@
 
 - [x] Add a loopback-only, standard-library Studio artifact reader.
 - [x] Show honest preflight, proof, receipt, and template states in a locked nine-step wizard with visible gates and an explicit Finish handoff.
-- [x] Add the synthetic `factory-fault` template with human-readable rules, an illustrative MeTTa lesson scaffold, and positive/negative fixtures.
+- [x] Add the synthetic `community-care` template with human-readable rules, an illustrative MeTTa lesson scaffold, and positive/negative fixtures.
 - [x] Add safe CLI and browser-assisted copying into private local workspaces.
 - [x] Add English installation, architecture, security, future-scope, and three-minute demo documentation.
 - [x] Add local preflight, start, and SSH-tunnel instruction helpers.
-- [x] Add the real-runtime `factory-fault` proof and local receipt.
+- [x] Add the real-runtime `community-care` proof and local receipt.
 - [x] Add a bounded local STDIO MCP bridge with only `omega.reason` and `omega.get_receipt`.
 - [x] Document agent-facing inputs, outputs, and safe MCP usage.
-- [x] Validate the complete installation and ARM64 factory-fault proof on an approved Oracle VPS without changing existing apps.
+- [x] Validate the complete installation and ARM64 community-care proof on an approved Oracle VPS without changing existing apps.
 - [ ] Record and publish the Studio three-minute demo.
 
 ## Studio v1.1 — Feynman experience redesign
@@ -47,7 +47,7 @@
 - [x] Rewrite every Wizard screen using the plain-language-first rules in `STUDIO_V2_FEYNMAN_JOURNEY.md`.
 - [x] Label every command with its execution location: user computer, VPS, or proof container.
 - [x] Replace click-only navigation with evidence-backed blockers and one explicit missing action.
-- [x] Rebuild the factory-fault lesson as a visible facts → human rule → real Omega path → safe result → limitations → receipt story.
+- [x] Rebuild the community-care lesson as a visible facts → human rule → real Omega path → safe result → limitations → receipt story.
 - [x] Add a real Finish destination that summarizes installation, proof, workspace, MCP state, one safe next prompt, and unavailable capabilities.
 - [ ] Design a fixed allowlisted action runner before adding any real `Run` button; never expose arbitrary shell or unrestricted Docker authority.
 - [x] Add the closed `Agent Disagreement — Release Readiness` teaching packet with deterministic tests.

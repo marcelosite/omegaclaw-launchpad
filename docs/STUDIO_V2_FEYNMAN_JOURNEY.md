@@ -42,7 +42,7 @@ In Launchpad:
 
 A fever and a cough may justify a medical examination. They do not prove a specific disease and do not authorize surgery.
 
-The factory-fault lesson uses the same distinction. A fictional high-temperature signal and a fictional high-vibration signal may derive `manual_inspection_recommended`. That means “a human should inspect this fictional machine.” It does not mean “the machine is broken,” “we found the cause,” or “stop the machine.”
+The community-care lesson uses the same distinction. A fictional high-temperature signal and a fictional high-vibration signal may derive `human_review_required`. That means “a human should inspect this fictional machine.” It does not mean “the machine is broken,” “we found the cause,” or “stop the machine.”
 
 ### The locked workshop
 
@@ -64,7 +64,7 @@ The product must distinguish three stages instead of presenting them as one fini
 
 - a no-key, real OmegaClaw `Test`/WebSocket/MeTTa/NAL proof;
 - readable proof artifacts and Markdown receipts;
-- a fully synthetic factory-fault teaching lesson;
+- a fully synthetic community-care teaching lesson;
 - copied local workspaces;
 - a bounded local STDIO MCP bridge with only `omega.reason` and `omega.get_receipt`;
 - an MCP answer limited to the already verified teaching workspace plus a bounded local consultation packet.
@@ -164,7 +164,7 @@ Then reveal the technical labels:
 - `NAL` — a reasoning system that can represent evidence strength;
 - `STV` — the numeric truth-strength/confidence pair returned by the reasoning step.
 
-The factory-fault diagram must show every boundary:
+The community-care diagram must show every boundary:
 
 ```text
 FICTIONAL OBSERVATIONS
@@ -178,7 +178,7 @@ REAL OMEGACLAW PATH
   Test agent → WebSocket → MeTTa skill → NAL/STV
           ↓
 SAFE RESULT
-  manual inspection recommended
+  human review required
           ↓
 NOT PROVEN
   no diagnosis, no cause, no validated sensor, no machine action
@@ -280,7 +280,7 @@ A real `Run` button is possible, but the dashboard must never become a general s
 The safe design is a small action runner with fixed action IDs, for example:
 
 - `studio.preflight`;
-- `proof.factory_fault`;
+- `proof.community_care`;
 - `workspace.test`;
 - `mcp.connection_test`.
 

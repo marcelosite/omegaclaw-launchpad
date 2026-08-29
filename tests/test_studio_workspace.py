@@ -11,12 +11,12 @@ from launchpad.studio_workspace import create_workspace, validate_workspace_slug
 
 
 class StudioWorkspaceTests(unittest.TestCase):
-    def test_factory_fault_copy_uses_fixed_local_destination_and_preserves_template(self):
-        source = resolve_template("factory-fault")
+    def test_community_care_copy_uses_fixed_local_destination_and_preserves_template(self):
+        source = resolve_template("community-care")
         original_facts = (source / "facts.json").read_text(encoding="utf-8")
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
-            destination = create_workspace(root, "my-case", "factory-fault")
+            destination = create_workspace(root, "my-case", "community-care")
 
             self.assertEqual(destination, root.resolve() / ".launchpad" / "studio" / "workspaces" / "my-case")
             self.assertTrue((destination / "facts.json").is_file())
@@ -25,13 +25,13 @@ class StudioWorkspaceTests(unittest.TestCase):
             self.assertTrue((destination / "tests.json").is_file())
             self.assertTrue((destination / "example-receipt.md").is_file())
             self.assertEqual((source / "facts.json").read_text(encoding="utf-8"), original_facts)
-            self.assertEqual(json.loads((destination / "workspace.json").read_text())["template"], "factory-fault")
+            self.assertEqual(json.loads((destination / "workspace.json").read_text())["template"], "community-care")
 
     def test_cli_copies_the_only_approved_template(self):
         with tempfile.TemporaryDirectory() as directory:
             output = io.StringIO()
             with contextlib.redirect_stdout(output):
-                result = main(["studio", "new", "my-case", "--template", "factory-fault", "--workspace", directory])
+                result = main(["studio", "new", "my-case", "--template", "community-care", "--workspace", directory])
             self.assertEqual(result, 0)
             self.assertIn("Studio workspace created", output.getvalue())
             self.assertTrue(Path(directory, ".launchpad", "studio", "workspaces", "my-case", "README.md").exists())
@@ -58,11 +58,11 @@ class StudioWorkspaceTests(unittest.TestCase):
     def test_existing_workspace_is_never_overwritten(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
-            destination = create_workspace(root, "my-case", "factory-fault")
+            destination = create_workspace(root, "my-case", "community-care")
             marker = destination / "user-note.txt"
             marker.write_text("keep", encoding="utf-8")
             with self.assertRaises(FileExistsError):
-                create_workspace(root, "my-case", "factory-fault")
+                create_workspace(root, "my-case", "community-care")
             self.assertEqual(marker.read_text(encoding="utf-8"), "keep")
 
     def test_workspace_root_rejects_symbolic_links(self):
@@ -70,15 +70,15 @@ class StudioWorkspaceTests(unittest.TestCase):
             root = Path(directory)
             (root / ".launchpad").symlink_to(Path(target), target_is_directory=True)
             with self.assertRaises(ValueError):
-                create_workspace(root, "my-case", "factory-fault")
+                create_workspace(root, "my-case", "community-care")
 
     def test_fixture_has_a_positive_and_negative_case_and_no_diagnostic_conclusion(self):
-        source = resolve_template("factory-fault")
+        source = resolve_template("community-care")
         fixture = json.loads((source / "tests.json").read_text(encoding="utf-8"))
         conclusions = {case["expected_conclusion"] for case in fixture["cases"]}
-        self.assertEqual(conclusions, {"manual_inspection_recommended", None})
-        self.assertIn("manual_inspection_recommended", (source / "rules.metta").read_text(encoding="utf-8"))
-        self.assertIn("not execute", (source / "rules.metta").read_text(encoding="utf-8").lower())
+        self.assertEqual(conclusions, {"human_review_required", None})
+        self.assertIn("human_review_required", (source / "rules.metta").read_text(encoding="utf-8"))
+        self.assertIn("illustrative", (source / "rules.metta").read_text(encoding="utf-8").lower())
         self.assertIn("synthetic", (source / "README.md").read_text(encoding="utf-8").lower())
         self.assertIn("fixture", (source / "example-receipt.md").read_text(encoding="utf-8").lower())
 

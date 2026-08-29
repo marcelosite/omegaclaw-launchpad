@@ -45,14 +45,14 @@ The proof runner verifies the upstream commit before patching and refuses unexpe
 
 The controlled Test provider supplies a deterministic tool-use sequence. Therefore this demonstrates real OmegaClaw integration and real NAL execution, not independent intelligence or autonomous self-improvement. The mismatch itself is established by deterministic event validation before OmegaClaw receives the facts.
 
-## Factory-fault Studio lesson
+## Community Hospital Studio lesson
 
 The Studio lesson has its own real-runtime harness. It uses the same pinned
 OmegaClaw-Core checkout and controlled `Test`/WebSocket path, but sends only
-fictional factory-fault facts. Reproduce it locally with:
+fictional community-care facts. Reproduce it locally with:
 
 ```bash
-scripts/run-factory-fault-proof.sh
+scripts/run-community-care-proof.sh
 ```
 
 The harness passed 7/7 checks on Apple Silicon: connection, Test provider,
@@ -60,14 +60,14 @@ controlled response, WebSocket delivery, real `metta` invocation, NAL/STV in
 the next loop context, and the returned response. It writes:
 
 ```text
-.launchpad/studio/runs/factory-fault/omega-proof.json
-.launchpad/studio/runs/factory-fault/receipt.md
+.launchpad/studio/runs/community-care/omega-proof.json
+.launchpad/studio/runs/community-care/receipt.md
 ```
 
 The proof marks `synthetic_only: true` and keeps
 `human_approval_still_required: true`. Its conclusion
-`manual_inspection_recommended` is a lesson result only; it is not an
-equipment diagnosis, causal finding, external-data validation, or action
+`human_review_required` is a lesson result only; it is not medical advice,
+a diagnosis, causal finding, external-data validation, or action
 authorization. The template's `rules.metta` remains an **Illustrative MeTTa
 lesson** scaffold; the proof verifies the real runtime path and the explicit
 controlled expression used by the harness, not a production rulebook.

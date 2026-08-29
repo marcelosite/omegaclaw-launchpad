@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Synthetic Community Hospital facts",
+  "type": "object",
+  "required": ["fixture", "case_id", "facts", "agent_claims", "forbidden_actions"],
+  "properties": {
+    "fixture": {"const": true},
+    "case_id": {"const": "community-care-first-review"},
+    "facts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+          "required": ["predicate", "value", "source"],
+        "properties": {
+          "predicate": {"enum": ["triage_capacity", "patient_consent"]},
+          "value": {"enum": ["observed", "missing", "unknown"]},
+          "source": {"const": "synthetic-fixture"}
+        },
+        "additionalProperties": false
+      }
+    },
+    "agent_claims": {"type": "array"},
+    "forbidden_actions": {"type": "array", "items": {"type": "string"}}
+  },
+  "additionalProperties": false
+}

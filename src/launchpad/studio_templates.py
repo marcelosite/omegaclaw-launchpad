@@ -17,7 +17,7 @@ def repository_root() -> Path:
 
 def approved_templates() -> Dict[str, Path]:
     """Return the immutable allowlist of templates that Studio may copy."""
-    return {"factory-fault": repository_root() / "templates" / "factory-fault"}
+    return {"community-care": repository_root() / "templates" / "community-care"}
 
 
 def resolve_template(template_name: str) -> Path:

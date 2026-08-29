@@ -2,7 +2,7 @@
 
 ## Short description
 
-OmegaClaw Launchpad Studio is a self-hosted, no-key onboarding lab for people who want to understand and try OmegaClaw safely. Its guided Wizard explains the path from recorded facts and human rules to a real OmegaClaw v0.1.19 WebSocket/Test-provider proof, MeTTa/NAL observations, a human approval gate, and a readable receipt. It then offers a fully fictional factory-fault lesson, a local workspace copy, and a deliberately bounded MCP bridge with only `omega.reason` and `omega.get_receipt`.
+OmegaClaw Launchpad Studio is a self-hosted, no-key onboarding lab for people who want to understand and try OmegaClaw safely. Its guided Wizard explains the path from recorded facts and human rules to a real OmegaClaw v0.1.19 WebSocket/Test-provider proof, MeTTa/NAL observations, a human approval gate, and a readable receipt. It then offers a fully fictional community-care lesson, a local workspace copy, and a deliberately bounded MCP bridge with only `omega.reason` and `omega.get_receipt`.
 
 ## Track 2 contribution
 
@@ -12,8 +12,8 @@ The project lowers the learning curve through small, verifiable steps. A newcome
 
 - A real pinned OmegaClaw-Core v0.1.19 loop with WebSocket, deterministic Test provider, MeTTa skill invocation, and NAL/STV observation.
 - A readable chain: fictional facts → human-written rule → executable lesson → result → receipt.
-- A synthetic teaching case that recommends manual inspection without claiming a real fault or cause.
-- A closed release-readiness Conflict Packet that demonstrates auditable disagreement handling without deploying, merging, or approving a release.
+- A synthetic Community Hospital teaching case that recommends human review without providing medical advice or claiming a diagnosis.
+- A closed Community Hospital first-review Conflict Packet that demonstrates auditable disagreement handling without changing a record or denying care.
 - Local files, deterministic tests, loopback-only Studio, and no paid LLM/API key.
 
 ## Links
@@ -23,4 +23,3 @@ The project lowers the learning curve through small, verifiable steps. A newcome
 - Public submissions: https://bgicommons.org/teams/55/submissions
 - Proof: https://github.com/marcelosite/omegaclaw-launchpad/blob/main/docs/PROOF.md
 - Studio guide: https://github.com/marcelosite/omegaclaw-launchpad/blob/main/docs/STUDIO.md
-

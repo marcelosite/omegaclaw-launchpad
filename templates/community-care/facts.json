@@ -1,0 +1,29 @@
+{
+  "fixture": true,
+  "case_id": "community-care-first-review",
+  "facts": [
+    {
+      "predicate": "triage_capacity",
+      "value": "observed",
+      "source": "fictional-fixture"
+    },
+    {
+      "predicate": "patient_consent",
+      "value": "missing",
+      "source": "fictional-fixture"
+    }
+  ],
+  "agent_claims": [
+    {
+      "agent_id": "triage-agent",
+      "position": "route_to_clinic",
+      "evidence_ids": ["triage-note"]
+    },
+    {
+      "agent_id": "records-agent",
+      "position": "request_more_information",
+      "evidence_ids": ["consent-missing"]
+    }
+  ],
+  "forbidden_actions": ["send_message", "change_record", "deny_care"]
+}
