@@ -69,6 +69,28 @@ class StudioArtifactTests(unittest.TestCase):
             (studio_dir / "preflight.json").write_text(json.dumps({"checks": [{"ok": True}]}))
             self.assertEqual(reader.status()["preflight"]["state"], "ready")
 
+    def test_factory_proof_requires_its_receipt(self):
+        with tempfile.TemporaryDirectory() as directory:
+            workspace = Path(directory)
+            run_root = workspace / ".launchpad" / "studio" / "runs" / "factory-fault"
+            run_root.mkdir(parents=True)
+            payload = {
+                "status": "verified",
+                "provider": "Test",
+                "channel": "websocket",
+                "template": "factory-fault",
+                "synthetic_only": True,
+                "conclusion": "manual_inspection_recommended",
+                "metta_skill_observed": True,
+                "nal_stv_observed_in_loop": True,
+                "human_approval_still_required": True,
+            }
+            (run_root / "omega-proof.json").write_text(json.dumps(payload), encoding="utf-8")
+            reader = StudioArtifacts(workspace)
+            self.assertEqual(reader.status()["factory_fault"]["state"], "pending")
+            (run_root / "receipt.md").write_text("# Receipt", encoding="utf-8")
+            self.assertEqual(reader.status()["factory_fault"]["state"], "verified")
+
     def test_artifact_content_is_returned_as_data_not_html(self):
         with tempfile.TemporaryDirectory() as directory:
             workspace = Path(directory)

@@ -212,8 +212,9 @@ class StudioArtifacts:
     def _factory_state(self) -> Dict[str, Any]:
         try:
             self.artifact("factory-proof")
+            self.artifact("factory-receipt")
         except ArtifactNotFound:
-            return {"state": "pending", "detail": "Run the real factory-fault proof to unlock the Codex handoff."}
+            return {"state": "pending", "detail": "Run the real factory-fault proof and keep its receipt to unlock the Codex handoff."}
         payload = _read_json(self._path_for("factory-proof"))
         requirements = {
             "status": "verified",

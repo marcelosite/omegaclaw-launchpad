@@ -46,6 +46,11 @@ class StudioServerTests(unittest.TestCase):
         self.assertIn("if(n<active)show(n)", page)
         self.assertIn("codex mcp add omegaclaw-launchpad", page)
         self.assertNotIn("Reviewed MeTTa", page)
+        self.assertIn("data-place-label", page)
+        self.assertIn("cannot prove who ran the command", page)
+        self.assertIn("This page does not run them", page)
+        self.assertIn("Studio does not connect my agent", page)
+        self.assertIn("Fictional facts → human rule → real OmegaClaw", page)
 
     def test_workspace_slug_disallows_paths_and_uppercase(self):
         self.assertIsNotNone(WORKSPACE_SLUG.fullmatch("my-case-2"))
