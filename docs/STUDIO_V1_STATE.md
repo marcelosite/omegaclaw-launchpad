@@ -105,4 +105,4 @@ The full product direction is in `docs/STUDIO_V2_FEYNMAN_JOURNEY.md`.
 - connecting Codex, Claude Code, or other agents to a new real workspace;
 - MiniMax/ASICloud compatibility work or credentials;
 - domain, TLS, authentication, reverse proxy, public firewall, or public exposure;
-- public sprint-page editing (the portal is currently unauthenticated in the available browser session).
+- public sprint-page editing is complete: the authenticated BGI Commons submission now presents the Studio scope, GitHub repository, Studio guide, and real-proof links.
