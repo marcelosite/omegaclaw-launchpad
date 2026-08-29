@@ -51,6 +51,9 @@ class StudioServerTests(unittest.TestCase):
         self.assertIn("This page does not run them", page)
         self.assertIn("Studio does not connect my agent", page)
         self.assertIn("Fictional facts → human rule → real OmegaClaw", page)
+        self.assertIn("/api/workspaces/", page)
+        self.assertIn("Open my workspace tests", page)
+        self.assertIn("Open the report", page)
 
     def test_workspace_slug_disallows_paths_and_uppercase(self):
         self.assertIsNotNone(WORKSPACE_SLUG.fullmatch("my-case-2"))

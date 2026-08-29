@@ -91,6 +91,19 @@ class StudioArtifactTests(unittest.TestCase):
             (run_root / "receipt.md").write_text("# Receipt", encoding="utf-8")
             self.assertEqual(reader.status()["factory_fault"]["state"], "verified")
 
+    def test_workspace_tests_are_read_by_logical_id_only(self):
+        with tempfile.TemporaryDirectory() as directory:
+            workspace = Path(directory)
+            tests_root = workspace / ".launchpad" / "studio" / "workspaces" / "my-case"
+            tests_root.mkdir(parents=True)
+            (tests_root / "tests.json").write_text("{\"cases\": []}", encoding="utf-8")
+            reader = StudioArtifacts(workspace)
+            result = reader.workspace_tests("my-case")
+            self.assertEqual(result["workspace_id"], "my-case")
+            self.assertEqual(result["content"], "{\"cases\": []}")
+            with self.assertRaises(ArtifactNotFound):
+                reader.workspace_tests("../outside")
+
     def test_artifact_content_is_returned_as_data_not_html(self):
         with tempfile.TemporaryDirectory() as directory:
             workspace = Path(directory)

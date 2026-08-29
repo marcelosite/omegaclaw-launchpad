@@ -8,6 +8,7 @@ general local file browser.
 from __future__ import annotations
 
 import json
+import re
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Dict, List, Mapping, Optional
@@ -18,6 +19,8 @@ from ..reflection import DEFAULT_MISSION_ID
 
 MAX_ARTIFACT_BYTES = 512 * 1024
 """Avoid turning the dashboard into a way to serve unexpectedly large files."""
+
+WORKSPACE_ID = re.compile(r"[a-z0-9][a-z0-9-]{0,62}\Z")
 
 
 @dataclass(frozen=True)
@@ -143,6 +146,24 @@ class StudioArtifacts:
         return {
             "name": logical_name,
             "content_type": ARTIFACT_SPECS[logical_name].content_type,
+            "content": content,
+        }
+
+    def workspace_tests(self, workspace_id: str) -> Dict[str, str]:
+        """Return only the copied workspace's fixed tests file by logical ID."""
+        if not isinstance(workspace_id, str) or WORKSPACE_ID.fullmatch(workspace_id) is None:
+            raise ArtifactNotFound("workspace tests are not available")
+        root = self.workspace / ".launchpad" / "studio" / "workspaces"
+        candidate = root / workspace_id / "tests.json"
+        path = self._safe_existing_file(candidate, root)
+        try:
+            content = path.read_text(encoding="utf-8")
+        except (OSError, UnicodeDecodeError) as error:
+            raise ArtifactNotFound("workspace tests are not available") from error
+        return {
+            "name": "workspace-tests",
+            "workspace_id": workspace_id,
+            "content_type": "application/json",
             "content": content,
         }
 
