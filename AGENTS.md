@@ -35,10 +35,10 @@ The `factory-fault` template contains fictional facts, a human-readable `rules.m
 
 Start the local bridge with `scripts/studio-mcp.sh`. It is newline-delimited JSON-RPC over STDIO and exposes exactly two tools:
 
-- `omega.reason({"workspace_id":"factory-fault","question":"..."})` consults the verified synthetic lesson and writes a receipt before returning.
+- `omega.reason({"workspace_id":"factory-fault","question":"..."})` consults the verified synthetic lesson and writes a receipt before returning. It also accepts one closed `release-readiness-demo` Conflict Packet documented in `docs/AGENT_GUIDE.md`; that local deterministic teaching test returns `human_review_required`, records a decision trace, and does not re-run OmegaClaw or validate external claims.
 - `omega.get_receipt({"receipt_id":"mcp-<32-hex>"})` returns one receipt created by the first tool.
 
-The bridge does not run a provider, call OmegaClaw again, execute shell commands, read arbitrary files, invoke connectors, or authorize an external action. A useful response always carries `synthetic_only: true` and `human_approval_required: true`.
+The bridge does not run a provider, call OmegaClaw again, execute shell commands, read arbitrary files, invoke connectors, or authorize an external action. A useful response always carries `synthetic_only: true` and `human_approval_required: true`. The closed teaching packet is not arbitrary multi-agent dispute support; do not describe it as such.
 
 Use the MCP bridge as an audit-friendly consultation surface, not as a general agent executor. If a requested task needs external data, credentials, a connector, a channel, or a machine action, stop and ask the human for a separate design and approval.
 

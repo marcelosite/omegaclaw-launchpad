@@ -10,7 +10,7 @@ Built for **BGI Commons HyperSprint #1 — Track 2: Onboarding OmegaClaw**.
 
 ## Launchpad Studio — First Proof
 
-Launchpad Studio is the P0 self-hosted learning interface for the same evidence and proof contracts. It runs only on `127.0.0.1:8765`, is opened through an SSH tunnel, and reads real First Reflection artifacts without controlling Docker or fabricating an OmegaClaw result.
+Launchpad Studio is the self-hosted learning interface for the same evidence and proof contracts. Its nine-step, plain-language Wizard uses the referee story to guide a newcomer from a safe preflight to a real proof, a synthetic lesson, a local workspace, and a bounded MCP handoff. It runs only on `127.0.0.1:8765`, is opened through an SSH tunnel, and reads real artifacts without controlling Docker or fabricating an OmegaClaw result.
 
 The P0 also includes a deliberately synthetic `factory-fault` tutorial that can be copied into a private local workspace:
 
@@ -27,7 +27,7 @@ scripts/run-factory-fault-proof.sh
 scripts/studio-mcp.sh
 ```
 
-The local STDIO bridge exposes only `omega.reason` and `omega.get_receipt`. It records local receipts and cannot run shell commands, providers, connectors, or external actions.
+The local STDIO bridge exposes only `omega.reason` and `omega.get_receipt`. It records local receipts and cannot run shell commands, providers, connectors, or external actions. Its first structured disagreement test is a closed release-readiness teaching packet, not arbitrary multi-agent arbitration. See the [sprint summary](docs/SPRINT_SUMMARY.md) for the concise product description.
 
 ## The simple idea
 

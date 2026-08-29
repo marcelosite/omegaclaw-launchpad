@@ -67,7 +67,7 @@ The transport is JSON-RPC 2.0 over newline-delimited STDIO. Initialization and t
 
 ### `omega.reason`
 
-Input:
+Minimum input:
 
 ```json
 {"workspace_id":"factory-fault","question":"What does this synthetic lesson conclude?"}
@@ -87,6 +87,32 @@ The workspace ID is `factory-fault` or a lowercase slug for an existing copied S
 
 The bridge persists the receipt before returning. It does not re-run OmegaClaw and does not infer a new conclusion from arbitrary text.
 
+### First structured disagreement test
+
+The same `omega.reason` tool accepts one deliberately closed **Conflict Packet** (a small, named envelope for recorded disagreement). It is a teaching test for release readiness, not a general way to submit arbitrary multi-agent debates. Run it **on the computer or VPS that holds the repository**, through the locally configured MCP process:
+
+```json
+{
+  "workspace_id": "factory-fault",
+  "question": "What must a human review before this release?",
+  "conflict_packet": {
+    "case_id": "release-readiness-demo",
+    "rulebook_id": "release-readiness-demo-r1",
+    "claims": [
+      {"agent_id": "build-agent", "position": "release_ready", "evidence_ids": ["unit-tests-2026-08-29"]},
+      {"agent_id": "security-agent", "position": "release_not_ready", "evidence_ids": ["security-check-missing"]}
+    ],
+    "recorded_facts": [
+      {"fact_id": "unit_tests", "status": "passed", "evidence_id": "unit-tests-2026-08-29"},
+      {"fact_id": "required_security_check", "status": "missing", "evidence_id": "security-check-missing"}
+    ],
+    "forbidden_actions": ["deploy", "merge"]
+  }
+}
+```
+
+The returned receipt contains a **decision trace** (the recorded claims and facts, rule, detected conflict, missing information, recommendation, and prohibited actions). It returns `human_review_required`. The packet is deterministic local teaching logic: its IDs and fact vocabulary are fixed, its entries are not externally validated, it does not re-run OmegaClaw, and it cannot deploy, merge, or approve a release.
+
 ### `omega.get_receipt`
 
 Input:
@@ -102,10 +128,11 @@ The ID is an opaque logical ID returned by `omega.reason`. Absolute paths, trave
 1. Ask for the smallest question that can be answered by the published lesson.
 2. Read the returned `basis` and `disclaimer` before summarizing the answer.
 3. Preserve the receipt ID in the human-facing report.
-4. Separate `facts`, `rule`, `runtime_observations`, `inference`, and `human_decision` in any proposed next step.
-5. Stop before external data, credentials, connectors, or actions.
+4. For the fixed Conflict Packet only, show the `decision_trace`, limitations, and receipt ID to the human rather than presenting it as a release decision.
+5. Separate `facts`, `rule`, `runtime_observations`, `inference`, and `human_decision` in any proposed next step.
+6. Stop before external data, credentials, connectors, or actions.
 
-For complex multi-agent systems, use Launchpad as the evidence and governance layer around an agent runtime. Have workers emit bounded observations and declarations, validate them deterministically, let OmegaClaw/MeTTa/NAL process only verified facts, and require a human decision before any change. Do not turn `omega.reason` into an unrestricted router or action tool.
+For complex multi-agent systems, use Launchpad as the evidence and governance layer around an agent runtime. Have workers emit bounded observations and declarations, validate them deterministically, let OmegaClaw/MeTTa/NAL process only verified facts, and require a human decision before any change. Do not turn `omega.reason` into an unrestricted router or action tool. The release-readiness packet above is the first closed teaching test; it is not evidence that v1 supports arbitrary multi-agent disputes.
 
 ## Future robust MCP direction
 

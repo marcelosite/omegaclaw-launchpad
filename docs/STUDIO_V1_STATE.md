@@ -24,10 +24,11 @@ This file is the continuity snapshot for future Codex chats. Read it together wi
 
 ## Verified local state
 
-- Python unit suite: 30 tests passed.
+- Python unit suite: 32 tests passed.
 - Shell syntax checks passed.
 - Apple Silicon factory-fault real proof passed 7/7.
-- Browser Finish flow and MCP handshake were tested locally.
+- Browser QA covered desktop and mobile layout, blocked Next steps, logical workspace copying, Finish handoff, and MCP command guidance.
+- MCP handshake and the closed release-readiness Conflict Packet were tested locally.
 - The untracked local `tmp/` directory belongs to the human and must remain untouched.
 
 ## Git state at this snapshot
@@ -81,22 +82,21 @@ ssh -N -L 8876:127.0.0.1:8765 oracle-fabrica
 
 - `factory_fault` is verified on the VPS.
 - The separate First Reflection proof artifact is still pending on the VPS.
-- The current MCP can consult the verified teaching lesson. It cannot yet accept arbitrary claims from several agents or run a new real-world decision.
+- The current MCP can consult the verified teaching lesson and accept only the fixed release-readiness teaching packet. It cannot accept arbitrary claims from several agents or run a new real-world decision.
 - The Studio process is held by tmux and is not configured to restart after a VPS reboot.
 
 ## Current human feedback
 
-The v1 dashboard is technically correct but not understandable enough for a newcomer. The human owner rejected the current level of technical language and the weak explanation of the factory example. The next UI must use the Feynman method, parables, explicit command locations, evidence-backed Next blockers, a real Finish destination, and a guided path from first proof to one connected agent and eventually to multi-agent disagreement consultation.
+The Studio UI now uses the approved Feynman method: referee story, plain-language definitions, explicit command locations, evidence-backed Next blockers, a meaningful Finish destination, and a guided path from first proof to one connected agent. The factory-fault lesson remains explicitly synthetic and illustrative. The fixed release-readiness packet is a first teaching test, not general arbitration.
 
 The full product direction is in `docs/STUDIO_V2_FEYNMAN_JOURNEY.md`.
 
 ## Actions requiring a new explicit human decision
 
-- implementation of the redesigned dashboard;
 - adding a fixed web action runner;
 - running the separate First Reflection proof on the VPS;
 - configuring automatic restart/systemd;
-- changing the MCP contract;
+- extending the bounded MCP contract beyond the fixed release-readiness teaching packet;
 - connecting Codex, Claude Code, or other agents to a new real workspace;
 - MiniMax/ASICloud compatibility work or credentials;
 - domain, TLS, authentication, reverse proxy, public firewall, or public exposure;

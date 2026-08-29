@@ -6,7 +6,7 @@
 
 ## One-line proposition
 
-An open-source onboarding layer that lets a newcomer observe real OmegaClaw MeTTa/NAL reasoning, understand its evidence, and continue into a safe local Studio workspace.
+A self-hosted, no-key onboarding lab that lets a newcomer understand and verify the real OmegaClaw reasoning path, then hand a bounded receipt to an agent through MCP.
 
 ## Problem
 
@@ -16,7 +16,7 @@ OmegaClaw introduces several powerful ideas at once: a MeTTa agent loop, Hyperon
 
 OmegaClaw Launchpad turns the learning curve into small, verifiable missions. Its first working module, First Reflection, begins with one concrete failure: an agent declares three sources, while its event record shows one. Launchpad records the mission, proves the mismatch with deterministic code, sends only the verified facts into a pinned real OmegaClaw runtime, observes a real MeTTa/NAL call, asks a human to approve or reject the proposal, reruns the controlled fixture, and writes a before/after receipt.
 
-Launchpad Studio extends that path for a nontechnical user: it runs a loopback-only dashboard, explains the evidence chain, offers the synthetic `factory-fault` lesson, copies a readable workspace, and provides a bounded local MCP handoff with only `omega.reason` and `omega.get_receipt`.
+Launchpad Studio extends that path for a nontechnical user: its human-first Wizard explains the referee story in plain language, blocks each Next step until the required evidence exists, labels where every command runs, offers the synthetic `factory-fault` lesson, copies a readable workspace, and provides a bounded local MCP handoff with only `omega.reason` and `omega.get_receipt`. The MCP also includes one closed release-readiness teaching packet so an agent can submit a structured disagreement without turning the bridge into an unrestricted multi-agent service.
 
 ## What shipped
 
@@ -27,9 +27,9 @@ Launchpad Studio extends that path for a nontechnical user: it runs a loopback-o
 - A pinned WebSocket/Test-provider harness for OmegaClaw-Core `v0.1.19`.
 - A test that requires a real `metta` skill call and NAL `stv` in the loop.
 - Documentation, tests, demo script, and future adapter boundary.
-- Launchpad Studio six-step local Wizard with Finish handoff.
+- Launchpad Studio human-first Wizard with evidence blockers, explicit command locations, Finish handoff, and MCP setup guidance.
 - Real pinned-runtime factory-fault lesson proof using Test/WebSocket/MeTTa/NAL.
-- Local STDIO MCP bridge with logical receipts and no external actions.
+- Local STDIO MCP bridge with logical receipts, one closed Conflict Packet teaching test, and no external actions.
 
 ## Why OmegaClaw is central
 

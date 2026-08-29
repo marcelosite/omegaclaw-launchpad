@@ -94,7 +94,7 @@ After the factory-fault proof is verified, run the bounded bridge from the repos
 scripts/studio-mcp.sh
 ```
 
-Register that local STDIO command in Codex only after reviewing the project-local configuration. It exposes exactly `omega.reason` and `omega.get_receipt`. `omega.reason` consults the verified synthetic lesson and writes a local receipt; it does not run a provider, shell command, connector, or external action. `omega.get_receipt` accepts only a logical receipt ID returned by the first tool. No absolute workspace path is returned by the API.
+Register that local STDIO command in Codex only after reviewing the project-local configuration. It exposes exactly `omega.reason` and `omega.get_receipt`. `omega.reason` consults the verified synthetic lesson and writes a local receipt; it does not run a provider, shell command, connector, or external action. It also has one fixed release-readiness teaching packet: two recorded positions, a passed unit-test record, a missing security-check record, and a `human_review_required` receipt. That packet is deterministic local teaching logic, not an externally validated or newly executed OmegaClaw decision. `omega.get_receipt` accepts only a logical receipt ID returned by the first tool. No absolute workspace path is returned by the API. See [the agent guide](AGENT_GUIDE.md#first-structured-disagreement-test) for the copyable packet.
 
 ## Graduate to Real Omega
 

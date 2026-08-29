@@ -18,22 +18,27 @@ class StudioServerTests(unittest.TestCase):
             require_loopback("0.0.0.0")
         self.assertEqual(PORT, 8765)
 
-    def test_page_has_six_wizard_screens_and_safe_artifact_rendering(self):
+    def test_page_has_nine_wizard_screens_and_safe_artifact_rendering(self):
         page = _page()
-        self.assertEqual(page.count('class="screen'), 6)
+        self.assertEqual(page.count('class="screen'), 9)
         self.assertIn("textContent", page)
         self.assertNotIn("innerHTML", page)
         self.assertIn("/api/templates/factory-fault/copy", page)
         self.assertIn('id="wizard-back"', page)
         self.assertIn('id="wizard-next"', page)
-        self.assertIn("function showScreen(index)", page)
+        self.assertIn("function show(index)", page)
         self.assertIn("Illustrative MeTTa lesson", page)
-        self.assertIn("Graduate to Real Omega", page)
+        self.assertIn("MCP", page)
         self.assertIn("Finish", page)
-        self.assertIn("factory-proof", page)
         self.assertIn("omega.reason", page)
         self.assertIn("omega.get_receipt", page)
         self.assertIn("Create my workspace", page)
+        self.assertIn("Blocked:", page)
+        self.assertIn("ack-boundary", page)
+        self.assertIn("ack-synthetic", page)
+        self.assertIn("ack-connect", page)
+        self.assertIn("ack-policy", page)
+        self.assertIn("codex mcp add omegaclaw-launchpad", page)
         self.assertNotIn("Reviewed MeTTa", page)
 
     def test_workspace_slug_disallows_paths_and_uppercase(self):

@@ -85,7 +85,7 @@ The browser should display content only after HTML escaping. Markdown is present
 
 The template-copy API returns only the validated logical workspace ID, for example `{"workspace_id":"my-case"}`. It never returns the server's absolute workspace path. The server resolves that ID internally beneath the fixed workspace root.
 
-The MCP bridge accepts only the logical workspace and receipt IDs described in its contract. It does not expose a filesystem path. `omega.reason` consults the verified synthetic factory-fault proof and persists a receipt before returning; `omega.get_receipt` reads only receipts created by that bridge.
+The MCP bridge accepts only the logical workspace and receipt IDs described in its contract. It does not expose a filesystem path. `omega.reason` consults the verified synthetic factory-fault proof and persists a receipt before returning; it also accepts one closed `release-readiness-demo` Conflict Packet and deterministically records `human_review_required` when its fixed disagreement and missing-check inputs validate. The packet does not run OmegaClaw again, validate outside data, or authorize a release action. `omega.get_receipt` reads only receipts created by that bridge.
 
 ## Status semantics
 
