@@ -44,8 +44,10 @@ if [[ "${MODE}" == "background" ]]; then
   mkdir -p "${RUNTIME_DIR}"
 
   studio_healthy() {
-    curl --fail --silent --show-error --max-time 2 http://127.0.0.1:8765/api/status \
-      | python3 -c 'import json, sys; d=json.load(sys.stdin); raise SystemExit(0 if all(d.get(k, {}).get("state") in {"ready", "verified"} for k in ("preflight", "lighthouse", "example", "mcp")) else 1)'
+    local status_json
+    status_json="$(curl --fail --silent --max-time 2 http://127.0.0.1:8765/api/status 2>/dev/null)" || return 1
+    printf '%s' "${status_json}" \
+      | python3 -c 'import json, sys; d=json.load(sys.stdin); raise SystemExit(0 if all(d.get(k, {}).get("state") in {"ready", "verified"} for k in ("preflight", "lighthouse", "example", "mcp")) else 1)' 2>/dev/null
   }
 
   if studio_healthy; then
