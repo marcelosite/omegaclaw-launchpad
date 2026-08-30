@@ -15,6 +15,10 @@ It is not an autonomous action platform. OmegaClaw can reason and return a recom
 
 ## Fast path
 
+Codex starts with [`AGENTS.md`](AGENTS.md). Claude Code starts with
+[`CLAUDE.md`](CLAUDE.md). Both guides lead to the same verified and
+human-supervised workflow.
+
 Run these commands **on the user's computer or private VPS, from this repository root**:
 
 ```sh

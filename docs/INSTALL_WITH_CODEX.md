@@ -1,6 +1,10 @@
 # Install with a coding agent
 
-Point Codex or Claude Code at this repository. Ask it to read `AGENTS.md`, `docs/AGENT_GUIDE.md`, and `examples/lighthouse-in-the-fog/AGENTS.md`.
+Point Codex or Claude Code at this repository. Codex reads `AGENTS.md`; Claude
+Code reads `CLAUDE.md`, which delegates to the same canonical rules. Both
+agents should also read `docs/AGENT_GUIDE.md`. Before adapting the example,
+Codex reads `examples/lighthouse-in-the-fog/AGENTS.md` and Claude Code reads
+`examples/lighthouse-in-the-fog/CLAUDE.md`.
 
 Run **on the user's computer or private VPS, from the repository root**:
 

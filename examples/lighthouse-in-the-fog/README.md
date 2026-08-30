@@ -36,7 +36,8 @@ No LLM key is required.
 - `reasoning.metta` — the exact teaching expressions.
 - `tests.json` — conflict, verified-update, missing-fact, and GIGO cases.
 - `example-receipt.md` — a fixture, never runtime evidence.
-- `AGENTS.md` — instructions for a coding agent adapting a private copy.
+- `AGENTS.md` — instructions for Codex and compatible coding agents.
+- `CLAUDE.md` — the Claude Code entry point for the same safe contract.
 
 ## Honest boundary
 
