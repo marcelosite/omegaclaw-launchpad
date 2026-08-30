@@ -27,6 +27,11 @@ scripts/launchpad-start.sh
 
 The launcher runs the host preflight, validates the example, runs the real Docker proof, verifies its receipt, and only then opens the loopback Studio at `http://127.0.0.1:8765`. The story-first Wizard has eight short moments: Intro → Input → Memory → Verify → Reason → Explain → Understand → Play. Each lesson keeps the story on the left and the matching OmegaClaw part on the right.
 
+For a private VPS, run `scripts/launchpad-start.sh --background` in the VPS
+terminal. Then, on the user's computer, run
+`ssh -N -L 8876:127.0.0.1:8765 <your-vps-ssh-target>` and open
+`http://127.0.0.1:8876`. The VPS stays loopback-only.
+
 To validate or copy the only approved example without Docker:
 
 ```sh

@@ -10,6 +10,12 @@ scripts/launchpad-start.sh
 
 That command runs `scripts/studio-doctor.sh`, validates `examples/lighthouse-in-the-fog/`, runs `scripts/run-lighthouse-proof.sh`, checks the evidence contract, and opens `http://127.0.0.1:8765`. The browser never receives Docker access and never creates a proof.
 
+For a private VPS, run `scripts/launchpad-start.sh --background` in the VPS
+terminal. Then run `scripts/studio-open.sh <your-vps-ssh-target>` in a terminal
+on the user's computer and open the printed local URL (normally
+`http://127.0.0.1:8876`). The tunnel is created on the user's computer; the
+VPS remains loopback-only.
+
 ## Eight-moment story journey
 
 The linear Wizard begins with the story, then keeps the plain-English scene on the left and the matching OmegaClaw part on the right. It uses one idea and one primary action per screen:

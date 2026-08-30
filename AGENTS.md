@@ -48,6 +48,12 @@ Codex, Claude Code, or another agent may inspect and propose edits to a copied w
 
 Do not access GitHub, Oracle, remote SSH, domains, firewalls, or MiniMax while working locally unless the human explicitly authorizes that separate operation. Do not expose port `8765`; Studio is loopback-only.
 
+For a private VPS, run `scripts/launchpad-start.sh --background` so the Studio
+survives the agent terminal. The user's computer must create the SSH tunnel:
+`ssh -N -L 8876:127.0.0.1:8765 <your-vps-ssh-target>`, then open
+`http://127.0.0.1:8876`. The VPS loopback URL is not a browser URL on the
+user's computer. Never invent the SSH target and never expose Studio publicly.
+
 ## Safe expansion direction
 
 Future work can add versioned rulebooks, structured fact editing, receipt redaction, adapter contracts for other agent runtimes, and a stronger MCP service with authentication and policy enforcement. Those changes must retain immutable evidence, explicit human approval, least privilege, and a clear distinction between observation, inference, and action.
