@@ -1,0 +1,19 @@
+{
+  "fixture": true,
+  "bulletin_id": "harbor-bulletin-2112",
+  "issued_at": "2026-08-29T21:12:00Z",
+  "source_id": "harbor-control",
+  "provenance": "controlled-local-read-only-file",
+  "observations": [
+    {
+      "statement": "north_route_clear",
+      "frequency": 1.0,
+      "confidence": 0.95
+    },
+    {
+      "statement": "north_buoy_operational",
+      "frequency": 1.0,
+      "confidence": 0.9
+    }
+  ]
+}

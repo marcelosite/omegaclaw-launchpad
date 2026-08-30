@@ -1,0 +1,20 @@
+{
+  "fixture": true,
+  "scenario_id": "lighthouse-in-the-fog",
+  "claims": [
+    {
+      "claim_id": "north-beacon-report",
+      "statement": "north_route_clear",
+      "frequency": 0.95,
+      "confidence": 0.75,
+      "source_id": "north-beacon"
+    },
+    {
+      "claim_id": "sailor-observation",
+      "statement": "north_route_clear",
+      "frequency": 0.15,
+      "confidence": 0.75,
+      "source_id": "aurora-sailor"
+    }
+  ]
+}

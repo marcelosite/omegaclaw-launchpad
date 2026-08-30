@@ -5,3 +5,9 @@ __pycache__/
 .pytest_cache/
 .launchpad/
 .env
+.tmp/
+tmp/
+deliverables/omegaclaw-launchpad-pitch/
+deliverables/*.pptx
+deliverables/*.inspect.ndjson
+deliverables/*speaker-script.txt

@@ -3,13 +3,18 @@ set -euo pipefail
 
 PROJECT_ROOT="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
 PROOF_MODE="first-reflection"
-if [[ "${1:-}" == "--community-care" ]]; then
-  PROOF_MODE="community-care"
-  shift
-fi
+case "${1:-}" in
+  --community-care)
+    echo "The retired community-care lesson is not part of V2. Use scripts/run-lighthouse-proof.sh." >&2
+    exit 2
+    ;;
+  --lighthouse) PROOF_MODE="lighthouse"; shift ;;
+esac
 MISSION_ID="${1:-source-audit-demo-001}"
 MISSION_ROOT="${PROJECT_ROOT}/.launchpad/first-reflection/${MISSION_ID}"
 COMMUNITY_RUN_ROOT="${PROJECT_ROOT}/.launchpad/studio/runs/community-care"
+LIGHTHOUSE_RUN_ROOT="${PROJECT_ROOT}/.launchpad/studio/runs/lighthouse-in-the-fog"
+LIGHTHOUSE_EXAMPLE_ROOT="${PROJECT_ROOT}/examples/lighthouse-in-the-fog"
 UPSTREAM_DIR="${PROJECT_ROOT}/.launchpad/omegaclaw-core-v0.1.19"
 UPSTREAM_REF="v0.1.19"
 UPSTREAM_COMMIT="642c53676cf795cb7a0030823b36018c029b1416"
@@ -28,14 +33,38 @@ if [[ "${PROOF_MODE}" == "first-reflection" ]]; then
     echo "Prepare the mission first: python3 -m launchpad reflect prepare" >&2
     exit 2
   fi
-else
+elif [[ "${PROOF_MODE}" == "community-care" ]]; then
   for required in README.md facts.json rules.md rules.metta tests.json; do
     if [[ ! -f "${PROJECT_ROOT}/templates/community-care/${required}" ]]; then
       echo "Missing Community Hospital template file: ${required}" >&2
       exit 2
     fi
   done
+else
+  for required in README.md story.md claims.json facts.json verified-update.json runtime-bulletin.txt rules.md reasoning.metta tests.json workspace.json; do
+    if [[ ! -f "${LIGHTHOUSE_EXAMPLE_ROOT}/${required}" ]]; then
+      echo "Missing Lighthouse example file: ${required}" >&2
+      exit 2
+    fi
+  done
 fi
+
+archive_lighthouse_evidence() {
+  local archived_at archive_root moved
+  moved=0
+  archived_at="$(date -u +'%Y%m%dT%H%M%SZ')"
+  archive_root="${LIGHTHOUSE_RUN_ROOT}/archive/${archived_at}"
+  for artifact in omega-proof.json receipt.md; do
+    if [[ -f "${LIGHTHOUSE_RUN_ROOT}/${artifact}" ]]; then
+      mkdir -p "${archive_root}"
+      mv "${LIGHTHOUSE_RUN_ROOT}/${artifact}" "${archive_root}/${artifact}"
+      moved=1
+    fi
+  done
+  if [[ "${moved}" == "1" ]]; then
+    echo "Archived the previous Lighthouse evidence at ${archive_root}"
+  fi
+}
 
 for command in git docker; do
   if ! command -v "${command}" >/dev/null 2>&1; then
@@ -137,20 +166,25 @@ if grep -q -- '--chmod=' "${UPSTREAM_DIR}/Dockerfile" || \
   exit 2
 fi
 
+if [[ "${PROOF_MODE}" == "first-reflection" ]]; then
+  TEST_SOURCE="${PROJECT_ROOT}/integrations/omegaclaw/test_launchpad_first_reflection_ws_mock.py"
+  TEST_TARGET="${UPSTREAM_DIR}/Autotests/mock_websocket/test_launchpad_first_reflection_ws_mock.py"
+elif [[ "${PROOF_MODE}" == "community-care" ]]; then
+  TEST_SOURCE="${PROJECT_ROOT}/integrations/omegaclaw/test_launchpad_community_care_ws_mock.py"
+  TEST_TARGET="${UPSTREAM_DIR}/Autotests/mock_websocket/test_launchpad_community_care_ws_mock.py"
+else
+  TEST_SOURCE="${PROJECT_ROOT}/integrations/omegaclaw/test_launchpad_lighthouse_ws_mock.py"
+  TEST_TARGET="${UPSTREAM_DIR}/Autotests/mock_websocket/test_launchpad_lighthouse_ws_mock.py"
+fi
+# Keep the build context and the host-side pytest target on the same harness
+# revision. This avoids one unnecessary source-layer rebuild on every retry.
+cp "${TEST_SOURCE}" "${TEST_TARGET}"
+
 DOCKER_BUILD_ARGS=(-t "${PROOF_IMAGE}")
 if docker build --help 2>/dev/null | grep -q -- '--progress'; then
   DOCKER_BUILD_ARGS=(--progress=plain "${DOCKER_BUILD_ARGS[@]}")
 fi
 docker build "${DOCKER_BUILD_ARGS[@]}" "${UPSTREAM_DIR}"
-
-if [[ "${PROOF_MODE}" == "first-reflection" ]]; then
-  TEST_SOURCE="${PROJECT_ROOT}/integrations/omegaclaw/test_launchpad_first_reflection_ws_mock.py"
-  TEST_TARGET="${UPSTREAM_DIR}/Autotests/mock_websocket/test_launchpad_first_reflection_ws_mock.py"
-else
-  TEST_SOURCE="${PROJECT_ROOT}/integrations/omegaclaw/test_launchpad_community_care_ws_mock.py"
-  TEST_TARGET="${UPSTREAM_DIR}/Autotests/mock_websocket/test_launchpad_community_care_ws_mock.py"
-fi
-cp "${TEST_SOURCE}" "${TEST_TARGET}"
 
 if git -C "${UPSTREAM_DIR}" apply --check \
   "${PROJECT_ROOT}/integrations/omegaclaw/macos-test-harness.patch" >/dev/null 2>&1; then
@@ -190,6 +224,13 @@ cleanup() {
 }
 trap cleanup EXIT
 
+# A failed retry must never leave an older proof looking like the result of the
+# current run. Keep prior receipts immutable in a timestamped archive and make
+# the active evidence slot pending until this run completes every checkpoint.
+if [[ "${PROOF_MODE}" == "lighthouse" ]]; then
+  archive_lighthouse_evidence
+fi
+
 env \
   WS_URL="ws://${HOST_FROM_CONTAINER}:8770" \
   WS_TOKEN="${WS_TOKEN}" \
@@ -211,12 +252,15 @@ env \
   WS_MOCK_PORT=8770 \
   WS_TOKEN="${WS_TOKEN}" \
   LAUNCHPAD_MISSION_ROOT="${MISSION_ROOT}" \
-  LAUNCHPAD_STUDIO_RUN_ROOT="${COMMUNITY_RUN_ROOT}" \
+  LAUNCHPAD_STUDIO_RUN_ROOT="$([[ "${PROOF_MODE}" == "lighthouse" ]] && printf '%s' "${LIGHTHOUSE_RUN_ROOT}" || printf '%s' "${COMMUNITY_RUN_ROOT}")" \
+  LAUNCHPAD_LIGHTHOUSE_EXAMPLE_ROOT="${LIGHTHOUSE_EXAMPLE_ROOT}" \
   "${UPSTREAM_DIR}/Autotests/venv/bin/pytest" -s -v \
     "${TEST_TARGET}"
 
 if [[ "${PROOF_MODE}" == "first-reflection" ]]; then
   echo "Real OmegaClaw proof captured at ${MISSION_ROOT}/03-reflection/omega-proof.json"
-else
+elif [[ "${PROOF_MODE}" == "community-care" ]]; then
   echo "Real OmegaClaw Community Hospital proof captured at ${COMMUNITY_RUN_ROOT}/omega-proof.json"
+else
+  echo "Real OmegaClaw Lighthouse proof captured at ${LIGHTHOUSE_RUN_ROOT}/omega-proof.json"
 fi

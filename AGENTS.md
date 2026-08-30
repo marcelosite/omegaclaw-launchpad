@@ -5,10 +5,10 @@ This repository is an onboarding and evidence layer for OmegaClaw. It is not an 
 ## Default workflow
 
 1. Read `README.md`, `docs/STUDIO.md`, `docs/STUDIO_ARCHITECTURE.md`, `docs/PROOF.md`, `docs/STUDIO_V1_STATE.md`, and `docs/STUDIO_V2_FEYNMAN_JOURNEY.md` before changing the Studio.
-2. Treat `docs/STUDIO_V1_STATE.md` as the continuity snapshot and `docs/STUDIO_V2_FEYNMAN_JOURNEY.md` as the approved direction for the next user experience. Where older P0 interface copy conflicts with the newer experience direction, stop and surface the conflict before implementation.
-3. Run `scripts/studio-doctor.sh` before a local proof. Show blockers instead of bypassing them.
+2. Treat `docs/STUDIO_V1_STATE.md` as historical continuity and `docs/STUDIO_V2_FEYNMAN_JOURNEY.md` as the active product contract. The V2 experience uses only **The Lighthouse in the Fog**. Older hospital, factory, community-care, referee-only, and mandatory-MCP copy must not appear in the active Wizard or primary onboarding docs.
+3. Run `scripts/studio-doctor.sh` before a local proof. Setup and proof happen before the Wizard. Show blockers instead of bypassing them.
 4. Use the deterministic `Test` provider for the first proof. Never request or store an LLM key for this path.
-5. Run `scripts/run-community-care-proof.sh` for the synthetic community-care lesson. A lesson is verified only when its real `omega-proof.json` passes the evidence contract.
+5. Run `scripts/run-lighthouse-proof.sh` for the synthetic Lighthouse lesson. A lesson is verified only when its real `omega-proof.json` passes the evidence contract.
 6. Keep facts, human rules, executable lesson scaffolds, runtime evidence, and receipts as separate files.
 7. Preserve human approval. Do not execute an action because a lesson concludes `human_review_required`.
 
@@ -17,7 +17,7 @@ This repository is an onboarding and evidence layer for OmegaClaw. It is not an 
 - Explain the plain-language idea before introducing a technical term.
 - Define the first use of each technical term in parentheses.
 - Every command shown to a user must say where it runs: the user's computer, the VPS, or the temporary proof container.
-- Describe Omega as a referee that applies a human-approved rule to recorded facts and produces a receipt. Do not describe it as the boss of agents or an autonomous action authority.
+- Describe OmegaClaw accurately as an experimental autonomous neural-symbolic agent framework. In the Lighthouse lesson, Launchpad deliberately restricts it to a supervised recommendation role. Do not present that lesson role as the complete definition of OmegaClaw.
 - Do not claim the current MCP supports arbitrary multi-agent disputes. That is a future bounded extension.
 
 ## Local files and formats
@@ -25,22 +25,22 @@ This repository is an onboarding and evidence layer for OmegaClaw. It is not an 
 - First Reflection mission: `.launchpad/first-reflection/<mission-id>/`.
 - Studio preflight: `.launchpad/studio/preflight.json`.
 - Copied workspaces: `.launchpad/studio/workspaces/<lowercase-slug>/`.
-- Real community-care proof: `.launchpad/studio/runs/community-care/omega-proof.json` and `receipt.md`.
+- Real Lighthouse proof: `.launchpad/studio/runs/lighthouse-in-the-fog/omega-proof.json` and `receipt.md`.
 - MCP receipts: `.launchpad/studio/runs/mcp/mcp-<32-hex>.json`.
 - Browser artifact names are logical allowlisted IDs; never add an arbitrary path endpoint.
 
-The `community-care` template contains fictional facts, a human-readable `rules.md`, an **Illustrative MeTTa lesson** in `rules.metta`, positive/negative `tests.json`, and a fixture receipt. The fixture is not runtime evidence.
+The canonical `examples/lighthouse-in-the-fog` example contains fictional claims, recorded facts with provenance, a human-readable rule, an executable MeTTa reasoning file, positive/negative/GIGO tests, and a fixture receipt. The fixture is not runtime evidence.
 
-## MCP v1
+## Optional MCP v1
 
 Start the local bridge with `scripts/studio-mcp.sh`. It is newline-delimited JSON-RPC over STDIO and exposes exactly two tools:
 
-- `omega.reason({"workspace_id":"community-care","question":"..."})` consults the verified synthetic lesson and writes a receipt before returning. It also accepts one closed `community-care-first-review` Conflict Packet documented in `docs/AGENT_GUIDE.md`; that local deterministic teaching test returns `human_review_required`, records a decision trace, and does not re-run OmegaClaw or validate external claims.
+- `omega.reason(...)` performs a bounded deterministic Launchpad consultation and writes a receipt before returning. It does not re-run OmegaClaw or validate external claims.
 - `omega.get_receipt({"receipt_id":"mcp-<32-hex>"})` returns one receipt created by the first tool.
 
-The bridge does not run a provider, call OmegaClaw again, execute shell commands, read arbitrary files, invoke connectors, or authorize an external action. A useful response always carries `synthetic_only: true` and `human_approval_required: true`. The closed teaching packet is not arbitrary multi-agent dispute support; do not describe it as such.
+The bridge does not run a provider, call OmegaClaw again, execute shell commands, read arbitrary files, invoke connectors, or authorize an external action. A useful response always carries `synthetic_only: true` and `human_approval_required: true`.
 
-Use the MCP bridge as an audit-friendly consultation surface, not as a general agent executor. If a requested task needs external data, credentials, a connector, a channel, or a machine action, stop and ask the human for a separate design and approval.
+MCP is optional and outside the main Wizard. Use the bridge as an audit-friendly Launchpad consultation surface, not as proof that an external agent spoke directly to a fresh OmegaClaw run. If a requested task needs external data, credentials, a connector, a channel, or a machine action, stop and ask the human for a separate design and approval.
 
 ## Agent boundaries
 

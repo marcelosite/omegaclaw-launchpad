@@ -1,0 +1,1 @@
+LIGHTHOUSE_BULLETIN source=harbor-control issued=2026-08-29T21:12:00Z observation=north_buoy_operational confidence=0.90

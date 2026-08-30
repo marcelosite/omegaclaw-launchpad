@@ -1,0 +1,33 @@
+{
+  "fixture": true,
+  "cases": [
+    {
+      "id": "conflicting-current-reports",
+      "inputs": ["north-beacon-report", "sailor-observation"],
+      "expected_conclusion": "gather_more_evidence",
+      "human_approval_required": true,
+      "external_actions": []
+    },
+    {
+      "id": "verified-independent-update",
+      "inputs": ["harbor-control", "north-beacon"],
+      "expected_conclusion": "north_route_supported_for_human_review",
+      "human_approval_required": true,
+      "external_actions": []
+    },
+    {
+      "id": "missing-required-beacon",
+      "inputs": ["south-beacon-status"],
+      "expected_conclusion": "gather_more_evidence",
+      "human_approval_required": true,
+      "external_actions": []
+    },
+    {
+      "id": "gigo-anonymous-claim-only",
+      "inputs": ["anonymous-route-claim"],
+      "expected_conclusion": "gather_more_evidence",
+      "human_approval_required": true,
+      "external_actions": []
+    }
+  ]
+}

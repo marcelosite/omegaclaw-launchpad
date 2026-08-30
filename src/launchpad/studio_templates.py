@@ -1,4 +1,4 @@
-"""Approved, local-only Studio templates."""
+"""Approved, local-only Studio examples."""
 
 from __future__ import annotations
 
@@ -11,13 +11,13 @@ class TemplateNotFoundError(ValueError):
 
 
 def repository_root() -> Path:
-    """Return the checkout root that contains the approved Studio templates."""
+    """Return the checkout root that contains the approved Studio example."""
     return Path(__file__).resolve().parents[2]
 
 
 def approved_templates() -> Dict[str, Path]:
-    """Return the immutable allowlist of templates that Studio may copy."""
-    return {"community-care": repository_root() / "templates" / "community-care"}
+    """Return the immutable allowlist of examples that Studio may copy."""
+    return {"lighthouse-in-the-fog": repository_root() / "examples" / "lighthouse-in-the-fog"}
 
 
 def resolve_template(template_name: str) -> Path:

@@ -1,225 +1,50 @@
 # OmegaClaw Launchpad
 
-**An open-source onboarding layer that turns OmegaClaw's learning curve into small, verifiable missions.**
+Launchpad is a Docker-only onboarding and evidence layer for [OmegaClaw](https://github.com/asi-alliance/OmegaClaw-Core). It tells one short story — **The Lighthouse in the Fog** — and proves the core path with the real pinned OmegaClaw runtime, the deterministic `Test` provider, a WebSocket channel, memory across restart, a file tool, MeTTa, NAL/STV, a response, and a receipt.
 
-Built for **BGI Commons HyperSprint #1 — Track 2: Onboarding OmegaClaw**.
+It is not an autonomous action platform. OmegaClaw can reason and return a recommendation; a person decides. The proof is synthetic and local, and deliberately performs no external action.
 
-## First Reflection
+## Project links
 
-**First Reflection** is Launchpad's first working module: a governed onboarding lab where a newcomer watches a real OmegaClaw agent reason about verified evidence before any change is approved.
+- [Open the repository](https://github.com/marcelosite/omegaclaw-launchpad)
+- [Download the V2 presentation (PDF)](https://github.com/marcelosite/omegaclaw-launchpad/releases/download/v0.3.0/omegaclaw-launchpad-pitch.pdf)
+- [Read the presentation in this repository](deliverables/omegaclaw-launchpad-pitch.pdf)
+- [Visit the official OmegaClaw Core repository](https://github.com/asi-alliance/OmegaClaw-Core)
+- [View the OmegaClaw Launchpad project on BGI Commons](https://bgicommons.org/teams/55)
+- [Visit BGI Commons HyperSprint #1: OmegaClaw](https://bgicommons.org/hackathons/hypersprint-1-omegaclaw)
 
-## Launchpad Studio — First Proof
+## Fast path
 
-Launchpad Studio is the self-hosted learning interface for the same evidence and proof contracts. Its nine-step, plain-language Wizard uses the referee story to guide a newcomer from a safe preflight to a real proof, a synthetic lesson, a local workspace, and a bounded MCP handoff. It runs only on `127.0.0.1:8765`, is opened through an SSH tunnel, and reads real artifacts without controlling Docker or fabricating an OmegaClaw result.
+Run these commands **on the user's computer or private VPS, from this repository root**:
 
-The P0 also includes a deliberately synthetic `community-care` tutorial that can be copied into a private local workspace:
-
-```bash
-python3 -m launchpad studio new my-case --template community-care
+```sh
+scripts/launchpad-start.sh
 ```
 
-The Studio server, preflight helper, exact installation flow, and agent-facing contracts are documented in the [Studio guide](docs/STUDIO.md) and [Agent integration guide](docs/AGENT_GUIDE.md). No LLM API key, public web port, database, account, or remote service is part of P0.
+The launcher runs the host preflight, validates the example, runs the real Docker proof, verifies its receipt, and only then opens the loopback Studio at `http://127.0.0.1:8765`. The story-first Wizard has eight short moments: Intro → Input → Memory → Verify → Reason → Explain → Understand → Play. Each lesson keeps the story on the left and the matching OmegaClaw part on the right.
 
-After the real synthetic community-care proof passes locally, the optional bounded handoff is:
+To validate or copy the only approved example without Docker:
 
-```bash
-scripts/run-community-care-proof.sh
-scripts/studio-mcp.sh
+```sh
+PYTHONPATH=src python3 -m launchpad example check lighthouse-in-the-fog
+PYTHONPATH=src python3 -m launchpad example copy my-case
 ```
 
-The local STDIO bridge exposes only `omega.reason` and `omega.get_receipt`. It records local receipts and cannot run shell commands, providers, connectors, or external actions. Its first structured disagreement test is a closed Community Hospital first review teaching packet, not arbitrary multi-agent arbitration. See the [sprint summary](docs/SPRINT_SUMMARY.md) for the concise product description.
+Read [the story](docs/THE_LIGHTHOUSE_IN_THE_FOG.md), [the runnable example](examples/lighthouse-in-the-fog/README.md), [the coding-agent guide](docs/AGENT_GUIDE.md), and [the proof contract](docs/PROOF.md).
 
-## The simple idea
+## Providers and keys
 
-An agent says: “I consulted three sources.” The independent event record shows one.
+The first proof uses `Test`; it needs no LLM key. Never commit a key or put one in an example, receipt, or chat. A direct MiniMax key is a future optional provider configuration (`OPENAIAPI_API_KEY` with the upstream `OpenAIAPI` provider), not the ASI Alliance `ASI_API_KEY` path. See [PROVIDERS.md](docs/PROVIDERS.md).
 
-Launchpad turns that small contradiction into a complete first lesson:
+## Optional MCP
 
-```text
-human defines the rule
-→ controlled agent run creates evidence
-→ deterministic validator proves the mismatch
-→ OmegaClaw receives the verified facts
-→ MeTTa/NAL reasons about conflicting evidence
-→ human approves or rejects the proposed rerun
-→ a before/after receipt is generated
+The local STDIO bridge is an optional receipt/teaching interface, not a new OmegaClaw executor. It exposes exactly `omega.reason` and `omega.get_receipt`, requires the verified Lighthouse proof, does not call a provider or run shell commands, and never authorizes an action. See [AGENT_GUIDE.md](docs/AGENT_GUIDE.md#mcp-optional).
+
+## Development checks
+
+```sh
+PYTHONPATH=src python3 -m unittest discover -s tests -p 'test_*.py'
+git diff --check
 ```
 
-The validator does not need AI: counting events is safer with ordinary code. OmegaClaw is used where it matters—inside its real agent loop, executing MeTTa/NAL and exposing the reasoning result for human review.
-
-## Try the local cycle in under a minute
-
-Requires Python 3.9+ and no API key:
-
-```bash
-git clone https://github.com/marcelosite/omegaclaw-launchpad.git
-cd omegaclaw-launchpad
-python3 -m launchpad reflect demo
-```
-
-You will see:
-
-```text
-FIRST RUN       declared 3 / observed 1 / FAIL
-OMEGACLAW PROOF pending — not simulated
-HUMAN DECISION approved
-CONTROLLED RERUN declared 3 / observed 3 / PASS
-```
-
-The evidence remains readable under:
-
-```text
-.launchpad/first-reflection/source-audit-demo-001/
-├── 00-mission/       # objective, rules, limits
-├── 01-run-1/         # report, declarations, hash-linked events
-├── 02-validation/    # deterministic findings
-├── 03-reflection/    # frozen OmegaClaw input and captured proof
-├── 04-review/        # explicit human decision
-├── 05-rerun/         # second run and validation
-└── 06-receipt/       # before/after comparison
-```
-
-The local cycle is a working instrumented mission, not an OmegaClaw simulation. It deliberately labels the OmegaClaw proof as pending until the upstream runtime has actually run.
-
-## Use the human review menu
-
-Run the stages separately:
-
-```bash
-python3 -m launchpad reflect init
-python3 -m launchpad reflect run
-python3 -m launchpad reflect validate
-python3 -m launchpad reflect prepare
-python3 -m launchpad reflect review
-```
-
-The final command presents four choices:
-
-```text
-1. Approve and allow the controlled rerun
-2. Show the complete reflection context
-3. Reject
-4. Exit without a decision
-```
-
-Only an approval permits:
-
-```bash
-python3 -m launchpad reflect rerun
-python3 -m launchpad reflect receipt
-```
-
-## Prove the real OmegaClaw path
-
-The real proof uses the pinned OmegaClaw-Core `v0.1.19` commit, its WebSocket test channel, the deterministic `Test` provider, the actual agent loop, and a real `(metta "...")` NAL call. **It does not require a paid LLM or an LLM API key.**
-
-Check readiness:
-
-```bash
-python3 -m launchpad reflect prove
-```
-
-Requirements:
-
-- Docker engine;
-- Python 3.10+;
-- Git;
-- a prepared First Reflection mission.
-
-Then run:
-
-```bash
-scripts/run-omegaclaw-proof.sh
-```
-
-The runner clones the exact upstream tag, verifies commit `642c53676cf795cb7a0030823b36018c029b1416`, builds a local image instead of using `latest`, starts OmegaClaw with `provider=Test` and `channel=websocket`, and runs the end-to-end proof. A successful run writes `omega-proof.json`; only then does the final receipt say `verified`.
-
-**Verified on 2026-08-28:** the proof completed with `7/7` integration checks and `1 passed` in pytest on Apple Silicon. See the [reproduction evidence](docs/PROOF.md) and [captured proof JSON](docs/evidence/omega-proof.json). The reported runtime is honestly labeled `v0.1.19-dirty`: its base is the verified upstream commit, with only a two-job FAISS build patch and a macOS test-harness compatibility patch.
-
-## Evidence frames
-
-These video-ready frames summarize one verified run. The rendered cards are derived from the saved mission artifacts; the review image is the original macOS Terminal capture.
-
-| Failure detected | Real OmegaClaw proof |
-|---|---|
-| ![Expected three sources, observed one, result fail](docs/assets/video/01-failure-detected.png) | ![Seven of seven real OmegaClaw integration checks passed](docs/assets/video/02-real-omegaclaw-proof.png) |
-
-| Human approval gate | Final governed receipt |
-|---|---|
-| ![Terminal review menu requiring a human decision](docs/assets/video/03-human-approval.png) | ![Before fail, after pass, human approved, OmegaClaw verified](docs/assets/video/04-final-receipt.png) |
-
-Download the originals and editable HTML source from the [video evidence kit](docs/assets/video/README.md).
-
-## What this proves—and what it does not
-
-| Demonstrated | Not claimed |
-|---|---|
-| Objective mismatch detection from recorded events | Universal truth detection |
-| Explicit mission and evidence contracts | Observation of every action in the outside world |
-| Human approval before a controlled rerun | Autonomous self-modification |
-| Real OmegaClaw loop + MeTTa/NAL when the proof passes | That the deterministic Test provider measures intelligence |
-| A reusable adapter boundary for future agents | Current OpenClaw, Hermes, Claude, or Codex integration |
-
-The honest claim is:
-
-> Launchpad gives a newcomer a small, observable mission in which they can use and verify OmegaClaw-specific capabilities—its agent loop, MeTTa skill, NAL reasoning, and human-governed learning boundary.
-
-## Why this is onboarding
-
-Most introductions begin with installation and terminology. First Reflection begins with a concrete failure that a nontechnical person can understand. Every abstract concept is introduced only when it becomes useful:
-
-- **instrumentation** means “write down what actually happened”;
-- **validation** means “compare the rule with the record”;
-- **NAL truth values** mean “show how conflicting evidence changes confidence”;
-- **human governance** means “the agent may propose, but it may not silently change itself.”
-
-This is the first small stair. Future adapters can translate events from OpenClaw, Hermes, Codex, Claude Code, or other agent systems into the same mission contract, while OmegaClaw remains the reflection runtime.
-
-## Community value
-
-The source-audit fixture is not the product; it is the smallest lesson that makes OmegaClaw-specific capabilities visible. Launchpad contributes:
-
-- a no-key path from zero to a verified OmegaClaw loop;
-- readable mission, event, reflection, decision, and receipt contracts;
-- a reproducible harness for WebSocket, MeTTa skill dispatch, and NAL results;
-- an honest separation between deterministic validation, agent reasoning, and human authority;
-- an adapter boundary that future OpenClaw, Hermes, Codex, Claude Code, and MCP integrations can reuse;
-- an example project that future tutorials and onboarding experiences can extend instead of starting from an empty repository.
-
-## Existing onboarding commands
-
-The earlier source-pinned onboarding path remains available:
-
-```bash
-python3 -m launchpad doctor
-python3 -m launchpad onboard --provider Anthropic --channel irc
-```
-
-It creates a secret-safe handoff and builds the image from the pinned upstream source. Provider credentials are read only from the shell and are never stored by Launchpad.
-
-## Development
-
-```bash
-python3 -m unittest discover -s tests -p 'test_*.py'
-```
-
-Current local coverage includes mismatch detection, approval gating, rejection, rerun comparison, CLI output, secret safety, and the no-fake-OmegaClaw boundary.
-
-## Sprint documentation
-
-- [MVP and acceptance criteria](docs/MVP.md)
-- [Architecture and component boundaries](docs/ARCHITECTURE.md)
-- [Verified upstream research](docs/RESEARCH.md)
-- [Practical backlog](docs/BACKLOG.md)
-- [Three-minute demo](docs/DEMO.md)
-- [Testing and recording guide](docs/TESTING.md)
-- [Real OmegaClaw proof](docs/PROOF.md)
-- [Launchpad Studio](docs/STUDIO.md)
-- [Launchpad Studio P0 plan](docs/STUDIO_P0_PLAN.md)
-- [Studio v1 state and continuity record](docs/STUDIO_V1_STATE.md)
-- [Studio v2 Feynman experience direction](docs/STUDIO_V2_FEYNMAN_JOURNEY.md)
-- [BGI submission draft](docs/SUBMISSION.md)
-
-## License
-
-MIT. OmegaClaw-Core, Hyperon, PeTTa, MeTTa, and their dependencies remain upstream projects with their own licenses and terms.
+The complete evidence contract and Docker proof procedure are in [PROOF.md](docs/PROOF.md). The architecture and safety boundaries are in [STUDIO_ARCHITECTURE.md](docs/STUDIO_ARCHITECTURE.md).

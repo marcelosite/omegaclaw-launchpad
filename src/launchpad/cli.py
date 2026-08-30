@@ -25,8 +25,9 @@ from .reflection import (
     validate_run,
 )
 from .studio_templates import TemplateNotFoundError
-from .studio_workspace import create_workspace
+from .studio_workspace import create_workspace, workspace_path
 from .studio.mcp_server import LocalMCP
+from .examples import validate_example
 
 
 def _root(value: str) -> Path:
@@ -45,7 +46,7 @@ def _add_reflection_location(parser: argparse.ArgumentParser) -> None:
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="omega-launchpad",
-        description="Guide a newcomer through a first governed OmegaClaw reflection.",
+        description="Guide a newcomer through a verified OmegaClaw proof and story-first lesson.",
     )
     parser.add_argument("--version", action="version", version=__version__)
     commands = parser.add_subparsers(dest="command", required=True)
@@ -121,6 +122,15 @@ def build_parser() -> argparse.ArgumentParser:
     studio_new.add_argument("--template", required=True, help="approved Studio template name")
     _add_workspace(studio_new)
 
+    example = commands.add_parser("example", help="check or copy the canonical Lighthouse example")
+    example_commands = example.add_subparsers(dest="example_command", required=True)
+    example_check = example_commands.add_parser("check", help="validate one Lighthouse example without Docker")
+    example_check.add_argument("example_id", nargs="?", default="lighthouse-in-the-fog")
+    _add_workspace(example_check)
+    example_copy = example_commands.add_parser("copy", help="copy the Lighthouse example into a private workspace")
+    example_copy.add_argument("workspace_name")
+    _add_workspace(example_copy)
+
     mcp = commands.add_parser("mcp", help="test and consult the local Studio MCP bridge")
     mcp_commands = mcp.add_subparsers(dest="mcp_command", required=True)
     mcp_check = mcp_commands.add_parser("check", help="verify the local bridge and its two tools")
@@ -128,10 +138,9 @@ def build_parser() -> argparse.ArgumentParser:
     mcp_check.add_argument("--json", action="store_true", help="emit machine-readable results")
     mcp_reason = mcp_commands.add_parser("reason", help="submit a bounded local consultation")
     _add_workspace(mcp_reason)
-    mcp_reason.add_argument("--workspace-id", default="community-care")
+    mcp_reason.add_argument("--workspace-id", default="lighthouse-in-the-fog")
     mcp_reason.add_argument("--question", required=True)
     mcp_reason.add_argument("--packet-file", type=Path, help="JSON file containing a bounded general consultation packet")
-    mcp_reason.add_argument("--community-care-demo", action="store_true", help="use the fixed Community Hospital teaching packet")
     mcp_reason.add_argument("--json", action="store_true", help="emit machine-readable results")
     mcp_receipt = mcp_commands.add_parser("receipt", help="read one local MCP receipt")
     _add_workspace(mcp_receipt)
@@ -209,13 +218,42 @@ def _studio(args: argparse.Namespace) -> int:
     return 0
 
 
+def _example(args: argparse.Namespace) -> int:
+    if args.example_command == "copy":
+        try:
+            created = create_workspace(args.workspace, args.workspace_name, "lighthouse-in-the-fog")
+        except (TemplateNotFoundError, ValueError, FileExistsError, FileNotFoundError) as error:
+            print("Lighthouse example was not copied: %s" % error, file=sys.stderr)
+            return 2
+        print("Lighthouse example copied to private workspace: %s" % created)
+        print("Next: python3 -m launchpad example check %s" % args.workspace_name)
+        return 0
+    if args.example_id == "lighthouse-in-the-fog":
+        root = args.workspace / "examples" / "lighthouse-in-the-fog"
+    else:
+        try:
+            root = workspace_path(args.workspace, args.example_id)
+        except ValueError as error:
+            print("Lighthouse example check failed: %s" % error, file=sys.stderr)
+            return 2
+    errors = validate_example(root)
+    if errors:
+        print("Lighthouse example check: FAILED", file=sys.stderr)
+        for error in errors:
+            print("- %s" % error, file=sys.stderr)
+        return 1
+    print("Lighthouse example check: PASS")
+    print("- story, facts, provenance, rules, reasoning, tests, and safety boundary are present")
+    return 0
+
+
 def _mcp(args: argparse.Namespace) -> int:
     bridge = LocalMCP(args.workspace)
     if args.mcp_command == "check":
         listing = bridge.dispatch({"jsonrpc": "2.0", "id": 1, "method": "tools/list"})
         names = [tool["name"] for tool in listing["result"]["tools"]] if listing and "result" in listing else []
         try:
-            bridge._verified_community_proof()
+            bridge._verified_proof()
             proof_state = "verified"
         except ValueError as error:
             proof_state = str(error)
@@ -232,25 +270,11 @@ def _mcp(args: argparse.Namespace) -> int:
             print("OmegaClaw Launchpad MCP check")
             print("[%s] STDIO bridge responds" % ("OK" if names else "BLOCKED"))
             print("[%s] Tools: %s" % ("OK" if names == ["omega.reason", "omega.get_receipt"] else "BLOCKED", ", ".join(names) or "none"))
-            print("[%s] Community Hospital proof: %s" % ("OK" if proof_state == "verified" else "BLOCKED", proof_state))
+            print("[%s] Lighthouse proof: %s" % ("OK" if proof_state == "verified" else "BLOCKED", proof_state))
         return 0 if ok else 1
     if args.mcp_command == "reason":
         arguments = {"workspace_id": args.workspace_id, "question": args.question}
-        if args.community_care_demo:
-            arguments["conflict_packet"] = {
-                "case_id": "community-care-first-review",
-                "rulebook_id": "community-care-first-review-r1",
-                "claims": [
-                    {"agent_id": "triage-agent", "position": "route_to_clinic", "evidence_ids": ["triage-note"]},
-                    {"agent_id": "records-agent", "position": "request_more_information", "evidence_ids": ["consent-missing"]},
-                ],
-                "recorded_facts": [
-                    {"fact_id": "patient_consent", "status": "missing", "evidence_id": "consent-missing"},
-                    {"fact_id": "triage_capacity", "status": "observed", "evidence_id": "triage-note"},
-                ],
-                "forbidden_actions": ["send_message", "change_record", "deny_care"],
-            }
-        elif args.packet_file:
+        if args.packet_file:
             try:
                 arguments["consultation"] = json.loads(args.packet_file.read_text(encoding="utf-8"))
             except (OSError, UnicodeDecodeError, json.JSONDecodeError) as error:
@@ -388,6 +412,8 @@ def main(argv: Sequence[str] | None = None) -> int:
         return _demo(args)
     if args.command == "studio":
         return _studio(args)
+    if args.command == "example":
+        return _example(args)
     if args.command == "mcp":
         return _mcp(args)
     if args.command == "reflect":

@@ -1,0 +1,15 @@
+{
+  "schema_version": 2,
+  "example": "lighthouse-in-the-fog",
+  "story": "story.md",
+  "claims": "claims.json",
+  "facts": "facts.json",
+  "verified_update": "verified-update.json",
+  "runtime_bulletin": "runtime-bulletin.txt",
+  "rules": {
+    "human": "rules.md",
+    "metta": "reasoning.metta"
+  },
+  "tests": "tests.json",
+  "fixture_receipt": "example-receipt.md"
+}

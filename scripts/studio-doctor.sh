@@ -51,12 +51,37 @@ fi
 docker_client_version="unavailable"
 docker_server_version="unavailable"
 docker_ok=false
+proof_image_present=false
 if command -v docker >/dev/null 2>&1; then
   docker_client_version="$(docker --version 2>/dev/null || true)"
-  docker_server_version="$(docker info --format '{{.ServerVersion}}' 2>/dev/null || true)"
+  # Docker Desktop can leave the CLI waiting forever while its VM is starting
+  # or its disk is full. Keep preflight bounded so the user sees a blocker.
+  docker_server_version="$(${PYTHON_WRITER} - <<'PY'
+import subprocess
+try:
+    result = subprocess.run(["docker", "info", "--format", "{{.ServerVersion}}"], capture_output=True, text=True, timeout=8)
+    print((result.stdout or "").strip())
+except (OSError, subprocess.TimeoutExpired):
+    pass
+PY
+  )"
   docker_client_version="${docker_client_version:-unavailable}"
   docker_server_version="${docker_server_version:-unavailable}"
   [[ "${docker_server_version}" != "unavailable" ]] && docker_ok=true
+  if [[ "${docker_ok}" == true ]] && "${PYTHON_WRITER}" - <<'PY'
+import subprocess
+try:
+    result = subprocess.run(
+        ["docker", "image", "inspect", "omegaclaw-launchpad-proof:v0.1.19"],
+        stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=8,
+    )
+except (OSError, subprocess.TimeoutExpired):
+    raise SystemExit(1)
+raise SystemExit(result.returncode)
+PY
+  then
+    proof_image_present=true
+  fi
 fi
 
 architecture="$(uname -m 2>/dev/null || printf 'unknown')"
@@ -81,7 +106,8 @@ disk_bytes="$(df -Pk "${PROJECT_ROOT}" 2>/dev/null | awk 'NR == 2 { print $4 * 1
   "${upstream_repository}" "${upstream_ref}" "${upstream_commit}" \
   "${python_command}" "${python_version}" "${python_ok}" "${docker_client_version}" \
   "${docker_server_version}" "${docker_ok}" "${architecture}" \
-  "${architecture_family}" "${architecture_ok}" "${memory_bytes}" "${disk_bytes}" <<'PY'
+  "${architecture_family}" "${architecture_ok}" "${memory_bytes}" "${disk_bytes}" \
+  "${proof_image_present}" <<'PY'
 import json
 import sys
 from datetime import datetime, timezone
@@ -90,12 +116,16 @@ from pathlib import Path
 (path, repo_version, repo_commit, upstream_repository, upstream_ref,
  upstream_commit, python_command, python_version, python_ok, docker_client, docker_server,
  docker_ok, architecture, architecture_family, architecture_ok, memory,
- disk) = sys.argv[1:]
+ disk, proof_image_present) = sys.argv[1:]
 python_ok = python_ok == "true"
 docker_ok = docker_ok == "true"
 architecture_ok = architecture_ok == "true"
 memory = int(memory)
 disk = int(disk)
+proof_image_present = proof_image_present == "true"
+disk_required = (5 if proof_image_present else 10) * 1024**3
+disk_recommended = 10 if proof_image_present else 25
+disk_phase = "cached proof image present" if proof_image_present else "first proof build"
 
 def check(name, ok, detail):
     return {"name": name, "ok": ok, "detail": detail}
@@ -107,7 +137,10 @@ checks = [
     check("docker", docker_ok, f"client={docker_client}; server={docker_server}"),
     check("architecture", architecture_ok, f"{architecture} ({architecture_family})"),
     check("memory", memory >= 2 * 1024**3, f"{memory} bytes detected; 4 GiB is recommended"),
-    check("disk", disk >= 10 * 1024**3, f"{disk} bytes available; 25 GiB is recommended"),
+    check(
+        "disk", disk >= disk_required,
+        f"{disk} bytes available; {disk_recommended} GiB is recommended for {disk_phase}",
+    ),
 ]
 overall = "ready" if all(item["ok"] for item in checks) else "blocked"
 document = {

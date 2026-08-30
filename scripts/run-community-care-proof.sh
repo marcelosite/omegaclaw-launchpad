@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-exec "${SCRIPT_DIR}/run-omegaclaw-proof.sh" --community-care "$@"
+echo "This retired proof is not part of V2. Use scripts/run-lighthouse-proof.sh." >&2
+exit 2

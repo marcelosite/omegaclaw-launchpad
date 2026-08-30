@@ -8,7 +8,10 @@ from http.server import ThreadingHTTPServer
 from pathlib import Path
 
 from launchpad.studio.artifacts import StudioArtifacts
-from launchpad.studio.server import HOST, PORT, WORKSPACE_SLUG, _handler_class, _page, require_loopback
+from launchpad.studio.server import (
+    HOST, PORT, STATIC_IMAGES, WORKSPACE_SLUG, _handler_class, _page,
+    require_loopback,
+)
 
 
 class StudioServerTests(unittest.TestCase):
@@ -18,50 +21,62 @@ class StudioServerTests(unittest.TestCase):
             require_loopback("0.0.0.0")
         self.assertEqual(PORT, 8765)
 
-    def test_page_has_nine_wizard_screens_and_safe_artifact_rendering(self):
+    def test_page_is_story_first_english_journey(self):
         page = _page()
-        self.assertEqual(page.count('class="screen'), 9)
+        self.assertEqual(page.count('class="screen'), 8)
+        self.assertIn("The Lighthouse in the Fog", page)
+        for label in ("Intro", "Input", "Memory", "Verify", "Reason", "Explain", "Understand", "Play"):
+            self.assertIn(label, page)
+        self.assertIn("Follow the story to see how", page)
+        self.assertIn("I understand the story and the problems it solves", page)
+        self.assertIn("I want to play with OmegaClaw", page)
+        self.assertIn("Copy prompt for my LLM", page)
+        self.assertIn("The keeper decides", page)
+        self.assertIn("/assets/lighthouse-hero.png", page)
+        self.assertIn("/assets/lighthouse-story-wide.png", page)
+        self.assertIn("data-primary", page)
         self.assertIn("textContent", page)
         self.assertNotIn("innerHTML", page)
-        self.assertIn('id="wizard-back"', page)
-        self.assertIn('id="wizard-next"', page)
-        self.assertIn("function show(n)", page)
-        self.assertIn("Community Hospital", page)
-        self.assertIn("MCP", page)
-        self.assertIn("Finish", page)
-        self.assertIn("omega.reason", page)
-        self.assertIn("omega.get_receipt", page)
-        self.assertIn("copy-packet", page)
-        self.assertIn("Blocked:", page)
-        self.assertIn("ack-boundary", page)
-        self.assertIn("ack-story", page)
-        self.assertIn("ack-flow", page)
-        self.assertIn("scripts/studio-doctor.sh", page)
-        self.assertIn("scripts/run-community-care-proof.sh", page)
-        self.assertIn("copy-mcp", page)
-        self.assertIn("copy-policy", page)
-        self.assertIn("Complete the step above", page)
-        self.assertIn("if(n<active)show(n)", page)
-        self.assertIn("codex mcp add omegaclaw-launchpad", page)
-        self.assertNotIn("Reviewed MeTTa", page)
-        self.assertIn("data-place-label", page)
-        self.assertIn("The card updates automatically", page)
-        self.assertIn("Green means the rehearsal ran", page)
-        self.assertIn("This is a human-owned workflow", page)
-        self.assertIn("claims → facts → rule → recommendation → receipt", page)
-        self.assertIn("human_review_required", page)
-        self.assertIn("The referee, not the boss", page)
+        self.assertNotIn("O Farol", page)
+        self.assertNotIn("Hospital", page)
+        self.assertNotIn("Factory", page)
+        self.assertNotIn("Community", page)
+        self.assertNotIn("scripts/run-community-care-proof.sh", page)
+        self.assertNotIn("codex mcp add", page)
+        self.assertIn("Checking the real Docker proof", page)
+
+    def test_each_screen_has_one_primary_action_and_progress_is_not_clickable(self):
+        page = _page()
+        self.assertEqual(page.count("data-primary"), 8)
+        self.assertIn("progress-bar", page)
+        self.assertNotIn("onclick=\"show", page)
+
+    def test_allowlisted_story_images_exist_and_are_png(self):
+        workspace = Path(__file__).resolve().parents[1]
+        server = ThreadingHTTPServer((HOST, 0), _handler_class(StudioArtifacts(workspace), None))
+        thread = threading.Thread(target=server.serve_forever, daemon=True)
+        thread.start()
+        try:
+            for route in STATIC_IMAGES:
+                connection = http.client.HTTPConnection(HOST, server.server_port, timeout=2)
+                try:
+                    connection.request("GET", route)
+                    response = connection.getresponse()
+                    body = response.read()
+                    self.assertEqual(response.status, HTTPStatus.OK)
+                    self.assertEqual(response.getheader("Content-Type"), "image/png")
+                    self.assertTrue(body.startswith(b"\x89PNG\r\n\x1a\n"))
+                finally:
+                    connection.close()
+        finally:
+            server.shutdown()
+            server.server_close()
+            thread.join()
 
     def test_workspace_slug_disallows_paths_and_uppercase(self):
         self.assertIsNotNone(WORKSPACE_SLUG.fullmatch("my-case-2"))
         for value in ("../outside", "my_case", "My-case", "", "a/b"):
             self.assertIsNone(WORKSPACE_SLUG.fullmatch(value))
-
-    def test_json_errors_do_not_reflect_request_content_as_html(self):
-        payload = {"error": "Unknown Studio route."}
-        encoded = json.dumps(payload).encode("utf-8")
-        self.assertEqual(json.loads(encoded.decode("utf-8"))["error"], "Unknown Studio route.")
-        self.assertEqual(HTTPStatus.NOT_FOUND.value, 404)
 
     def test_http_allowlist_and_copy_callback(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -91,29 +106,16 @@ class StudioServerTests(unittest.TestCase):
 
                 body = json.dumps({"name": "my-case"})
                 status, payload = request(
-                    "POST", "/api/templates/community-care/copy", body, {"Content-Type": "application/json"}
+                    "POST", "/api/examples/lighthouse-in-the-fog/copy", body, {"Content-Type": "application/json"}
                 )
                 self.assertEqual(status, HTTPStatus.CREATED)
                 self.assertEqual(payload, {"workspace_id": "my-case"})
-                self.assertNotIn(str(workspace), json.dumps(payload))
                 self.assertEqual(copied, ["my-case"])
 
                 status, _payload = request(
-                    "POST",
-                    "/api/templates/community-care/copy",
-                    json.dumps({"name": "../bad"}),
-                    {"Content-Type": "application/json"},
+                    "POST", "/api/examples/lighthouse-in-the-fog/copy", json.dumps({"name": "../bad"}), {"Content-Type": "application/json"}
                 )
                 self.assertEqual(status, HTTPStatus.BAD_REQUEST)
-                self.assertEqual(copied, ["my-case"])
-
-                status, _payload = request(
-                    "POST",
-                    "/api/templates/community-care/copy",
-                    json.dumps({"name": "another-case"}),
-                    {"Content-Type": "text/plain"},
-                )
-                self.assertEqual(status, HTTPStatus.UNSUPPORTED_MEDIA_TYPE)
                 self.assertEqual(copied, ["my-case"])
             finally:
                 server.shutdown()

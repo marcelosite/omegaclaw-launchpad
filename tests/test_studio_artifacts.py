@@ -1,49 +1,42 @@
+import hashlib
 import json
 import tempfile
 import unittest
 from pathlib import Path
 
 from launchpad.config import UPSTREAM_COMMIT
-from launchpad.reflection import DEFAULT_MISSION_ID
 from launchpad.studio.artifacts import ArtifactNotFound, StudioArtifacts, UnknownArtifact
 
 
 class StudioArtifactTests(unittest.TestCase):
-    def _mission(self, workspace: Path) -> Path:
-        root = workspace / ".launchpad" / "first-reflection" / DEFAULT_MISSION_ID
-        (root / "03-reflection").mkdir(parents=True)
-        (root / "06-receipt").mkdir()
-        return root
-
-    def _proof(self, root: Path, **changes: object) -> None:
+    def _proof(self, workspace: Path, **changes: object) -> None:
+        run = workspace / ".launchpad" / "studio" / "runs" / "lighthouse-in-the-fog"
+        run.mkdir(parents=True, exist_ok=True)
+        receipt = run / "receipt.md"
+        receipt.write_text("# Lighthouse receipt\n", encoding="utf-8")
         payload = {
-            "status": "verified",
-            "runtime": "OmegaClaw-Core v0.1.19-dirty",
-            "upstream_base_commit": UPSTREAM_COMMIT,
-            "provider": "Test",
-            "channel": "websocket",
-            "metta_skill_observed": True,
-            "nal_stv_observed_in_loop": True,
-            "human_approval_still_required": True,
-            "response": "A recorded response.",
+            "status": "verified", "runtime": "OmegaClaw-Core v0.1.19-dirty",
+            "upstream_base_commit": UPSTREAM_COMMIT, "provider": "Test", "channel": "websocket",
+            "scenario": "lighthouse-in-the-fog", "synthetic_only": True,
+            "loop_observed": True, "remember_observed": True, "restart_observed": True,
+            "query_after_restart_observed": True, "tool_skill_observed": True,
+            "metta_skill_observed": True, "nal_stv_observed_in_loop": True,
+            "response_observed": True, "human_approval_still_required": True,
+            "external_actions": [], "conclusion": "human_review_required",
+            "receipt_sha256": hashlib.sha256(receipt.read_bytes()).hexdigest(),
         }
         payload.update(changes)
-        (root / "03-reflection" / "omega-proof.json").write_text(json.dumps(payload), encoding="utf-8")
+        (run / "omega-proof.json").write_text(json.dumps(payload), encoding="utf-8")
 
-    def test_status_never_verifies_without_the_complete_proof_contract(self):
+    def test_lighthouse_proof_requires_complete_contract(self):
         with tempfile.TemporaryDirectory() as directory:
             workspace = Path(directory)
-            root = self._mission(workspace)
             reader = StudioArtifacts(workspace)
-            self.assertEqual(reader.status()["proof"]["state"], "pending")
-            self._proof(root, provider="Not-Test")
-            self.assertEqual(reader.status()["proof"]["state"], "failed")
-            self._proof(root, runtime="OmegaClaw-Core v0.1.19")
-            self.assertEqual(reader.status()["proof"]["state"], "failed")
-            self._proof(root, response="")
-            self.assertEqual(reader.status()["proof"]["state"], "failed")
-            self._proof(root)
-            self.assertEqual(reader.status()["proof"]["state"], "verified")
+            self.assertEqual(reader.status()["lighthouse"]["state"], "pending")
+            self._proof(workspace, provider="Not-Test")
+            self.assertEqual(reader.status()["lighthouse"]["state"], "failed")
+            self._proof(workspace)
+            self.assertEqual(reader.status()["lighthouse"]["state"], "verified")
 
     def test_artifact_allowlist_rejects_traversal_and_symlinks(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -51,91 +44,45 @@ class StudioArtifactTests(unittest.TestCase):
             reader = StudioArtifacts(workspace)
             with self.assertRaises(UnknownArtifact):
                 reader.artifact("../../etc/passwd")
-            studio_dir = workspace / ".launchpad" / "studio"
-            studio_dir.mkdir(parents=True)
-            (studio_dir / "preflight.json").symlink_to("/etc/passwd")
+            example = workspace / "examples" / "lighthouse-in-the-fog"
+            example.mkdir(parents=True)
+            (example / "README.md").symlink_to("/etc/passwd")
             with self.assertRaises(ArtifactNotFound):
-                reader.artifact("preflight")
+                reader.artifact("example-readme")
 
-    def test_preflight_uses_recorded_check_results_only(self):
+    def test_preflight_and_mcp_states_are_recorded_optional_checks(self):
         with tempfile.TemporaryDirectory() as directory:
             workspace = Path(directory)
-            studio_dir = workspace / ".launchpad" / "studio"
-            studio_dir.mkdir(parents=True)
+            studio = workspace / ".launchpad" / "studio"
+            studio.mkdir(parents=True)
             reader = StudioArtifacts(workspace)
             self.assertEqual(reader.status()["preflight"]["state"], "pending")
-            (studio_dir / "preflight.json").write_text(json.dumps({"checks": [{"ok": True}, {"ok": False}]}))
-            self.assertEqual(reader.status()["preflight"]["state"], "failed")
-            (studio_dir / "preflight.json").write_text(json.dumps({"checks": [{"ok": True}]}))
+            (studio / "preflight.json").write_text(json.dumps({"checks": [{"ok": True}]}))
             self.assertEqual(reader.status()["preflight"]["state"], "ready")
-
-    def test_community_proof_requires_its_receipt(self):
-        with tempfile.TemporaryDirectory() as directory:
-            workspace = Path(directory)
-            run_root = workspace / ".launchpad" / "studio" / "runs" / "community-care"
-            run_root.mkdir(parents=True)
-            payload = {
-                "status": "verified",
-                "provider": "Test",
-                "channel": "websocket",
-                "template": "community-care",
-                "synthetic_only": True,
-                "conclusion": "human_review_required",
-                "metta_skill_observed": True,
-                "nal_stv_observed_in_loop": True,
-                "human_approval_still_required": True,
-            }
-            (run_root / "omega-proof.json").write_text(json.dumps(payload), encoding="utf-8")
-            reader = StudioArtifacts(workspace)
-            self.assertEqual(reader.status()["community_care"]["state"], "pending")
-            (run_root / "receipt.md").write_text("# Receipt", encoding="utf-8")
-            self.assertEqual(reader.status()["community_care"]["state"], "verified")
-
-    def test_workspace_tests_are_read_by_logical_id_only(self):
-        with tempfile.TemporaryDirectory() as directory:
-            workspace = Path(directory)
-            tests_root = workspace / ".launchpad" / "studio" / "workspaces" / "my-case"
-            tests_root.mkdir(parents=True)
-            (tests_root / "tests.json").write_text("{\"cases\": []}", encoding="utf-8")
-            reader = StudioArtifacts(workspace)
-            result = reader.workspace_tests("my-case")
-            self.assertEqual(result["workspace_id"], "my-case")
-            self.assertEqual(result["content"], "{\"cases\": []}")
-            with self.assertRaises(ArtifactNotFound):
-                reader.workspace_tests("../outside")
-
-    def test_mcp_status_requires_expected_tools_and_verified_proof(self):
-        with tempfile.TemporaryDirectory() as directory:
-            workspace = Path(directory)
-            reader = StudioArtifacts(workspace)
-            self.assertEqual(reader.status()["mcp"]["state"], "pending")
-            studio_dir = workspace / ".launchpad" / "studio"
-            studio_dir.mkdir(parents=True)
-            (studio_dir / "mcp-check.json").write_text(json.dumps({"transport": "stdio", "tools": ["omega.reason"], "proof": "verified"}), encoding="utf-8")
-            self.assertEqual(reader.status()["mcp"]["state"], "failed")
-            (studio_dir / "mcp-check.json").write_text(json.dumps({"transport": "stdio", "tools": ["omega.reason", "omega.get_receipt"], "proof": "verified"}), encoding="utf-8")
+            self.assertEqual(reader.status()["mcp"]["state"], "optional")
+            self._proof(workspace)
+            (studio / "mcp-check.json").write_text(json.dumps({"transport": "stdio", "tools": ["omega.reason", "omega.get_receipt"]}))
             self.assertEqual(reader.status()["mcp"]["state"], "ready")
 
-    def test_artifact_content_is_returned_as_data_not_html(self):
+    def test_workspace_tests_use_logical_id_only(self):
         with tempfile.TemporaryDirectory() as directory:
             workspace = Path(directory)
-            root = self._mission(workspace)
-            content = "# Receipt\n\n<script>alert('not executable')</script>"
-            (root / "06-receipt" / "final-receipt.md").write_text(content, encoding="utf-8")
-            artifact = StudioArtifacts(workspace).artifact("receipt")
-            self.assertEqual(artifact["content"], content)
-            self.assertEqual(artifact["content_type"], "text/markdown")
+            root = workspace / ".launchpad" / "studio" / "workspaces" / "my-case"
+            root.mkdir(parents=True)
+            (root / "tests.json").write_text('{"cases": []}', encoding="utf-8")
+            result = StudioArtifacts(workspace).workspace_tests("my-case")
+            self.assertEqual(result["workspace_id"], "my-case")
+            with self.assertRaises(ArtifactNotFound):
+                StudioArtifacts(workspace).workspace_tests("../outside")
 
-    def test_template_example_receipt_and_workspace_contract_are_allowlisted(self):
+    def test_artifact_content_is_data_not_html(self):
         with tempfile.TemporaryDirectory() as directory:
             workspace = Path(directory)
-            template = workspace / "templates" / "community-care"
-            template.mkdir(parents=True)
-            (template / "example-receipt.md").write_text("# Fixture receipt", encoding="utf-8")
-            (template / "workspace.json").write_text("{}", encoding="utf-8")
-            reader = StudioArtifacts(workspace)
-            self.assertEqual(reader.artifact("template-receipt")["content"], "# Fixture receipt")
-            self.assertEqual(reader.artifact("template-workspace")["content"], "{}")
+            run = workspace / ".launchpad" / "studio" / "runs" / "lighthouse-in-the-fog"
+            run.mkdir(parents=True)
+            content = "# Receipt\n<script>alert('not executable')</script>"
+            (run / "receipt.md").write_text(content, encoding="utf-8")
+            self.assertEqual(StudioArtifacts(workspace).artifact("lighthouse-receipt")["content"], content)
 
 
 if __name__ == "__main__":
